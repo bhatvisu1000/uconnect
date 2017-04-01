@@ -1,0 +1,5 @@
+"RecordNumber".string(),Zipcode.string(),ZipCodeType.string(),City.string(),State.string(),LocationType.string(),Lat.string(),Long.string(),Xaxis.string(),Yaxis.string(),Zaxis.string(),WorldRegion.string(),Country.string(),LocationText.string(),Location.string(),Decommisioned.string(),TaxReturnsFiled.string(),EstimatedPopulation.string(),TotalWages.string(),Notes.string()
+mongoimport --host=127.0.0.1 --db test --collection zipcode --type csv --file zipcode.csv --headerline --drop --fields='RecordNumber.double()'
+mongoimport --host=127.0.0.1 --db test --collection zipcode --type csv --file zipcode.csv --drop --fields='RecordNumber.double(),Zipcode.string(),ZipCodeType.string(),City.string(),State.string(),LocationType.string(),Lat.string(),Long.string(),Xaxis.string(),Yaxis.string(),Zaxis.string(),WorldRegion.string(),Country.string(),LocationText.string(),Location.string(),Decommisioned.string(),TaxReturnsFiled.string(),EstimatedPopulation.string(),TotalWages.string(),Notes.string()'
+
+mongoimport --host=127.0.0.1 --db test --collection zipcode --type csv --file zipcode.csv --drop --fieldFile zipcode_fields.txt

@@ -1,0 +1,81 @@
+from pymongo import MongoClient
+from infra import Environment
+import logging, com.uconnect.utility.ucLogging
+
+# lets the parent logger from config file
+myLogger = logging.getLogger('uConnect')
+
+class DbConnection(object):
+
+   #__metaclass__ = ABCMeta
+   #MyConnection.register(tuple)
+   #assert issubclass(tuple, MyConnection)
+   #assert isinstance((), MyConnection)
+
+   def getConnection(self):
+     pass
+
+class MongoDbConnection(object):
+   '''
+     MongoDbConnection class
+   '''
+   def __init__(self):
+      myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
+
+   def getConnection(self):
+      myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
+      myModuleLogger.debug("Reading MONGO_URI details ...")
+      mongoDbEnv = Environment.Instance()
+      mongoDbEnvDetail = mongoDbEnv.getEnvironmentDetails(mongoDbEnv.globalSettings['Environment'])
+      mongoDbMongoURI  = mongoDbEnvDetail['MongoUri']
+      mongoDbDBName = mongoDbEnvDetail['MongoDBName']
+
+      myModuleLogger.debug(" MONGO_URI details [{mongoUri}]".format(mongoUri=mongoDbMongoURI))
+      myModuleLogger.debug(" MongoDb Name [{mongoDB}]".format(mongoDB=mongoDbDBName))
+
+      self.mongoClient = MongoClient(mongoDbMongoURI)
+      self.mongoConn = self.mongoClient.get_database(mongoDbDBName)
+
+      myModuleLogger.debug(" MongoDb Connection [{mongoConn}]".format(mongoConn=self.mongoConn))
+
+      myLogger.info(self.mongoConn)
+      return self.mongoConn
+
+class OracleDBConnection(DbConnection):
+   def getConnection(self):
+      pass
+
+class ConnectionBuilder(object):
+   def buildConnection(self, argDbType):
+      ''' 
+         Description:    Initializes dbconnection for a given environment and database. This method calls getConnection
+                         method of relevant DB class 
+         argEnvType:     dbType (currently only Mongo is supported)
+         usage:          buildConnection(<dbType>)
+         Return:         db connection
+      '''		
+      myModuleLogger = logging.getLogger('uConnect.dbconnection.'+__name__)
+      
+      if (argDbType == "MongoDB" ):
+         myModuleLogger.info('Connection request is for [{db}] database'.format(db=argDbType))
+         MongoDBConn = MongoDbConnection()
+         myMongoDbConn = MongoDBConn.getConnection()
+      
+      return myMongoDbConn
+
+'''
+if ( __name__ == "__main__" ):
+	myConnectionBuilder = ConnectionBuilder()
+	myMongoDb = myConnectionBuilder.buildConnection("MongoDB") 
+	myConnection = myMongoDb.mongo
+	print "This is main"
+	print myConnection
+	#mongo = PyMongo(app)
+	with myMongoDb.app.app_context():
+		Member = myConnection.db.Member	
+		output = []
+	#with myMongoDb.app.app_context():
+		for MemberData in myConnection.db.Member.find():
+			output.append({'_id' :MemberData['_id']});
+			print MemberData['_id']		
+'''

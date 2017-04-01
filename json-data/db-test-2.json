@@ -1,0 +1,856 @@
+{
+  "ConnectionSummary": {
+    "member id": "membsmith_10001",
+    "Name": "Smith, Michael",
+    "Image": "<mypic.jpeg>",
+    "Group": {
+      "owner": [
+        {
+          "ID": "family_smith_10001",
+          "Name": "Family Group"
+        },
+        {
+          "ID": "family_Friends_smith_10001",
+          "Name": "Family Friends"
+        }
+      ],
+      "Participate": [
+        {
+          "ID": "College Alumni",
+          "Name": "Other Group",
+          "start_date": "01-Jan-2016",
+          "end_date": "31-Dec-2017"
+        }
+      ]
+    },
+    "Share": [
+      {
+        "ID": "Diana Smith",
+        "start_date": "01-JAN-2016",
+        "start_time": "01:00PM",
+        "end_date": "",
+        "end_time": ""
+      },
+      {
+        "ID": "Friends_smith_10001",
+        "start_date": "01-JAN-2016",
+        "start_time": "01:00PM",
+        "end_date": "01-JAN-2016",
+        "end_time": "02:00PM"
+      }
+    ]
+  },
+  "Schedule": [
+    {
+      "Id": "Sched1001",
+      "Subject": "uConnect Prototype",
+      "Descriptions": "We will go over the prototype for new schedules ",
+      "share with": {},
+      "Place": "Starbucks",
+      "Owner": "Michael Smith",
+      "Organizer": "Michael Smith",
+      "time": {
+        "start_date": "01-JAN-2017",
+        "start_time": "01:00PM",
+        "end_date": "01-JAN-2016",
+        "end_time": "02:00PM",
+        "duration": "60 minutes"
+      },
+      "Location": {
+        "address1": "111 Main Street",
+        "City": "Edison",
+        "State": "NJ",
+        "zip_code": "06555",
+        "longitude": "W 74° 37' 8.9063",
+        "lattitude": "N 40° 42' 50.241"
+      },
+      "invitee": [
+        {
+          "Name": "Vishal Bhat",
+          "Status": "Accepted",
+          "Contact": "888-555-1212"
+        },
+        {
+          "Name": "Anil Singh",
+          "Status": "Accepted",
+          "Contact": "888-555-1212"
+        },
+        {
+          "Name": "Kamal",
+          "Status": "Tentative",
+          "Contact": "888-555-1212"
+        }
+      ],
+      "Comments": [
+        {
+          "who": "Vishal Bhat",
+          "what": "I will be there",
+          "when": "01-JAN-2016 10:10AM"
+        },
+        {
+          "who": "Kamal",
+          "what": "I am not sure",
+          "when": "01-JAN-2016 10:10AM"
+        }
+      ],
+      "tasks": [
+        {
+          "who": "Vishal Bhat",
+          "what": "Bring bagel",
+          "due_by": "30-DEC-2016 10:10AM",
+          "status": "Pending"
+        },
+        {
+          "who": "Vishal Bhat",
+          "what": "Reserve a spot",
+          "due_by": "20-DEC-2016 10:10AM",
+          "status": "Completed"
+        }
+      ]
+    },
+    {
+      "Id": "Sched1002",
+      "Subject": "Math Tution for Jack",
+      "Descriptions": "Math Tution for Jack",
+      "Place": "Kumon Learning Center",
+      "share with": {
+        "type": "Grpup",
+        "Name": "family_smith_1000002"
+      },
+      "Owner": "Michael Smith",
+      "Organizer": "Michael Smith",
+      "time": {
+        "start_date": "08-FEB-2017",
+        "start_time": "01:00PM",
+        "end_date": "08-FEB-2017",
+        "end_time": "02:00PM",
+        "duration": "60 minutes"
+      },
+      "Location": {
+        "address1": "111 S Main Street",
+        "City": "Edison",
+        "State": "NJ",
+        "zip_code": "06555",
+        "longitude": "W 74° 37' 8.9063",
+        "lattitude": "N 40° 42' 50.241"
+      },
+      "invitee": [
+        {}
+      ]
+    },
+    {
+      "Id": "Sched1003",
+      "Subject": "Family Dinner",
+      "Descriptions": "Friday night out dinner",
+      "group": "family_smith_1000002",
+      "share with": {
+        "type": "Grpup",
+        "Name": "family_smith_1000002"
+      },
+      "Place": "Carabaas",
+      "Owner": "Michael Smith",
+      "Organizer": "Michael Smith",
+      "time": {
+        "start_date": "20-FEB-2017",
+        "start_time": "08:00PM",
+        "end_date": "20-FEB-2017",
+        "end_time": "09:00PM",
+        "duration": "60 minutes"
+      },
+      "Location": {
+        "address1": "111 Main Street",
+        "City": "Parlin",
+        "State": "NJ",
+        "zip_code": "06555",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "invitee": [
+        {
+          "Name": "Dianna Smith",
+          "Status": "Accepted",
+          "Contact": "888-555-1212"
+        }
+      ]
+    },
+    {
+      "Id": "Sched1004",
+      "Subject": "Dentist Appointment",
+      "Descriptions": "Routine cleaning",
+      "Place": "Smile Image Dentist",
+      "Owner": "Dr Yen Pang",
+      "share with": {
+        "type": "Grpup",
+        "Name": "family_smith_1000002"
+      },
+      "Organizer": "Dr. Yen Pang",
+      "time": {
+        "start_date": "25-FEB-2017",
+        "start_time": "01:00PM",
+        "end_date": "25-FEB-2017",
+        "end_time": "02:00PM",
+        "duration": "60 minutes"
+      },
+      "Location": {
+        "address1": "1 Bell Street",
+        "City": "Woodbridge",
+        "State": "NJ",
+        "zip_code": "08626",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "invitee": [
+        {
+          "Name": "Michael Smith",
+          "Status": "Pending",
+          "Contact": "888-555-1212"
+        }
+      ]
+    },
+    {
+      "Id": "Sched1005",
+      "Subject": "Parent Teacher Meeting",
+      "Descriptions": "Parent teacher meeting for Justin",
+      "Place": "Edison Middle School",
+      "share with": {
+        "type": "Grpup",
+        "Name": "family_smith_1000002"
+      },
+      "Owner": "Diana Smith",
+      "Organizer": "Diana Smith",
+      "group": "family_smith_1000002",
+      "time": {
+        "start_date": "26-FEB-2017",
+        "start_time": "01:00PM",
+        "end_date": "26-FEB-2017",
+        "end_time": "02:00PM",
+        "duration": "60 minutes"
+      },
+      "Location": {
+        "address1": "100 Bellvier Ave",
+        "City": "Edison",
+        "State": "NJ",
+        "zip_code": "08628",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "invitee": [
+        {
+          "Name": "Mr Bob (Math Teacher)",
+          "Status": "Accepted",
+          "Contact": "888-555-1212"
+        }
+      ]
+    }
+  ],
+  "All_Users": [
+    {
+      "Name": "Diana Smith",
+      "Phone": "9085551212"
+    },
+    {
+      "Name": "Diann Smith",
+      "Phone": "9085551213"
+    },
+    {
+      "Name": "Vishal Bhat",
+      "Phone": "9085551214"
+    },
+    {
+      "Name": "Anil Singh",
+      "Phone": "9085551215"
+    },
+    {
+      "Name": "Kamal Kumar",
+      "Phone": "9085551216"
+    },
+    {
+      "Name": "Tiger Woods",
+      "Phone": "9085551217"
+    },
+    {
+      "Name": "Jaqlin Fernandis",
+      "Phone": "9085551218"
+    }
+  ],
+  "Connections": [
+      {
+        "Name": "Diana Smith",
+        "Phone": "9085551212",
+        "Type": "Individual",
+        "Group": "family_smith_10001",
+        "total_connections": "100",
+        "Favorite": "TRUE",
+        "Blocked": {
+          "IsBlocked": "FALSE",
+          "When": ""
+        }
+      },
+      {
+        "Name": "Debby Smith",
+        "Phone": "9085551213",
+        "Type": "Individual",
+        "Group": "family_smith_10001",
+        "total_connections": "878",
+        "Favorite": "TRUE",
+        "Blocked": {
+          "IsBlocked": "FALSE",
+          "When": ""
+        }
+      },
+      {
+        "Name": "Vishal Bhat",
+        "Phone": "9085551214",
+        "Type": "Individual",
+        "Group": "family_Friends_smith_10001",
+        "total_connections": "890",
+        "Favorite": "TRUE",
+        "Blocked": {
+          "IsBlocked": "FALSE",
+          "When": ""
+        }
+      },
+      {
+        "Name": "Anil Singh",
+        "Phone": "9085551215",
+        "Type": "Individual",
+        "Group": "family_Friends_smith_10001",
+        "Favorite": "TRUE",
+        "total_connections": "900",
+        "Blocked": {
+          "IsBlocked": "FALSE",
+          "When": ""
+        }
+      },
+      {
+        "Name": "Kamal Kumar",
+        "Phone": "9085551216",
+        "Type": "Individual",
+        "Group": "",
+        "total_connections": "190",
+        "Favorite": "FALSE",
+        "Blocked": {
+          "IsBlocked": "TRUE",
+          "When": "01'OCT-2016 01:00AM"
+        }
+      }
+    ],
+  "vendor": [
+    {
+      "Id": "vendor10001",
+      "Image": "abc.gif",
+      "Name": "ABC Automobiles",
+      "location": {
+        "address": "1 Meltock Ave",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "07777",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "contact": {
+        "Phone": "9085551212",
+        "Email": "sales@abcautomobiles.com",
+        "Web": "http://www.abcautomobiles.com"
+      },
+      "Current Offers": [
+        {
+          "Desc": "10% off on oil change",
+          "Start Date": "01-OCT-2016",
+          "End Date": "31-OCT-2016"
+        },
+        {
+          "Desc": "Free 20 point inspection",
+          "Start Date": "01-Nov-2016",
+          "End Date": "31-DEC-2016"
+        }
+      ],
+      "Ratings": "4",
+      "Review": [
+        {
+          "Review By": "Vishal Bhat",
+          "Review Text": "Very Good ",
+          "UserRatings": "4.8"
+        },
+        {
+          "Review By": "Jaqualine Faah",
+          "Review Text": "Its ok ",
+          "UserRatings": "3.2"
+        }
+      ],
+      "tags": [
+        "oil change",
+        "tire change",
+        "automobile",
+        "engine light on",
+        "headlight replacement",
+        "mechanich shop"
+      ],
+      "Agents": [
+        {
+          "Name": "Brian Kurtis",
+          "Speciality": "All auto mechanical works",
+          "Working Hours": [
+            {
+              "Day": "Sunday",
+              "Start Hours": "0",
+              "End Hours": "0"
+            },
+            {
+              "Day": "Monday",
+              "Start Hours": "10AM",
+              "End Hours": "7PM"
+            },
+            {
+              "Day": "Tuesday",
+              "Start Hours": "8AM",
+              "End Hours": "5PM"
+            },
+            {
+              "Day": "Wednesday",
+              "Start Hours": "8AM",
+              "End Hours": "5PM"
+            },
+            {
+              "Day": "Thrusday",
+              "Start Hours": "8AM",
+              "End Hours": "5PM"
+            },
+            {
+              "Day": "Friday",
+              "Start Hours": "0",
+              "End Hours": "0"
+            },
+            {
+              "Day": "Saturday",
+              "Start Hours": "8AM",
+              "End Hours": "3PM"
+            }
+          ],
+          "Booked Hours": [
+            {
+              "week": "1",
+              "days": [
+                {
+                  "Day": "Monday",
+                  "Start Hours": "10AM",
+                  "End Hours": "1PM"
+                },
+                {
+                  "Day": "Wednesday",
+                  "Start Hours": "2PM",
+                  "End Hours": "5PM"
+                },
+                {
+                  "Day": "Saturday",
+                  "Start Hours": "8AM",
+                  "End Hours": "3PM"
+                }
+              ]
+            }
+          ],
+          "scheduled off": {
+            "week": "2",
+            "day": "Tuesday"
+          }
+        },
+        {
+          "Name": "Tim Todler",
+          "Spceiality": "All auto mechanical work",
+          "Working Hours": [
+            {
+              "Day": "Sunday",
+              "Start Hours": "0",
+              "End Hours": "0",
+              "Speciality": "All Automiobile work"
+            },
+            {
+              "Day": "Monday",
+              "Start Hours": "0",
+              "End Hours": "0"
+            },
+            {
+              "Day": "Tuesday",
+              "Start Hours": "8AM",
+              "End Hours": "5PM"
+            },
+            {
+              "Day": "Wednesday",
+              "Start Hours": "8AM",
+              "End Hours": "5PM"
+            },
+            {
+              "Day": "Thrusday",
+              "Start Hours": "8AM",
+              "End Hours": "5PM"
+            },
+            {
+              "Day": "Friday",
+              "Start Hours": "8AM",
+              "End Hours": "7PM"
+            },
+            {
+              "Day": "Saturday",
+              "Start Hours": "8AM",
+              "End Hours": "3PM"
+            }
+          ]
+        }
+      ],
+      "working_hours": [
+        {
+          "Day": "Sunday",
+          "Start Hours": "0",
+          "End Hours": "0"
+        },
+        {
+          "Day": "Monday",
+          "Start Hours": "08AM",
+          "End Hours": "07PM"
+        },
+        {
+          "Day": "Tuesday",
+          "Start Hours": "08AM",
+          "End Hours": "07PM"
+        },
+        {
+          "Day": "Wednesday",
+          "Start Hours": "08AM",
+          "End Hours": "07PM"
+        },
+        {
+          "Day": "Thursday",
+          "Start Hours": "08AM",
+          "End Hours": "07PM"
+        },
+        {
+          "Day": "Friday",
+          "Start Hours": "08AM",
+          "End Hours": "07PM"
+        },
+        {
+          "Day": "Friday",
+          "Start Hours": "08AM",
+          "End Hours": "04PM"
+        }
+      ],
+      "availability": [
+        {
+          "date": "10-OCT-2016",
+          "booked_time": [
+            "08:00AM",
+            "09:00AM"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vendor10002",
+      "Name": "STS Tire",
+      "location": {
+        "address": "1 Main Street",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "07777",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "Ratings": "4",
+      "Review": [
+        {
+          "Review By": "Tom Kite",
+          "Review Text": "Nice ",
+          "UserRatings": "4"
+        }
+      ],
+      "tags": [
+        "oil change",
+        "tire change",
+        "automobile",
+        "engine light on",
+        "headlight replacement",
+        "mechanich shop"
+      ]
+    },
+    {
+      "Name": "Mike's tire center",
+      "id": "vendor10003",
+      "location": {
+        "address": "1 Meltock Ave",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "07777",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "Ratings": "2",
+      "Review": [
+        {
+          "Review By": "Kamal Kumar",
+          "Review Text": "Garbage Place, dont go",
+          "UserRatings": "2"
+        }
+      ],
+      "tags": [
+        "oil change",
+        "tire change",
+        "automobile",
+        "engine light on",
+        "headlight replacement",
+        "mechanich shop"
+      ]
+    },
+    {
+      "Name": "Duke's hair salon",
+      "id": "vendor10004",
+      "location": {
+        "address": "222 Belmair Ct.",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "07788",
+        "longitude": "12.223.22",
+        "lattitude": "3423423.213123"
+      },
+      "Ratings": "3",
+      "Review": [
+        {
+          "Review By": "Michael Smith",
+          "Review Text": "Good Customer service",
+          "UserRatings": "3"
+        }
+      ],
+      "tags": [
+        "Hair cut",
+        "Barbaer shop",
+        "Salon",
+        "Spa"
+      ]
+    }
+  ],
+  "Activity": [
+    {
+      "schedule_id": "sched1001",
+      "subject": "uConnect Prototype",
+      "activities": [
+        {
+          "actvity_id": "act1000001",
+          "When": "20-Oct-2016 10:00AM",
+          "Who": "Michael Smith",
+          "What": "created scheduled",
+          "display": "no",
+          "acknowledged": "yes"
+        },
+        {
+          "actvity_id": "act1000002",
+          "When": "25-Oct-2016 10:00AM",
+          "Who": "Vishal Bhat",
+          "What": "Accepted the invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        },
+        {
+          "actvity_id": "act1000003",
+          "When": "26-Oct-2016 10:00AM",
+          "Who": "Anil Singh",
+          "What": "Accepted the invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        },
+        {
+          "actvity_id": "act1000004",
+          "Who": "Kamal",
+          "When": "25-Oct-2016 10:00PM",
+          "What": "Declined the invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        }
+      ]
+    },
+    {
+      "schedule_id": "sched1002",
+      "subject": "Math Tution for Jack",
+      "activities": [
+        {
+          "actvity_id": "act1000005",
+          "When": "26-Nov-2016 10:00AM",
+          "Who": "Michael Smith",
+          "What": "created scheduled",
+          "display": "no",
+          "acknowledged": "yes"
+        }
+      ]
+    },
+    {
+      "schedule_id": "sched1003",
+      "subject": "Family Dinner",
+      "activities": [
+        {
+          "actvity_id": "act1000006",
+          "When": "01-Nov-2016 10:00PM",
+          "Who": "Michael Smith",
+          "What": "created schedule",
+          "display": "no",
+          "acknowledged": "yes"
+        },
+        {
+          "actvity_id": "act1000007",
+          "When": "02-Nov-2016 09:00AM",
+          "Id": "Sched1003",
+          "Id_Type": "Schedule",
+          "Who": "Diana Smith",
+          "What": "accepted schedule",
+          "display": "yes",
+          "acknowledged": "no"
+        }
+      ]
+    },
+    {
+      "schedule_id": "sched1004",
+      "subject": "Dentist Appointment",
+      "activities": [
+        {
+          "actvity_id": "act1000008",
+          "When": "01-Dec-2016 03:00PM",
+          "Who": "Dr Yeng Pang",
+          "What": "sent an invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        },
+        {
+          "actvity_id": "act1000009",
+          "When": "01-Dec-2016 04:00PM",
+          "Who": "Michael Smith",
+          "What": "accepted invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        }
+      ]
+    },
+    {
+      "schedule_id": "sched1005",
+      "subject": "Parent Teacher Meeting",
+      "activities": [
+        {
+          "actvity_id": "act1000010",
+          "When": "10-Nov-2016 05:00PM",
+          "Who": "Diana Smith",
+          "What": "sent an invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        },
+        {
+          "actvity_id": "act1000011",
+          "When": "12-Nov-2016 05:00PM",
+          "Who": "Michael Smith",
+          "What": "accepted invitation",
+          "display": "yes",
+          "acknowledged": "no"
+        }
+      ]
+    },
+    {
+      "group_id": "GRP10001",
+      "activities": [
+        {
+          "actvity_id": "act1000012",
+          "When": "10-Aug-2016 10:00PM",
+          "Who": "Michael Smith",
+          "What": "New Group Created, invitee sent to ...",
+          "display": "no",
+          "acknowledged": "yes"
+        },
+        {
+          "actvity_id": "act1000013",
+          "When": "15-Aug-2016 10:00PM",
+          "Who": "Kamal",
+          "What": "Joined the group",
+          "display": "yes",
+          "acknowledged": "no"
+        },
+        {
+          "actvity_id": "act1000014",
+          "When": "10-Sep-2016 10:00PM",
+          "Who": "Anil Singh",
+          "What": "Joined the group",
+          "display": "yes",
+          "acknowledged": "no"
+        },
+        {
+          "actvity_id": "act1000015",
+          "When": "11-Sep-2016 10:00PM",
+          "Who": "John ",
+          "What": "Joined the group",
+          "display": "yes",
+          "acknowledged": "no"
+        }
+      ]
+    }
+  ],
+  "Notification": [
+    {
+      "notification_id": "notify100001",
+      "When": "18-Oct-2016 10:00AM",
+      "notify_entity": "sched10001",
+      "notify_entity_type": "schedule",
+      "what": "Possible delay due to an incident",
+      "acknosledged": "no"
+    },
+    {
+      "notification_id": "notify100002",
+      "When": "18-Oct-2016 10:30AM",
+      "notify_entity": "sched10001",
+      "notify_entity_type": "schedule",
+      "what": "Traffic delays by 30 minutes, alternate route available",
+      "acknosledged": "no"
+    },
+    {
+      "notification_id": "notify100003",
+      "When": "18-Oct-2016 11:00AM",
+      "notify_entity": "sched10001",
+      "notify_entity_type": "schedule",
+      "what": "Meeting Cancelled",
+      "acknosledged": "no"
+    }
+  ],
+  "Offers": [
+    {
+      "vendor": "Seven Eleven",
+      "location": {
+        "address1": "1 Main Street",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "08817"
+      },
+      "start_date": "01-DEC-2016",
+      "end_time": "15-Dec-2016",
+      "offer_text": "Buy 1 ltr Pepsi cola, get 1 free",
+      "acknowledged":"no"
+    },
+    {
+      "vendor": "ABC Automobile",
+      "location": {
+        "address1": "1 Bevair Street",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "08817"
+      },
+      "start_date": "10-DEC-2016",
+      "end_time": "30-Dec-2016",
+      "offer_text": "$19,99 Oil Change and, free 'winter ready' check ",
+      "acknowledged":"no"
+    },
+    {
+      "vendor": "Mike's Barbae shop",
+      "location": {
+        "address1": "8 Bevair Street",
+        "city": "Edison",
+        "state": "NJ",
+        "zipcode": "08817"
+      },
+      "start_date": "",
+      "end_time": "",
+      "offer_text": "$12 Mens haircut, every Wednesday",
+      "acknowledged":"no"
+    }    
+  ]
+}

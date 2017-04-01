@@ -1,0 +1,45 @@
+<!--
+  Generated template for the MyConnection page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>My Connection Details</ion-title>
+  </ion-navbar>
+  
+</ion-header>
+
+
+<ion-content padding>
+ 
+ <ion-avatar item-left>
+        <img src="img/avatar-cher.png">
+  </ion-avatar>
+      <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
+      <h3>({{ item.Address.Street }}{{ item.Address.County }}</h3>
+      <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
+      <h3>({{ item.Address.Country }} {{ item.Address.ZipCode }})</h3>
+      <h3>({{ item.Contact.Mobile }})</h3>
+      
+       <button ion-button color="secondary">
+        <ion-icon name="call"></ion-icon>
+        Add to Group
+      </button>
+      
+      <ion-list>
+    
+    <ion-item *ngFor="let item of listItems; let i = index" (click)="onCheckItem(i)">
+      <ion-avatar item-left>
+        <img src="img/avatar-cher.png">
+      </ion-avatar>
+      /**
+      Need schedule data
+      **/
+      </ion-item>
+  </ion-list>
+
+
+</ion-content>

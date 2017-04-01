@@ -1,0 +1,9 @@
+Naming Convention:
+    Python File:
+        All python file must be in camelCase case
+    Class:
+        All calss must be in StudlyCase
+    Method:
+        All methods must be camelCase
+    Variables:
+        joined_lower

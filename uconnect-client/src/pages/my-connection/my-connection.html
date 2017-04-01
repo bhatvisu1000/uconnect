@@ -1,0 +1,83 @@
+<!--
+  Generated template for the MyConnection page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>myConnection</ion-title>
+  </ion-navbar>
+  <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+</ion-header>
+
+
+<ion-content padding>
+
+<ion-segment [(ngModel)]="icons" color="secondary">
+    <ion-segment-button value="People">
+      People
+    </ion-segment-button>
+    <ion-segment-button value="Group">
+      Group
+    </ion-segment-button>
+    <ion-segment-button value="Favorite">
+      Favorite
+    </ion-segment-button>
+    <ion-segment-button value="Business">
+      Business  
+    </ion-segment-button>
+  </ion-segment>
+ 
+  <ion-list>
+    <ion-item-sliding *ngFor="let item of listItems; let i = index" (click)="onCheckItem(i)">
+    <ion-item>
+      
+      <ion-avatar item-left>
+        <img src="../../assets/icon/favicon.ico">
+      </ion-avatar>
+      <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
+      <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
+      <h3>({{ item.Contact.Mobile }})</h3>
+      <h3>({{ item.Main.MutualConnectionCount }})</h3>
+      
+    </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary" (click)="removeItem()">
+          <ion-icon name="text"></ion-icon>
+          Schedule
+        </button>
+        <button ion-button color="secondary" (click)="removeItem()">
+          <ion-icon name="call"></ion-icon>
+          More
+        </button>
+        </ion-item-options>
+
+        <ion-item-options side="left">
+        <button ion-button color="primary" (click)="removeItem()">
+          <ion-icon name="text"></ion-icon>
+          More
+        </button>
+        <button ion-button color="secondary" (click)="removeItem()">
+          <ion-icon name="call"></ion-icon>
+          Call
+        </button>
+      </ion-item-options>
+    
+    </ion-item-sliding>
+  </ion-list>
+<ion-list>
+    <ion-list-header>
+      Adjust Text {{contrast}}
+    </ion-list-header>
+    <ion-item>
+    <ion-range min="-200" max="200" (ionChange)="updateResults();" pin="true" [(ngModel)]="contrast" step="1" snaps="true" color="secondary">
+      <ion-label range-left>-200</ion-label>
+      <ion-label range-right>200</ion-label>
+    </ion-range>
+  </ion-item>
+
+  </ion-list>
+
+</ion-content>

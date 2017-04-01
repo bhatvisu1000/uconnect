@@ -1,0 +1,12 @@
+# Following are the format of response.json which will be returned after each process Request
+
+# Request type Find/Update/Delete will return data which is selecte/updated
+
+{"Response":
+    {"Header":
+        {"Status":"Success/Error","StatusMessage":"","Summary":""},
+      "Data":{}
+    }
+}
+
+

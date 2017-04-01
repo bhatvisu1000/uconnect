@@ -1,0 +1,169 @@
+{
+  "MemberRegistration": {
+    "ValidateZipCode": {
+      "Description": "Validate zip code",
+      "BPS": {
+        "Module": "com.uconnect.utility.ucUtility",
+        "Class": "Utility",
+        "Method": "isValidZipCode"
+      },
+      "DB": {}
+    },
+    "GenerateSecCode": {
+      "Description": "Generate sec code for this session",
+      "BPS": {
+        "Module": "com.uconnect.utility.ucUtility",
+        "Class": "Utility",
+        "Method": "generateSecCode"
+      },
+      "DB": {}
+    },
+    "CreateMember": {
+      "Description": "Create a new Member during ",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "createAMember"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "InsertOneDoc"
+      }
+    }
+  },
+  "MemberConnection": {
+    "getAMemberDetail": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "getAMemberDetail"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "LinkMember2Member": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "linkAMember2Member"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "LinkMember2Group": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "linkAMember2Group"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "MarkMemberFavorite": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "addMember2Favorite"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "RemoveMemberFavorite": {
+      "Description": "Remove Favorite",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "removeMemberFromFavorite"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "BlockMember": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "blockMember"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "UnBlockMember": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "unBlockMember"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },    
+    "BlockGroup": {
+      "Description": "Find a Member Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "BlockGroup"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "GetMemberConnection": {
+      "Description": "Find member connection for a given member",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "getAMemberConnections"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    }    
+  },
+  "Group01":
+    {"getAGroupDetail": {
+      "Description": "Get a Group Details",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "getAGroupDetail"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    }
+  }  
+}

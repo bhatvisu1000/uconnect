@@ -1,0 +1,31 @@
+# FactryMetadat should have detailed information on expected key in MainArg
+# All request must have all the key value present irrespective of availability of value
+
+# Find
+{"Request":
+    {"Header":
+        {"ScreenId":"2001","ActionId":"100","Page":""},
+     "MainArg":
+        {"Criteria":{},
+         "Projection":{},
+         "FindOne":False},
+     "Auth":
+        {}
+    }
+}
+
+# Insert/Update
+#   Insert: expecting all available data to be inserted in json/dict format
+#   update: expecting Criteria and Data need to be updated
+#   Delete: expecting criteria only
+{"Request":
+    {"Header":
+        {"ScreenId":"","ActionId":"","Page":""},
+     "MainArg":
+        {"Criteria":{},
+          "Data":{}},
+     "Auth":
+        {}
+    }
+}
+

@@ -1,0 +1,9 @@
+Auth
+loginid:email/cell#
+password:
+deviceMacAdd:
+lastsuccessfullogin:
+lastunsuccessfulLogin
+token: 
+
+1.) Authenticate if device is registered

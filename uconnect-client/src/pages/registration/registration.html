@@ -1,0 +1,70 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>registration</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<form #f="ngForm" (ngSubmit)="onAddMember(f)">
+	    <ion-list>
+	      <ion-item>
+	        <ion-label floating>First Name</ion-label>
+	        <ion-input
+	          type="text"
+	          name="firstName"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+	      
+	      <ion-item>
+	        <ion-label floating>Last Name</ion-label>
+	        <ion-input
+	          type="text"
+	          name="lastName"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+	      
+	      <ion-item>
+	        <ion-label floating>Mobile No</ion-label>
+	        <ion-input
+	          type="text"
+	          name="mobileNo"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+
+		<ion-item>
+	        <ion-label floating>Zip Code</ion-label>
+	        <ion-input
+	          type="text"
+	          name="zipCode"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+	      
+	       <ion-item>
+	        <ion-label floating>Email ID</ion-label>
+	        <ion-input
+	          type="text"
+	          name="emailAddress"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+
+		  
+
+	    </ion-list>
+	    <button
+	      ion-button
+	      type="submit"
+	      block
+	      [disabled]="!f.valid">Add Member</button>
+	    
+   
+  	</form>
+</ion-content>

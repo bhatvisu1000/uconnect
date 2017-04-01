@@ -1,0 +1,49 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {"format": "%(asctime)s - [%(name)s:%(funcName)s]  %(levelname)s : %(message)s" },
+        "debugFormat": {"format": "%(asctime)s - [%(name)s:%(funcName)s:%(lineno)d]  %(levelname)s : %(message)s" }
+
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "simple",
+            "filename": "c:/projects/uconnect/myapp/log/uConnect.log",
+            "maxBytes": 1485760,
+            "backupCount":5,
+            "encoding": "utf8"
+        }       
+    },
+    "loggers": {
+        "myConsole": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": "no"
+        },
+        "uConnect": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+            "propagate": "no"
+        },
+        "startup": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+            "propagate": "no"
+        },                               
+        "shutdown": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+            "propagate": "no"
+        }                               
+    }
+}

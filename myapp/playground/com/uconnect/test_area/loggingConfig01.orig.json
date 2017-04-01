@@ -1,0 +1,60 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {"format": "%(asctime)s - [%(name)s:%(funcName)s]  %(levelname)s : %(message)s" },
+        "debugFormat": {"format": "%(asctime)s - [%(name)s:%(funcName)s:%(lineno)d]  %(levelname)s : %(message)s" }
+
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "uConnect.log",
+            "maxBytes": 10240,
+            "backupCount":8,
+            "encoding": "utf8"
+        },
+        "debugFile": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "debugFormat",
+            "filename": "uConnect1.log",
+            "maxBytes": 10240,
+            "backupCount":8,
+            "encoding": "utf8"
+        }        
+    },
+
+    "loggers": {
+        "myConsole": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+            "propagate": "no"
+        },
+        "uConnect": {
+            "level": "INFO",
+            "handlers": ["file"],
+            "propagate": "no"
+        },
+        "uConnectDebug": {
+            "level": "DEBUG",
+            "handlers": ["debugFile"],
+            "propagate": "no"
+        }                                
+    },
+
+    "root": {
+        "level": "INFO",
+        "handlers": ["console" , "file" ]
+    }
+}
+

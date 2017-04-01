@@ -1,0 +1,8 @@
+## To compile all python file
+python -m -f compileall c:\projects\uconnect\myapp\src -r 10
+
+
+
+## Memory management
+## Logger
+## Singleton/classmethod and staticmethod

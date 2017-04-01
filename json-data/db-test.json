@@ -1,0 +1,118 @@
+{"ConnectionSummary": [
+  {
+    "Address": {
+      "City": "Princeton",
+      "State": "New Jersey",
+      "Street": "0 Main Street",
+      "Zip": "08542"
+    },
+    "Auth": {
+      "AuthType": ""
+    },
+    "BusyDays": [
+      {
+        "CreatedDt": "Sun, 05 Feb 2017 03:32:34 GMT",
+        "EndDate": "",
+        "StartDate": "Sun, 05 Feb 2017 03:32:34 GMT"
+      }
+    ],
+    "BusyHours": [
+      {
+        "EndHours": "17:00",
+        "StartHours": "09:00",
+        "Week": "*",
+        "WeekDay": [
+          "MO",
+          "TU",
+          "WE",
+          "TH",
+          "FR"
+        ]
+      }
+    ],
+    "Contact": {
+      "Email": "Clark.John@uconnect.com",
+      "Mobile": "7325558273",
+      "Other": ""
+    },
+    "LinkedGroup": [
+      {
+        "EndDt": "",
+        "GroupId": "GRPFAM10016",
+        "GroupName": "MyFamily",
+        "GroupType": "Private",
+        "IsOwner": true,
+        "StartDt": "Sun, 05 Feb 2017 03:32:34 GMT"
+      }
+    ],
+    "LinkedMember": [],
+    "LinkedVendor": [],
+    "Main": {
+      "FirstName": "John",
+      "LastName": "Clark",
+      "Sex": "M"
+    },
+    "MyBlocked": [],
+    "MyFavorite": [],
+    "VacationDays": [],
+    "_id": "MEM10016"
+  },
+  {
+    "Address": {
+      "City": "Princeton",
+      "State": "New Jersey",
+      "Street": "0 Main Street",
+      "Zip": "08542"
+    },
+    "Auth": {
+      "AuthType": ""
+    },
+    "BusyDays": [
+      {
+        "CreatedDt": "Sun, 05 Feb 2017 03:32:34 GMT",
+        "EndDate": "",
+        "StartDate": "Sun, 05 Feb 2017 03:32:34 GMT"
+      }
+    ],
+    "BusyHours": [
+      {
+        "EndHours": "17:00",
+        "StartHours": "09:00",
+        "Week": "*",
+        "WeekDay": [
+          "MO",
+          "TU",
+          "WE",
+          "TH",
+          "FR"
+        ]
+      }
+    ],
+    "Contact": {
+      "Email": "Clark.Dianna@uconnect.com",
+      "Mobile": "7325558273",
+      "Other": ""
+    },
+    "LinkedGroup": [
+      {
+        "EndDt": "",
+        "GroupId": "GRPFAM10031",
+        "GroupName": "MyFamily",
+        "GroupType": "Private",
+        "IsOwner": true,
+        "StartDt": "Sun, 05 Feb 2017 03:32:34 GMT"
+      }
+    ],
+    "LinkedMember": [],
+    "LinkedVendor": [],
+    "Main": {
+      "FirstName": "Dianna",
+      "LastName": "Clark",
+      "Sex": "M"
+    },
+    "MyBlocked": [],
+    "MyFavorite": [],
+    "VacationDays": [],
+    "_id": "MEM10031"
+  }
+]}

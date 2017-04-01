@@ -1,0 +1,26 @@
+{
+  "Environment": [
+    {
+      "type": "Dev",
+      "Details": {
+        "DBType": "Mongo",
+        "DBHost": "localhost",
+        "DBPort": "27017",
+        "FlaskHost": "localhost",
+        "FlaskPort": "28017",
+        "Comments":"This is Development"
+      }
+    },
+    {
+      "type": "Prod",
+      "Details": {
+        "DBType": "Mongo",
+        "DBHost": "localhost",
+        "DBPort": "27017",
+        "FlaskHost": "localhost",
+        "FlaskPort": "28017",
+        "Comments":"This is Production"        
+      }
+    }
+  ]
+}

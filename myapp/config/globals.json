@@ -1,0 +1,9 @@
+{
+ "Environment":"Dev",
+ "Infra":"infra.json",
+ "maxPageSize":10,
+ "mongoCollRepositoty":"myMongoAllCollection.json",
+ "Factory":"FactoryMetadata.json",
+ "ZipCode":"zipcode.json",
+ "Defaults":"defaults.json"
+}

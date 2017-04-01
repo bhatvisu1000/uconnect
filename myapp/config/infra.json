@@ -1,0 +1,23 @@
+{
+  "Dev":
+    {"MongoDBHost": "localhost",
+     "MongoDBPort": "27017",
+     "MongoDBName": "test",
+     "MongoUri":"mongodb://localhost:27017/test?connectTimeoutMS=300000&maxPoolSize=100&minPoolSize=10&w=majority",
+     "FlaskHost": "127.0.0.1",
+     "FlaskPort": "5000",
+     "Comments":"This is Development",
+     "logCfg":"loggingConfig.json",
+     "myApp":"uConnect",
+     "logPath":"log"
+    },
+  "Prod":
+    {"MongoDBHost": "localhost",
+     "MongoDBPort": "27017",
+     "MongoDBName": "test",
+     "MongoUri":"localhost:27017/test",        
+     "FlaskHost": "localhost",
+     "FlaskPort": "5000",
+     "Comments":"This is Production"        
+    }
+}

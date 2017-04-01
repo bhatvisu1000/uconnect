@@ -1,0 +1,44 @@
+{
+    "Member": 
+        {
+            "Main":{},
+            "Address":{},
+            "Contact":{}
+        },
+        "Connections":[],
+        "Settings":
+            {
+                "BusyHours":
+                    [
+                        {"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}
+                    ],
+                "BusyDays":
+                    [
+                        {"BusyType":"ThanksGiving","StartDate": "12/24/2016 11:32AM" ,"EndDate":"","CreatedDt": "12/24/2016 11:32AM" }
+                    ],
+                "Personalize":{"Style":""},
+                "Privacy":{"Picture":"<BSON>"},
+                "Ethnicity":""
+            },
+    "Group":
+        {
+            "Main":
+                {
+                    "GroupName":"","MemberId":""
+                },
+            "Participants":[], 
+            "Metrics":{"TotalPArticipants":1},    
+            "_History":{}
+        },
+    "History":
+        {
+            "InitChange":{"When": "", "Message":""},
+            "LastChange":{"when": "", "Message":""}
+        },
+    "Connections":
+        {
+            "Member":{"MemberId":"", "Favorite":0, "Blocked":0,"Type":"Member"},
+            "Group":{"GroupId":"", "Favorite":0, "Blocked":0,"Type":"Group"},
+            "Vendor":{"LocationId":"", "Favorite":0, "Blocked":0,"Type":"Vendor"}
+        }        
+}
