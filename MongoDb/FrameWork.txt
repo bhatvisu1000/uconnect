@@ -1,0 +1,27 @@
+Rest ful Web Service Class
+	--> Controller
+		--> BusinessLayer
+			--> DB Layer
+
+Supporting Class
+	--> Helper
+	--> Utility
+	--> Constant
+	--> Property
+	--> Connection (pooling)
+	--> Caching
+Lookup (Get)
+	--> Suggestions (for Member connections)
+
+
+Services
+	--> Flask
+		--> Python
+			--> Mongo
+
+
+LinkedMember
+	--> LinkedMemeberController.py
+			--> LinkedMemberDB.py
+				--> fun_InsertLinkedMember
+						(this function has db level insert)				

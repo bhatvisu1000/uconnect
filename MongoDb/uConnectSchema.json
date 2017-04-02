@@ -1,0 +1,188 @@
+db.Member.insert(
+	{"_id": "MEM + getNextSequence(MemberId)",
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Smith","FirstName":"Michael", "Nick Name":"","Sex":"Male","DisplayPic":"<file_name_w_loc>"},
+	  "Personal":{"HealthCondition":"","Medication":[],"Pharmacy":"",
+	  			  "MedicalServcProvider":[
+	  			  		{"Type":"PCP","Name":"","Contact":""}],
+	  			  "Insurance":[
+	  			  		{"InsType":"","InsProvider":"","Insurance#":"","OtherDetails":""}]},
+	  "Status":{"Status":"Pending/Active/Inactive","Reason":"","ActivationDate":"","DeActivatinDate":""},
+	  "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818","Country":"USA"},
+	  "Contact":{"Cell1":"7325557235","Email":"michael.smith@uconnect.com","Other":""},
+	  "LinkedMember":[{"MemberId":"MEM10001","LastName":"Smith","FirstName":"Dianna","Sex":"Male","IsFavorite":"0","Status":"Pending/Active/InActive","StartDt":"01/01/2016","EndDt":"01/30/2020"},
+	                  {"MemberId":"","LastName":"Smith","FirstName":"Michael","Sex":"Male","IsFavorite":"1","StartDt":"","EndDt":""}],
+	  "LinkedGroup":[{"GroupId":"","GroupName":"","IsThisMemberOwner":0,"StartDt":"","EndDt":""}],
+	  "LinkedVendor":[{
+	  			"VendorId":"", "VenodrName":"",
+	  			"VendorLocation":[{"LocationId":"","LocationName":"","AgentId":"","LocationStatus":"Active"}],
+	  	    	"StartDate":"","EndDate":""
+	  	    }],
+	  "TrustedDevice":[{"DeviceType":"","DeviceName":"","AuthDate"}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedDt":"","Reason":""}],
+	  // We need to reconsider the below option rather above one
+	  // "BusyDays":[{"Week":"21","Days":"10","StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedDt":""}],	                  
+	  "VacationDays":[{"StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedOn":"", 
+	  					"UserData":{"We can store user data like, air ticket/plcae"},
+	  					"TaskForVacation":[{"TaskName":"","DueBy":""}] }],
+	  "MyFavorite":[{"Id":"","Type":"Member"}],
+	  "MyBlocked":[{"Id":"MEM100002","IdType":"Member","BlockedStartDt":"","BlockedEndDt":"","BlockedOn":""}]
+	})
+
+
+
+## Member document will store Member and Group information. Group Owned by Member will stay with Member Data under Linked.Group, participant Group will also be storedd under "Linked.Group"
+## Interaction will store the data of all interaction to our web site and download our app on Mobile Device
+db.Interaction({"_id":"",
+     "Main":{"InteractionType":"Web/App"},
+     "Web":{"when":"<website timestamp>","LandingFrom":"<from which pagepage this visit was landed>","IpAddress":"","CarrierSrvcProvider":"<Carrier providing internet service"},
+     "Mobile":{"MacAddress":"","OsType":"","OsVer":"","When":"","MobileDeviceMake":"","CarrierSrvcProvider":"<Carrier providing internet service","AppVer":""}
+  })
+
+# Registration will hold the data needed for registration process, Interaction/Download --> Registration --> SecurityCodeCheck --> Authenticated
+db.Registration.Insert({"_id":"",
+	"Main":{"LastName":"","FirstName":""},
+	"Device":
+	   {"RegisteredDevice":
+	   	  [
+	   	  	{"Type":"<MOBILE/NON-MOBILE","MacAddress":"","OsType":"ANDROID/IOS","OsVer":"","Region":"",    
+	   	  	"Address":{"Street":"","State":"<Will be determined by which gateway IP is resolved","Country":""},
+	        "Security":{"Validated":"true/false","ValidationTime":"<DateTime>"},
+	   	  }],
+	   	},
+	"LoginInfo":{"LoginbyExternal":"true/false","ExternalSource":"<Facebook/Google/Yahoo>","ExternalId":"","EncryptedPasswd":"", "Mobile#":""}
+})
+
+db.SecurityCode({"_id":"macAddress",
+	  "Main": {"SendTo":"<in case of mobile, this is always cell#, else this can be cell or Email Address>",
+	           "SecurityCode":"", "SentTime":"","ExpiryTime":""},
+	   "Member":{"NewMember":"true/false","MemberId":""}
+	          })
+
+
+
+
+# Login Attempts and its history
+# Auth document will retain all the information of successfull/UnSuccessfull login attempts
+db.Auth.Insert({"_Id":"MemberId",
+       "Main":{"MemberId":"","LogonTime":"","LogonOutcome":"Successfull/UnSuccessfull"},
+       "Device": 
+          {"Type":"<MOBILE/NON-MOBILE","MacAddress":"","OsType":"ANDROID/IOS","OsVer":"","Region":"",    
+	   	  	"Address":{"Street":"","State":"<Will be determined by which gateway IP is resolved","Country":""}}
+   })
+
+
+db.SystemSetting({"_id":"",
+        "Main":{"DefaultBackgroundTheme":"","DefaultBackgroundColor":""}
+   })
+
+db.UserLayoutSetting
+
+
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Smith","FirstName":"Michael","Sex":"Male","MyPicture":""},
+	  "Address":[{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"}],
+	  "Contact":{"Cell1":"9085551212","Other":""},
+	  "Linked":[{"Member":[{"Id":"MEM10001","IsFavorite":"0","StartDt":"01/01/2016","EndDt":"","Proxy":{"IsDispSched":"0","StartDt":"","EndDt":""}},
+	                     {"Id":"MEM10001","IsFavorite":"0","StartDt":"01/01/2016","EndDt":"","Proxy":{"IsDispSched":"0","StartDt":"","EndDt":""}}]},
+	            {"Group":[{"Id":"GRP10001","IsFavorite":"0","StartDt":"01/01/2016","EndDt":"","Proxy":{"IsDispSched":"0","StartDt":"","EndDt":""}}]},
+	  			{"Vendor":[{"Id":"VENLOC10001","IsFavorite":"0","StartDt":"01/01/2017","EndDt":"","Agent":[{"AgentId":"","IsFavorite":"0","AgentName":"","StartDt":"","EndDt":""}]}]}],
+	  "BusyHours":[{"Week":"*",
+	 	    		        "Hrs":[{"Day":"MO","Start":"09:00AM","End":"05:00PM"},
+	 	    		           	   {"Day":"TU","Start":"09:00AM","End":"03:00PM"},
+	 	    		           	   {"Day":"WE","Start":"09:00AM","End":"03:00PM"},
+	 	    		           	   {"Day":"TH","Start":"09:00AM","End":"03:00PM"},
+	 	    		           	   {"Day":"FR","Start":"08:00AM","End":"06:00PM"},
+	 	    		           	   {"Day":"SA","Start":"08:00AM","End":"04:00PM"}]}],
+	  "BusyDays":[{"StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedDt":""}],	                  
+	  "VacationDays":[{"StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedOn":""}],
+	  "MyBlocked":[{"Id":"MEM100002","IdType":"Member","BlockedStartDt":"","BlockedEndDt":"","BlockedOn":""}]
+	})
+
+db.Venodr.Insert(
+	{"_id":"",
+	 "Main":{"Name":"ABC Automotibile","ServiceOffering":[""],"Tag":[""]},
+	 "Category":{"Type":"Automobile","SubType":""},
+	 "Rating":[{"Source":"Member","Rating":"<This is overall Rating>"},
+	           {"Source":"Facebook","Rating":""}],
+	 "LatestReviews":[{"MemberId":"","ReviewDate":"","ServiceDate":"","Review":""}],
+	 "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+	 "Location":[{"LocationId":"","LocationName":"","IsAcceptWaitList":"true","WaitQueueLength":"6",
+	 	          "offHrsService":{"IsSrvcAvailable":"","Contact":"<contact information during offhrs service>","OffHrsNote":"<customized note from vendor"},
+	 		"Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+	 		"WorkingHrs":[{"Week":"*",
+	 	    		        "Hrs":[{"Day":"MO","Start":"09:00","End":"17:00"},
+	 	    		           	   {"Day":"TU","Start":"09:00","End":"15:00"},
+	 	    		           	   {"Day":"WE","Start":"09:00","End":"15:00"},
+	 	    		           	   {"Day":"TH","Start":"09:00","End":"15:00"},
+	 	    		           	   {"Day":"FR","Start":"08:00","End":"18:00"},
+	 	    		           	   {"Day":"SA","Start":"08:00","End":"16:00"}]}],
+	 		"NonWorkHrs":[{"Date":"01/01/2017","StartHrs":"09:00","EndHrs":"17:00"},
+	 			          {"Date":"12/24/2017","StartHrs":"13:00","EndHrs":"17:00"},	 			
+	 			          {"Date":"12/25/2017","StartHrs":"09:00","EndHrs":"17:00"}
+	 		             ],	 		
+	 	    "Contact":{"Phone":[""],"Email":"","URL":""},
+	 	    "Agent":
+	 	       {"Main":{"AgentId":"","LastName":"","FirstName":"","Sex":"","Ethnicity":"","ServiceOffering":[""],"Certification":[""],
+	 	                "Language":["English","Spanish"], "Education":"","SpecializedIn":"","Awards":"","PersonalGreeting":"","SrvcDuration":"<in minutes"},
+	 	    	"WorkingHrs":[{"Week":"*",
+	 	    		           "Hrs":[{"Day":"MO","Start":"09:00AM","End":"05:00PM"},
+	 	    		           	      {"Day":"TU","Start":"09:00AM","End":"03:00PM"},
+	 	    		           	      {"Day":"WE","Start":"09:00AM","End":"03:00PM"},
+	 	    		           	      {"Day":"TH","Start":"09:00AM","End":"03:00PM"},
+	 	    		           	      {"Day":"FR","Start":"08:00AM","End":"06:00PM"},
+	 	    		           	      {"Day":"SA","Start":"08:00AM","End":"04:00PM"}]
+	 	    		         }
+	 	    		        ]
+	 	            }
+	 		}],
+	 		"Insurance":[{"InsuranceId":"","StartDt":"","EndDt"}]
+	})
+
+db.Insurance.Insert({"InsuranceId":"","InsuranceName":"","Address":{"Street":"","City":"","State":"","ZipCode":""}})
+
+db.Review.Insert({"_id":"","ReviewBy":"<MemberId>","ReviewDt":"","Vendor":{"VendorId":"","LocationId":"","AgentId":""},"Rating":"<#ofStars out of 5>","IsApproved":"true"})
+
+db.Schedule.Insert({"_id":"ID+ScheudleDate",
+	"Main":{"SchedOwnerId":"","ScheduleOwner":"<Member/Agent>","ScheudleDate":"","ScheduleType":"<Task/Schedule>"},
+	"Vendor":{"VendorId":"","LocationId":"","AgentId":""},
+	"Hrs":[{"Start":"","EndTime":"",
+	         "InviteeList":[{"InviteeId":"","InviteeType":"","Status":"<Pending/Accepted/Tentative/Declined>","Response":"<Comments/Response from Invitee>"}],
+	         "Task":[{"TaskName":"","AssignedTo":"","DueBy":"","Status":"","Comments":""}],
+	         "SharedWith":["<MemberId>","<MemberId>"],
+	         "Recurring":{"IsRecurring":"<true/false>","StartDt":"","EndDt":"","Occurrance":"<daily/weekly/monthly/yearly>","Occurrance#":"<occurrance# of this meeting>"},
+	         "WaitingList":{"IsWaiting":"<true/false>","QueueInWait":""}
+	     }]
+})
+
+db.ScheduleActivities.Insert({"_id":"ScheduleId",
+	"Main":{"ScheduleId":""},
+	"Activities":[{"AcitvityTimeStamp":"","Seq#":"","ActivityText"}]
+})
+
+
+### HistoricalData
+### Schedule will move to history if it's completed, 3 months old and not part of any recurring schedulr which is still alive
+
+db.ScheduleHist.Insert({"_id":"ID+ScheudleDate",
+	"Main":{"SchedOwnerId":"","ScheduleOwner":"<Member/Agent>","ScheudleDate":"","ScheduleType":"<Task/Schedule>"},
+	"Vendor":{"VendorId":"","LocationId":"","AgentId":""},
+	"Hrs":[{"Start":"","EndTime":"",
+	         "InviteeList":[{"InviteeId":"","InviteeType":"","Status":"<Pending/Accepted/Tentative/Declined>","Response":"<Comments/Response from Invitee>"}],
+	         "Task":[{"TaskName":"","AssignedTo":"","DueBy":"","Status":"","Comments":""}],
+	         "SharedWith":["<MemberId>","<MemberId>"],
+	         "Recurring":{"IsRecurring":"<true/false>","StartDt":"","EndDt":"","Occurrance":"<daily/weekly/monthly/yearly>","Occurrance#":"<occurrance# of this meeting>"},
+	         "WaitingList":{"IsWaiting":"<true/false>","QueueInWait":""}
+	     }],
+    "HistoryInfo":{"MovedToHistory":"<date when moved to history>","MovedToHistoryCriteria":""}
+})
+
+db.ScheduleActivitiesHist.Insert({"_id":"ScheduleId",
+	"Main":{"ScheduleId":""},
+	"Activities":[{"AcitvityTimeStamp":"","Seq#":"","ActivityText"}],
+    "HistoryInfo":{"MovedToHistory":"<date when moved to history>","MovedToHistoryCriteria":""}
+})

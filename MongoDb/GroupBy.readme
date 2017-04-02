@@ -1,0 +1,44 @@
+## Group by
+db.Test.aggregate ([   {$group : {_id:"$City", count : { $sum:1 } } }  ])
+db.Member.aggregate ([   {$group : {_id:"$Address.City", count : { $sum:1 } } }  ])
+db.Member.aggregate ([   {$group : {_id:"$Address.City", count : { $sum:1 } } }  ])
+
+	SELECT ord_dt, item_sku, SUM(item_qty) as total
+	FROM orders
+	WHERE ord_dt > '01/01/2012'
+	GROUP BY ord_dt, item_sku
+
+	db.orders.group(
+	   	{key: { ord_dt: 1, 'item.sku': 1 },
+	     cond: { ord_dt: { $gt: new Date( '01/01/2012' ) } },
+	     reduce: function( curr, result ) {
+	                 result.total += curr.item.qty;
+	             },
+	     initial: { total : 0 }
+	   }
+	)
+
+	The following example groups by the calculated day_of_week field, those documents that have ord_dt greater than 01/01/2011 and calculates the sum, count, and average of the qty field for each grouping:
+
+	db.orders.group(
+   		{
+     	keyf: function(doc) {
+               return { day_of_week: doc.ord_dt.getDay() };
+           },
+     	cond: { ord_dt: { $gt: new Date( '01/01/2012' ) } },
+    	reduce: function( curr, result ) {
+                result.total += curr.item.qty;
+                result.count++;
+            },
+    	initial: { total : 0, count: 0 },
+    	finalize: function(result) {
+                  var weekdays = [
+                       "Sunday", "Monday", "Tuesday",
+                       "Wednesday", "Thursday",
+                       "Friday", "Saturday"
+                      ];
+                  result.day_of_week = weekdays[result.day_of_week];
+                  result.avg = Math.round(result.total / result.count);
+              }
+   		}
+	)

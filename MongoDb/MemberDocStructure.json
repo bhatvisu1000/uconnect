@@ -1,0 +1,98 @@
+// version 1.0
+{"_id": "MEM10001",
+    "Auth":{"AuthType":""},
+    "Main":{"LastName":"Smith","FirstName":"Michael","Sex":"M"},
+    "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+    "Contact":{"Cell1":"7325558273","Email":"michael.smith@uconnect.com","Other":""},
+    "LinkedMember":[{}],
+    "LinkedGroup":[{"GroupId":"GRPFAM10001","GroupName":"MyFamily","IsOwner":true,"GroupType":"Private","StartDt": "12/24/2016 11:32AM" ,"EndDt":""}],
+    "LinkedVendor":[{}],
+    "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+    "BusyDays":[{"StartDate": "12/24/2016 11:32AM" ,"EndDate":"","CreatedDt": "12/24/2016 11:32AM" }],
+    "VacationDays":[{}], 
+    "MyFavorite":[{}],
+    "MyBlocked":[{}]
+}
+
+// version 1.1
+Member
+{"_id":"",
+    "Main":{"LastName":"", "FirstName":"","Sex":""},
+    "Address":{"Street":"","City":"","State":"","County":"","Country":"","ZipCode":"","Country":""},
+    "Contact":{"Mobile":"","Email":"","Home":"","Other":""},
+    "LinkedBy":{"Member":[{"MemberId":"","Favorite":0, "Blocked":0}],
+                "Vendor":[{"VednorLocId":"","Favorite":0,"Blocked":0}]
+               },
+    "Setting":{"BusyHours":[{"Week":"*","WeekDay":["MON","TUE","WED","THU","FRI","SAT","SUN"]}],
+               "BusyDays":[{"StartDate": "12/24/2016 11:32AM" ,"EndDate":"","CreatedDt": "12/24/2016 11:32AM","For":"" }],}
+}
+
+
+//Example
+{"_id": "1001",
+    "Main":{"LastName":"Smith","FirstName":"Michael","Sex":"M"},
+    "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818","Country":"USA"},
+    "Contact":{"Mobile":"7325558273","Email":"michael.smith@uconnect.com","Other":""},
+    "LinkedBy":
+        {
+            "Member":
+                [
+                    {"id":"1002","Favorite":1,"Blocked":0},
+                    {"id":"1003","Favorite":0,"Blocked":0}
+                ],
+            "Group":
+                [
+                    {"id":"GRPFAM10001","GroupOwner":1}
+                ],
+            "Vendor":[{"_id":"1001"},{"_id":"1002"}]
+        },
+
+    "Settings":
+        {"BusyHours":
+            [{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+         "BusyDays":
+            [{"StartDate": "12/24/2016 11:32AM" ,"EndDate":"","CreatedDt": "12/24/2016 11:32AM" }],
+         "VacationDays":
+            [{}],
+         "Personalize":{"Style":""},
+         "Privacy":{"Picture":"<BSON>"},
+         "Ethnicity":""
+        }
+}
+// find linked connection
+//db.temp.find({"LinkedBy.Member.id":1001},{"_id":1,"LinkedBy.Member.Favorite.$":1})
+// update
+//db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
+// Create a Member
+    // Member
+    // Group
+//1.4
+{"_id": "1001",
+    "General":{
+        "Main":{"LastName":"Smith","FirstName":"Michael","Sex":"M"},
+        "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818","Country":"USA"},
+        "Contact":{"Mobile":"7325558273","Email":"michael.smith@uconnect.com","Other":""}
+    },
+    "LinkedBy":
+        [
+        {"MemberId":"1002","Favorite":1,"Blocked":0},
+        {"MemberId":"1003","Favorite":0,"Blocked":0},
+        {"GroupId":"GRPFAM10001","GroupOwner":1},
+        {"VendorId":"1001","Favorite":0,"Blocked":0}
+        {"VendorId":"1002","Favorite":0,"Blocked":0}
+        ],
+    "Settings":
+        {"BusyHours":
+            [{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+         "BusyDays":
+            [{"BusyType":"ThanksGiving","StartDate": "12/24/2016 11:32AM" ,"EndDate":"","CreatedDt": "12/24/2016 11:32AM" }],
+         "Personalize":{"Style":""},
+         "Privacy":{"Picture":"<BSON>"},
+         "Ethnicity":""
+        }
+}
+
+
+MemberHistory
+{1234:{"ChangeScn#":"","When":"",""}}
+

@@ -1,0 +1,18 @@
+# Start Mongodb
+mongod --dbpath c:\mongodata\uconnect --port 2800 --logpath c:\mongodata\uconnect\uconnect.log --logappend --timeStampFormat iso8601-local
+
+mongo 127.0.0.1:2800/uconnect
+
+## Insert Collections from command prompt
+mongoimport --db uconnect --collection Member --file insMembers.json  ### this must ne json file
+
+## load a mongo shell file which has insert statement
+load('<file_name>')  ## must set the db using db = db.getSiblingDB('uconnect')
+
+-- Install Windows service
+## Run As Administrator
+"c:\Program Files\MongoDB\Server\3.4\bin\mongod.exe" --config "c:\projects\uConnect\MongoDb\mongod.conf" --install
+net start MongoDB
+
+
+

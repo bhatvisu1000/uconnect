@@ -1,0 +1,15 @@
+//Auth
+//=================
+
+{"Main":
+    {"id":"<Mem/VENDORLOCID",
+        "Login":
+            [
+                {"MobileLoginid":"7325551212","Pass":"dsds","EmailLoginId":"bob@uconnect.com","pasword":"sfsdf"}
+            ],
+        "Device":
+            [{"MacAddress":"0:14235:X3256","OS":"iOs","AuthType":"Mobile"},
+             {"MacAddress":"245245:SX3256","OS":"Windows","AuthType":"Email"}
+            ]
+    }
+}

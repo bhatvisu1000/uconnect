@@ -1,0 +1,97 @@
+1. Stats: mongostat /host:localhost /port:2800
+2. Pretty Display: db.Collection.find().pretty()
+3. Use <Tab> to autocomplete or to list the completion possibilities
+4. List all dbs
+	show dbs OR 
+5. switch to DB: use <db> (in mongo prompt) or db.getSiblingDB('users') in script (script does not take use command)
+EXAMPLE
+6. Collection
+	db.collection.validate() ## Validate the collection, this is needed when an unexpected shutdown is performed
+7. Command
+	db.getName()
+	db.getMongo() ## Current connection
+	db.hostInfo()
+	db.getCollectionNames()
+	db.auth()
+	db.dropDatabase()
+	db.repairDatabase()
+	show dbs	Print a list of all databases on the server.
+	use <db>	Switch current database to <db>. The mongo shell variable db is set to the current database.
+	show collections	Print a list of all collections for current database
+	show users	Print a list of users for current database.
+	show roles	Print a list of all roles, both user-defined and built-in, for the current database.
+	show profile	Print the five most recent operations that took 1 millisecond or more. See documentation on the database profiler for more information.
+	show databases
+	db.collection.remove()
+	db.collection.drop()
+	db.collection.createIndex
+	db.getSiblingDb()
+	db.collection.find().count()
+	db.collection.find().sort()
+	db.collection.find().limit()
+	db.collection.find().skip()
+	db.collection.findOne().count()
+	db.collection.getCollectionNames()
+	db.<cur_collection_name>.renameCollection(<to_new_collection>)
+	db.collection.createIndex({"<column_name>":1},{name:"<index_name>",background:true})
+	db.collection.getIndexes()
+	db.collection.stats()
+	// this saves the function in current  database in system collection
+	db.system.js.save({_id:<func_name,value:<func def>}) 
+	// Load all the function saved in current database (functions are saved in system collection)
+	db.loadServerScripts() 
+	// List all the function saved in current database
+	db.system.js.find({},{_id:true}) 
+
+	// copy and move the collection between database
+	1.) Copy using Insert 
+		db.<collection_name>.find().forEach(function(data){ db.getSiblingDB('<new_database>')['<collection_name>'].insert(data); });
+	1.) Clone and Move:
+		a. 	db.source_collection.find().forEach( function(x){db.collection_copy.insert(x)} );
+		b. 	use admin
+			db.runCommand({renameCollection: 'db1.source_collection', to: 'db2.target_collection'})
+	2.) Use below command to clone // Copies a collection from a remote mongod instance to the current mongod instance
+		db.runCommand( { cloneCollection: "users.profiles",from: "mongodb.example.net:27017", query: { 'active' : true } } )
+	3.) Copies data directly between MongoDB instances (same as above ?).
+		db.cloneCollection('mongodb.example.net:27017', 'users.profile', { 'active' : true } )
+	4.) Move
+	5.) mongodump/restore
+		mongodump -d some_database -c some_collection
+		mongorestore -d some_other_db -c some_or_other_collection dump/some_collection.bson
+
+	// Display structure
+	var col_list= db.Vendor.findOne();
+	for (var col in col_list) { print (col) ; }
+	
+7. Group By (Calculate Sum):  
+	The following aggregation operation selects documents with status equal to "A", groups the matching documents by the cust_id field and calculates the total for each cust_id field from the sum of the amount field, and sorts the results by the total field in descending order:
+	db.orders.aggregate([
+        { $match: { status: "A" } },
+        { $group: { _id: "$cust_id", total: { $sum: "$amount" } } },
+        { $sort: { total: -1 } }
+     ])
+    The following aggregation operation sets the option explain to true to return information about the aggregation operation.
+	db.orders.aggregate([
+       { $match: { status: "A" } },
+        { $group: { _id: "$cust_id", total: { $sum: "$amount" } } },
+        { $sort: { total: -1 } }
+        {explain: true}
+    ])
+	Perform Large Sort Operation with External Sort
+	db.orders.aggregate([
+       { $match: { status: "A" } },
+        { $group: { _id: "$cust_id", total: { $sum: "$amount" } } },
+        { $sort: { total: -1 } }
+        {allowDiskUse: true}
+    ])
+
+To print all items in a result cursor in mongo shell scripts, use the following idiom:
+
+var cursor = db.collection.find();
+while ( cursor.hasNext() ) {
+   printjson( cursor.next() );
+}
+
+var c = db.products.find({}).sort({name:-1});
+while (c hasNext()) {
+   print (c.next().name);

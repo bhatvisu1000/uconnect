@@ -1,0 +1,97 @@
+    var vendorId = "VEND" + getNextSequence("VendorId")
+db.Vendor.insert({"_id":vendorId, 
+	 "Main":{"BusinessName":"ABC Automotibile","ServiceOffering":["Oil Change","Tire Install",""],"Tag":[""]},
+	 "Rating":[{"Source":"Member","Rating":""},
+	           {"Source":"Facebook","Rating":"3"}],
+	 "LatestReviews":[],
+	 "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+	"Location":[] });
+
+//db.Member.update({"_id":memberInfo._id},{$addToSet:{"LinkedMember":{$each:LinkedMemberInfo}}})
+
+var locationId = "LOC" + getNextSequence("VendorLocId")
+var locationData = new Array()
+locationData={
+   	"LocationId":locationId,
+  	"LocationName":"Edison","IsAcceptWaitList":true,"WaitQueueLength":"6",
+	"LocationContact":{"Phone":["8665551212"],"Email":"edison.abcauto@uconnect.com","URL":"www.abcauto.com"},
+	"Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+  	"WorkHrs":[ {"Week":"*",
+		"Hrs":[ {"Day":"MO","Start":"09:00","End":"17:00"},
+				{"Day":"TU","Start":"09:00","End":"15:00"},
+	 	    	{"Day":"WE","Start":"09:00","End":"15:00"},
+	 	    	{"Day":"TH","Start":"09:00","End":"15:00"},
+	 	    	{"Day":"FR","Start":"08:00","End":"18:00"},
+	 	    	{"Day":"SA","Start":"08:00","End":"16:00"}]}],
+	"AdjWorkHrs":[	{"Date":"01/01/2017","AllDayOff":true,"StartHrs":"","EndHrs":""},
+	 			    {"Date":"12/24/2017","AllDayOff":false,"StartHrs":"09:00","EndHrs":"13:00"},	 			
+	 			    {"Date":"12/25/2017","AllDayOff":false,"StartHrs":"09:00","EndHrs":"17:00"}
+	 			],	 		
+	"offBusHrsService":{"IsSrvcAvailable":true,"Contact":"8005551212","Note":"Pls leave a VM with call back#"},
+	"Agent":[],
+	"Insurance":[{"InsuranceId":"","StartDt":"","EndDt":""}] 
+}
+
+db.Vendor.update({"_id":vendorId},{ $addToSet : {"Location":locationData}})
+
+var agentId = "AGENT" + getNextSequence("AgentId")
+var agentData = new Array()
+agentData = {
+	"AgentId":agentId, 
+	"Main":{"LastName":"","FirstName":"","Sex":"","Ethnicity":"",
+			"ServiceOffering":[""],"Certification":[""],"Language":["English","Spanish"], "Education":"",
+	 	    "SpecializedIn":"","Awards":"","PersonalGreeting":"","SrvcDuration":"60"},
+	"WorkingHrs":[
+		{"Week":"*",
+	 	 "Hrs":[{"Day":"MO","Start":"09:00AM","End":"05:00PM"},
+	 			{"Day":"TU","Start":"09:00AM","End":"03:00PM"},
+	 	    	{"Day":"WE","Start":"09:00AM","End":"03:00PM"},
+	 	    	{"Day":"TH","Start":"09:00AM","End":"03:00PM"},
+	 	    	{"Day":"FR","Start":"08:00AM","End":"06:00PM"},
+	 	    	{"Day":"SA","Start":"08:00AM","End":"04:00PM"}
+	 	    ]
+	 	}]	
+}
+
+// Issue with addto set in nested array, below code doesn't work rather use $push instead $addtoset
+//db.Vendor.update({"_id":vendorId, "Location.LocationId": locationId}, { $addToSet : { $forEach : {"Location.$.Agent.$":agentData}}})
+db.Vendor.update({"_id":vendorId, "Location.LocationId": locationId}, { $push : { "Location.$.Agent":agentData}})
+or
+db.Vendor.update({"_id":vendorId, "Location.LocationId": locationId}, { $addToSet : { "Location.$.Agent":agentData}})
+db.Vendor.update({"_id":vendorId, "Location.LocationId": locationId}, { $addToSet : { "Location.$.Agent.0":agentData}})
+
+db.Vendor.aggregate([
+  {$unwind: "$Location"},
+  {$unwind: "$Location.Agent"},
+  {$group:{
+    _id:null, 
+    Agent: {$push: {
+      AgentId:"$Location.Agent.AgentId"}}
+  }},
+  {$project:{_id:1, Agent:"$Agent"}}
+]).pretty()
+
+// Find total Agents
+
+db.Vendor.aggregate([
+  {$unwind: "$Location"},
+  {$match:{"Location.LocationId":"LOC10008"}},
+  {$unwind: "$Location.Agent"},
+  {$group:{_id:1,total_agent:{$sum:1}}} 
+])
+
+db.Vendor.aggregate([   
+	{$unwind: "$Location"},   
+	{$unwind: "$Location.Agent"},   
+	{$group:{_id:"$Location.LocationId",total_agent:{$sum:1}}}  ])
+//
+db.Vendor.aggregate([
+  {$unwind: "$Location"},
+  {$unwind: "$Location.Agent"},
+  {$group:{"_id":"$VendorId",total_agent:{$sum:1}}} ]) 
+
+// Find the doc which has n number of elements in array
+// Find Vendor which has atleast 1 collections
+db.Vendor.find({"Location" : { "$size" : 1 }},{_id:true})
+// display literal
+db.Vendor.aggregate({$project: {"_id":1,"Location":{"$literal":"My Location"}}})

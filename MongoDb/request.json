@@ -1,0 +1,45 @@
+{
+    "page_id":"Member101,,,,.....",
+    "action_id":"CreateAMemner>,,....",
+    "request_data":{"_id": "MEM + getNextSequence(MemberId)",
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Smith","FirstName":"Michael", "Nick Name":"","Sex":"Male","DisplayPic":"<file_name_w_loc>"},
+	  "Personal":{"HealthCondition":"","Medication":[],"Pharmacy":"",
+	  			  "MedicalServcProvider":[
+	  			  		{"Type":"PCP","Name":"","Contact":""}],
+	  			  "Insurance":[
+	  			  		{"InsType":"","InsProvider":"","Insurance#":"","OtherDetails":""}]},
+	  "Status":{"Status":"Pending/Active/Inactive","Reason":"","ActivationDate":"","DeActivatinDate":""},
+	  "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818","Country":"USA"},
+	  "Contact":{"Cell1":"7325557235","Email":"michael.smith@uconnect.com","Other":""},
+	  "LinkedMember":[{"MemberId":"MEM10001","LastName":"Smith","FirstName":"Dianna","Sex":"Male","IsFavorite":"0","Status":"Pending/Active/InActive","StartDt":"01/01/2016","EndDt":"01/30/2020"},
+	                  {"MemberId":"","LastName":"Smith","FirstName":"Michael","Sex":"Male","IsFavorite":"1","StartDt":"","EndDt":""}],
+	  "LinkedGroup":[{"GroupId":"","GroupName":"","IsThisMemberOwner":0,"StartDt":"","EndDt":""}],
+	  "LinkedVendor":[{
+	  			"VendorId":"", "VenodrName":"",
+	  			"VendorLocation":[{"LocationId":"","LocationName":"","AgentId":"","LocationStatus":"Active"}],
+	  	    	"StartDate":"","EndDate":""
+	  	    }],
+	  "TrustedDevice":[{"DeviceType":"","DeviceName":"","AuthDate"}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedDt":"","Reason":""}],
+	  // We need to reconsider the below option rather above one
+	  // "BusyDays":[{"Week":"21","Days":"10","StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedDt":""}],	                  
+	  "VacationDays":[{"StartDate":"12/30/2016","EndDate":"01/03/2017","CreatedOn":"", 
+	  					"UserData":{"We can store user data like, air ticket/plcae"},
+	  					"TaskForVacation":[{"TaskName":"","DueBy":""}] }],
+	  "MyFavorite":[{"Id":"","Type":"Member"}],
+	  "MyBlocked":[{"Id":"MEM100002","IdType":"Member","BlockedStartDt":"","BlockedEndDt":"","BlockedOn":""}]
+	}
+}
+
+{
+    "page_id":"Member101,,,,.....",
+    "action_id":"SearchAMember>,,....",
+    "auth": {"session":"", "username":"", "clientMac": "" },
+    "request_data": {"criteria":"","projection":""}
+}
+
+MobileApp --> Flask Web Service --> BPS --> Db
+WebPage   --> Flask Web Service --> BPS --> Db
+

@@ -1,0 +1,10 @@
+db.counters.drop()
+
+db.createCollection("counters",{"capped":false,"autoIndexId":true})
+
+db.counters.insert({"_id":"Member","seq":10001})
+db.counters.insert({"_id":"Group","seq":10001})
+db.counters.insert({"_id":"Vendor","seq":10001})
+db.counters.insert({"_id":"VendorLocation","seq":10001})
+db.counters.insert({"_id":"Schedule","seq":10001})
+db.counters.insert({"_id":"Activity","seq":10001})

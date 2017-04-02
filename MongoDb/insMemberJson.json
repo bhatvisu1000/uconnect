@@ -1,0 +1,195 @@
+db = db.getSiblingDB('uconnect');
+
+function getNextSequence(name) {
+   var ret = db.counters.findAndModify(
+          {
+            query: { _id: name },
+            update: { $inc: { seq: 1 } },
+            new: true
+          }
+   );
+   return ret.seq;
+}
+
+var MemberFirstNameList=["John","Dianna","Mark","Michele","Mark","Steve","David","Edward","Richard","Gio","Ramen","Willaim","James","Ethan","John"]	
+var MemberLastNameList=["Smith","Jackson","Robinson","Seterburg","Markel","Jones","Euma","Brown","Miller","Thompson","Lopez","Lee","Harris","Gonzalez","Clark"]	
+var StreetAddressList=["Main Street","Pine Street","Lake Ave","River Road","Lake Ave","Ridge Street","Church Street","Willow Street","Sunset Ave","Mill Road","Jackson Street","Cherry Street","Center Street","Hillcrest Ave","Madison Ave"]
+var CityList=["Edison","Princeton","Trenton","Roseland","Jersey City","Rutherford","Basking Ridge","Bridgewater","Somerset","Franklin Park","South Brunswick","Iselin","South Amboy","Perth Amboy","New Brunswick","Middlesex","Hamilton","Somerville"]
+var TotFNameCnt = TotLNameCnt = TotStreetCnt = TotCityCnt
+for (var FNameCnt = 0; x <= TotFNameCnt; x++) {
+	db.Test.insert({"_id": x, "MyText": "This is test for counter [" + x + "]" ,"City":City[curCity], "When": new Date() });
+	curCity++;
+	if ( curCity > 4 ) {
+		curCity = 0
+	} ;
+}
+
+
+
+
+	City":"Edison","State":"New Jersey"},
+	Jersey City",""}]
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Smith","FirstName":"Michael","Sex":"M"},
+	  "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+	  "Contact":{"Cell1":"7325558273","Email":"michael.smith@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,
+	                  "GroupName":"MyFamily","IsOwner":true,"GroupType":"Private","StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Smith","FirstName":"Dianna","Sex":"F"},
+	  "Address":{"Street":"1 Main Street","City":"Edison","State":"NJ","Zip":"08818"},
+	  "Contact":{"Cell1":"7325551288","Email":"dianna.smith@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,
+	                  "GroupName":"MyFamily","IsOwner":true,"GroupType":"Private","StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"River","FirstName":"John","Sex":"M"},
+	  "Address":{"Street":"2 Main Street","City":"South Plainfield","State":"NJ","Zip":"08819"},
+	  "Contact":{"Cell1":"7325550014","Email":"john.river@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,
+	                  "GroupName":"MyFamily","IsOwner":true,"GroupType":"Private","StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Risote","FirstName":"David","Sex":"M"},
+	  "Address":{"Street":"5 Main Street","City":"Iselin","State":"NJ","Zip":"08820"},
+	  "Contact":{"Cell1":"9085555328","Email":"david.risote@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,
+	                  "GroupName":"MyFamily","IsOwner":true,"GroupType":"Private","StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Weisset","FirstName":"Marcal","Sex":"M"},
+	  "Address":{"Street":"100 Baker Street","City":"Edison","State":"NJ","Zip":"08818"},
+	  "Contact":{"Cell1":"9085555352","Email":"marcal.weisset@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,
+	                  "GroupName":"MyFamily","IsOwner":true,"GroupType":"Private","StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Johnson","FirstName":"Frank","Sex":"M"},
+	  "Address":{"Street":"100 Dvolt Ave","City":"Princetion","State":"NJ","Zip":"08839"},
+	  "Contact":{"Cell1":"6095551201","Email":"frank.johnson@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,"GroupName":"MyFamily","IsThisMemberOwner":false,"StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Johnson","FirstName":"Michele","Sex":"F"},
+	  "Address":{"Street":"100 Dvolt Ave","City":"Princetion","State":"NJ","Zip":"08839"},
+	  "Contact":{"Cell1":"6095551223","Email":"michele.johnson@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,"GroupName":"MyFamily","IsThisMemberOwner":false,"StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Milasi","FirstName":"Michele","Sex":"M"},
+	  "Address":{"Street":"10 Maltek Ave","City":"Rutherford","State":"NJ","Zip":"08813"},
+	  "Contact":{"Cell1":"6095551212","Email":"michael.milasi@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,"GroupName":"MyFamily","IsThisMemberOwner":false,"StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Bhat","FirstName":"Vishal","Sex":"M"},
+	  "Address":{"Street":"10 Ridgefield Street","City":"Edison","State":"NJ","Zip":"08818"},
+	  "Contact":{"Cell1":"7325554326","Email":"vishal.bhat@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,"GroupName":"MyFamily","IsThisMemberOwner":false,"StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})
+
+db.Member.insert(
+	{"_id": "MEM" + getNextSequence("MemberId") ,
+	  "Auth":{"AuthType":""},
+	  "Main":{"LastName":"Singh","FirstName":"Anil","Sex":"M"},
+	  "Address":{"Street":"10 River Rodad","City":"South Brunswick","State":"NJ","Zip":"08820"},
+	  "Contact":{"Cell1":"7325551219","Email":"anil.singh@uconnect.com","Other":""},
+	  "LinkedMember":[{}],
+	  "LinkedGroup":[{"GroupId":"GRPFAM" + getNextSequence("GroupId") ,"GroupName":"MyFamily","IsThisMemberOwner":false,"StartDt": new Date() ,"EndDt":""}],
+	  "LinkedVendor":[{}],
+	  "BusyHours":[{"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}],
+	  "BusyDays":[{"StartDate": new Date() ,"EndDate":"","CreatedDt": new Date() }],	                  
+	  "VacationDays":[{}],
+	  "MyFavorite":[{}],
+	  "MyBlocked":[{}]
+	})

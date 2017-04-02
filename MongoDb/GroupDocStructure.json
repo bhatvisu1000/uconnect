@@ -1,0 +1,20 @@
+Group 1.0
+======
+
+{"_id":"",
+    "Main":{"Name":"","MemberId/VendorId":"","Status":"Active/InActive"},
+    "Duration":{"StartDate":"","EndDate":""},
+    "Participants":[{"MemberId":""}],
+    "Metrics":{"TotalPArticipants":},
+     "_History":
+        {
+          "InitChange":{"When": "", "Message":""},
+          "LastChange":{"when": "", "Message":""}
+        }
+    }
+
+}
+
+
+db.Group.insert({''})
+
