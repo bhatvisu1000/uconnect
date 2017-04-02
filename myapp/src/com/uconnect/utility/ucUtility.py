@@ -82,7 +82,7 @@ class Utility(object):
             myModuleLogger.error("MainArg key is empty [{arg}], expecting nonempty value) !!!".format(arg=argRequest))
             return False
         elif (len(argRequest['Request']['MainArg']) == 0 ):
-            myModuleLogger.error("Auth key is [{arg}] empty, expecting authorizartion information !!!) [{arg}]".format(arg=argRequest))
+            myModuleLogger.error("Main argument [{arg}] is empty, expecting valid argumen !!!) [{arg}]".format(arg=argRequest))
             return False
 
         myModuleLogger.debug("Validation completed successfully")

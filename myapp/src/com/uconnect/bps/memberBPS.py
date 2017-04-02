@@ -482,7 +482,6 @@ class MemberBPS(object):
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
             myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
-
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
             if not (myArgValidation):
@@ -491,40 +490,43 @@ class MemberBPS(object):
             ''' Extracting MainArg from data from Request '''            
             myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
 
-            ''' Preparing document:    '''
-            print('myMemberData',myMainArgData)
-
+            ''' Preparing document :    '''
             myConnections = self.MemberConnectionsTemplate
-            myConnections['MemberId'] = myMainArgData['ConnectMemberId']
-
-            myConnectionData = {'Connections':myConnections}
             myMemberId = myMainArgData['MemberId']
+            myConnectMemberId = myMainArgData['ConnectMemberId']
             myCriteria = {'_id':myMemberId}
-            
-            myModuleLogger.info('Linking member [{member} --> {linkMember}]'.format(
-                member=myMemberId,linkMember=myMainArgData['ConnectMemberId']))
+            myConnections['MemberId'] = myConnectMemberId
 
-            myConnectionResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myModuleLogger.debug('Preparing document for connection between [{member}] and [{connectMember}]'.format(member=myMemberId, connectMember=myConnectMemberId))
+            myConnectionData = {'Connections':myConnections}            
 
-            myModuleLogger.debug('Connection created, result[{result}]'.format(result=myConnectionResult))
-            myModuleLogger.debug('Creating reverse connection')
+            ''' Saving document in database '''
+            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
+                format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
+
+            ''' Preparing document for reverse connection ConnectMember --> Member(requestor):    '''
+            myModuleLogger.debug('Creating reverse connection ')
 
             myConnections = self.MemberConnectionsTemplate
-            myConnections['MemberId'] = myMemberId
-
-            myConnectionData = {'Connections':myConnections}
             myMemberId = myMainArgData['ConnectMemberId']
+            myConnectMemberId = myMainArgData['MemberId']
             myCriteria = {'_id':myMemberId}
-            
-            myModuleLogger.info('Linking member [{member} --> {linkMember}]'.format(
-                member=myMemberId,linkMember=myMainArgData['ConnectMemberId']))
+            myConnections['MemberId'] = myConnectMemberId
 
-            myConnectionResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myModuleLogger.debug('Preparing document for connection between [{member}] and [{connectMember}]'.format(member=myMemberId, connectMember=myConnectMemberId))
+            myConnectionData = {'Connections':myConnections}            
 
+            ''' Saving document in database '''
+            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
+                format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
 
             ''' Build response data '''
+            myResponseRequest = self.utilityInstance.builInternalRequestDict({'Data':{'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member'}})
+            myResponseData = self.getAMemberConnections(myResponseRequest)
             myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myConnectionResult,'Update')
+                argRequestDict['Request']['Header']['ScreenId'],myBuildConnectStatus,'Update',myResponseData)
 
             return myResponse
 
@@ -636,25 +638,23 @@ class MemberBPS(object):
 
             ''' Preparing document:    '''
 
-            #this is example --> db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
-
             myMemberId = myMainArgData['MemberId']
             myFavoriteMember = myMainArgData['FavoriteMemberId']
-            #myFavoriteData = {'LinkedBy.$.Favorite':1}
-            myFavoriteData = {"Favorite":{"MemberId":myFavoriteMember}}
-            myCriteria = {'_id':myMemberId}
+            myCriteria = {'_id':myMemberId,'Connections.MemberId':myFavoriteMember,'Connections.Type':'Member'}
+            myFavoriteData = {"Connections.$.Favorite":1}
 
             myModuleLogger.info('Adding Memebr [{favMember}] to Member [{member}]s Favorite list'.format(
                 favMember=myFavoriteMember, member=myMemberId))
 
-            ''' Executing document update '''
-
-            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myFavoriteData, 'addToset',False)
-            #myUpdateStatus = self.utilityInstance.getUpdateStatus(myResult)
+            ''' Saving document '''
+            ##db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
+            myMarkFavoriteStatus =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myFavoriteData, 'set',False)
 
             ''' build response data '''
+            myResponseRequest = self.utilityInstance.builInternalRequestDict({'Data':{'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member'}})
+            myResponseData = self.getAMemberConnections(myResponseRequest)
             myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myLinkedResult,'Update')
+                argRequestDict['Request']['Header']['ScreenId'], myMarkFavoriteStatus,'Update',myResponseData)
 
             return myResponse
 
