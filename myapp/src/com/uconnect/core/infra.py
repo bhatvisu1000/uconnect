@@ -182,7 +182,7 @@ class Environment(object):
 
       myModuleLogger.info("Reading defaults json file [{defaultsFile}] ".format(defaultsFile=self.defaultsFileWPath))
       self.defaultsData = json.loads(open(self.defaultsFileWPath).read())
-    
+      #print(self.defaultsData)
       # check if defaults dictionary is empty after loading data, raise error
 
       if not self.defaultsData: 

@@ -39,7 +39,7 @@ class MemberBPS(object):
     def __buildInitMembderData(self,argMainDict,argAddressDict,argContactDict):
 
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.info('Argument [{Main}], [{Address}], [{Contact}]'.
+        myModuleLogger.debug('Argument [{Main}], [{Address}], [{Contact}]'.
             format(Main=argMainDict,Address=argAddressDict,Contact=argContactDict))
 
         myZipCode = argAddressDict['ZipCode']
@@ -47,6 +47,10 @@ class MemberBPS(object):
         myState = self.envInstance.zipCodeData[myZipCode]['State']
 
         myInitMemberData = self.envInstance.defaultsData['Member']
+        myModuleLogger.debug('Defaults Member template [{template}]'.format(template=self.envInstance.defaultsData['Member']))        
+        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData))        
+        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData['Connections']))
+        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData['Settings']))
 
         ''' Main '''
         if ( 'LastName' in argMainDict ):
@@ -75,7 +79,6 @@ class MemberBPS(object):
 
         ''' build initial history data '''
         myInitMemberData['_History'] = self.utilityInstance.buildInitHistData() 
-
         myModuleLogger.info('Argument [{arg}] returned'.format(arg=myInitMemberData))
 
         return myInitMemberData

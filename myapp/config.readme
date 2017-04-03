@@ -1,0 +1,18 @@
+Windows:
+
+-- Create following environment variable
+1.) Edit System Environment Variable
+2.) Create following variable
+    UCONNECT_HOME= c:\app\uconnect\myapp # <This is the top folder of application>
+    UCONNECT_CONFIG = %UCONNECT_HOME%/config
+    PYTHONPATH = %UCONNECT_HOME%/src
+    UCONNECT_LOG = c:\uconect_logs
+
+Unix:
+
+-- Create following environment variable in bash_profile
+
+export UCONNECT_HOME= /<rootfs>/app/uconnect/myapp # <This is the top folder of application>
+export UCONNECT_CONFIG = %UCONNECT_HOME%/config
+export PYTHONPATH = %UCONNECT_HOME%/src
+export UCONNECT_LOG = /tmp/uconnect.log # you can move this to any folder u want

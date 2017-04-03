@@ -108,7 +108,7 @@ def processRequestOrig(requestType,memberId,connType):
   
   ''' extrcat value from argument passed '''
   
-  myArgumentTuple = Utility.extractRequest(argRequests)
+  myArgumentTuple = utilityInstance.extractRequest(argRequests)
   myArgTupleStatus = myArgumentTuple[0]  
   myScreenId = myArgumentTuple[1]
   myActionId = myArgumentTuple[2]
@@ -120,7 +120,7 @@ def processRequestOrig(requestType,memberId,connType):
   if myArgTupleStatus == 'Success':
     myResults = myFactory.processRequest(myScreenId,myActionId,myArgumentData)
 
-  myResponseData = Utility.buildResponseData(myResults,myArgTupleStatus,myArgTupleStatus)
+  myResponseData = utilityInstance.buildResponseData(myResults,myArgTupleStatus,myArgTupleStatus)
 
   return jsonify(myResponseData)
 
@@ -138,7 +138,7 @@ def request(requestType):
   #313886
   #313888 
 
-  myMemberId = 313883
+  myMemberId = 314094
   print(requestType)
   if requestType == "GetConnection":
     myRequest = {"Request":

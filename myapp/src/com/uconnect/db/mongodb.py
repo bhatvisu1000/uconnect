@@ -354,7 +354,8 @@ class MongoDB(object):
 
             myData = []
 
-            if len(argProjection) == 0: argProjection = None
+            if argProjection:
+                if len(argProjection) == 0: argProjection = None
 
             ''' 
                 Sort value in pymongo should be in list not dictionary 
@@ -367,13 +368,12 @@ class MongoDB(object):
                 raise com.uconnect.core.error.NotListValue("Sort argument passed [{sort}] is not list value (expecting list)".format(sort=argSort))
 
             skipPage = int(argPage) * (self.myPageSize)
-            #myResults.append(self.__getRequestSummary(argCollection, argCriteria, int(argPage)))
             mySummary = (self.__getRequestSummary(argCollection, argCriteria, int(argPage)))
 
             myModuleLogger.debug("arg passed to MongoDB: db[{db}].({criteria}).skip({skipPage}).limit({limit}).sort({sort})]".
                 format(db=myDb, criteria=argCriteria,skipPage=skipPage,limit=self.myPageSize,sort=argSort))
             
-            for data in myDb.find(argCriteria).sort(argSort).limit(self.myPageSize).skip(skipPage):
+            for data in myDb.find(argCriteria,argProjection).sort(argSort).limit(self.myPageSize).skip(skipPage):
                 myData.append(data)
 
             myResults={"Summary":mySummary,"Data":myData}

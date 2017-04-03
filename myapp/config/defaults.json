@@ -3,10 +3,9 @@
         {
             "Main":{},
             "Address":{},
-            "Contact":{}
-        },
-        "Connections":[],
-        "Settings":
+            "Contact":{},
+            "Connections":[],
+            "Settings":
             {
                 "BusyHours":
                     [
@@ -19,7 +18,8 @@
                 "Personalize":{"Style":""},
                 "Privacy":{"Picture":"<BSON>"},
                 "Ethnicity":""
-            },
+            }            
+        },
     "Group":
         {
             "Main":
