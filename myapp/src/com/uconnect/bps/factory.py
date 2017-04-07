@@ -55,15 +55,15 @@ class Factory(object):
         '''
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) )
         myModuleLogger.debug("arg received [{screen},{action}]".format(screen=argScreenId, action=argActionId))
-        
-        # find value from factory metadata
 
         try:
-            myLibrary = self.envInstance.factoryMetaData[argScreenId][argActionId]['BPS']['Module']
-            myClass   = self.envInstance.factoryMetaData[argScreenId][argActionId]['BPS']['Class']
-            myMethod  = self.envInstance.factoryMetaData[argScreenId][argActionId]['BPS']['Method']
-            #myProjection = self.envInstance.myFactoryMetaData[argScreenId][argActionId]['BPS']['Columns']
-            #myArg=['Member']
+            myLibClassMethod = self.envInstance.getModuleClassMethod(argScreenId, argActionId)
+            if not( myLibClassMethod[0] == None):
+                myLibrary = myLibClassMethod[0]
+                myClass   = myLibClassMethod[1]
+                myMethod  = myLibClassMethod[2]
+            else:
+                raise KeyError
         except KeyError as error:
             print(error)
             myModuleLogger.error("KeyError while navigating in Factory data, error[{err}]".format(err=error.message))

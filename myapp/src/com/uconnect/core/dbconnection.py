@@ -29,7 +29,8 @@ class MongoDbConnection(object):
    def getConnection(self):
       myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
       myModuleLogger.debug("Reading MONGO_URI details ...")
-      mongoDbEnvDetail = self.envInstance.getEnvironmentDetails(self.envInstance.globalSettings['Environment'])
+      myEnvironment = self.envInstance.getCurrentEnvironment()
+      mongoDbEnvDetail = self.envInstance.getEnvironmentDetails(myEnvironment)
       mongoDbMongoURI  = mongoDbEnvDetail['MongoUri']
       mongoDbDBName = mongoDbEnvDetail['MongoDBName']
 

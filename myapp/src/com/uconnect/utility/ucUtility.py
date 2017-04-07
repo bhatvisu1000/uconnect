@@ -12,7 +12,13 @@ class Utility(object):
     def __init__(self):
         self.envInstance = Environment.Instance()
         self.globalInstance = Global.Instance()
-
+        '''
+        print ("Global Success:",self.globalInstance._Global__Success)
+        print ("Global UnSuccess:",self.globalInstance._Global__UnSuccess)
+        print ("Global Error:",self.globalInstance._Global__Error)
+        print ("Global Screen:",self.globalInstance._Global__InternalScreenId)
+        print ("Global Action:",self.globalInstance._Global__InternalActionId)
+        '''
     def isDict(self, argDict):
         try:
             if isinstance(argDict,dict): 
@@ -102,78 +108,7 @@ class Utility(object):
             Arguments:      Zipcode
             usage:          ( isValidZipCode(<zipciode>)
         '''
-        return argZipCode in self.envInstance.zipCodeData
-
-    def extractAllFromReq(self, argRequestDict):
-        ''' 
-            Description:    Extracts all argument passed to request
-            Arguments:      Request json dict data 
-            usage:          ( extractRequest(<argRequestDict>)
-        '''
-        myStatus = myScreenId = myActionId = myRequestData = ''
-
-        if self.isDict(argRequestDict):
-            myStatus = 'Success'
-            myScreenId = argRequestDict['Request']['Header']['ScreenId']
-            myActionId = argRequestDict['Request']['Header']['ActionId']
-            myRequestData = argRequestDict['Request']['MainArg']
-        else:
-            myStatus = 'Error'
-
-        return myStatus, myScreenId, myActionId, myRequestData 
-
-    def extMainArgFromReq(self, argRequestDict):
-        ''' 
-            Description:    Extracts Main Argument passed to request
-            Arguments:      Request json dict data 
-            usage:          ( extractRequest(<argRequestDict>)
-        '''
-        return self.extractAllFromReq(argRequestDict)[3]
-
-    def builInternalRequestDict(self, argRequestDict):
-        ''' 
-            Description:    Build request data for internal purpose
-            Arguments:      Request json dict data, will use screenId:99999, ActionId: 99999
-            usage:          ( builRequestData(<argRequestDict>)
-        '''
-        myRequestData = {"Request":{
-                            "Header":
-                                {"ScreenId":self.globalInstance.InternalScreenId,
-                                 "ActionId":self.globalInstance.InternalActionId,
-                                 "Page":self.globalInstance.InternalPage},
-                            "MainArg":argRequestDict["Data"],
-                            "Auth":{}
-                            }
-                        }
-        return myRequestData
-
-    def buildResponseData(self, argRespDict, argRespStatusCd, argRespMessage):
-        ''' 
-            Description:    Build Response data
-            Arguments:      Response json dict data, Response Status, Response Status Message 
-            usage:          ( extractRequest(<argRespDict, argRespStatus, argRespMessage>)
-        '''
-
-        ''' if summary data is available in data dict, remove it and pass it as a header '''
-        print('popping summary')
-        if 'Summary' in argRespDict:
-            mySummary = argRespDict.pop('Summary')
-        else:
-            mySummary = ''
-
-        print('summary popped',mySummary)
-
-        myResponseData = {'Response':
-                            {'Header':
-                                {'Status':{"Code":argRespStatusCd,"Message":argRespMessage},
-                                 'Summary':mySummary},
-                             'Data':argRespDict['Data']}
-                        }
-        
-        #print (myResponseData['Response']['Header'])
-        print (myResponseData['Response']['Header']['Summary'])
-
-        return myResponseData 
+        return argZipCode in self.envInstance._Environment__zipCodeData
 
     def findPagingValue(self, argTotDocuments, argPageSize, argRequestedPage = None):
         ''' 
@@ -229,20 +164,64 @@ class Utility(object):
     def getCreateStatus(self,argCreateResult):
 
         if argCreateResult["_id"]:
-            return self.globalInstance.Success
+            return self.globalInstance._Global__Success
         else:
-            return self.globalInstance.UnSuccess
+            return self.globalInstance._Global__UnSuccess
 
     def getUpdateStatus(self,argUdateResult):
 
         if (int(argUdateResult['modified'])) > 0:
-            return self.globalInstance.Success
+            return self.globalInstance._Global__Success
         else:
-            return self.globalInstance.UnSuccess
+            return self.globalInstance._Global__UnSuccess
+
+    def extractAllFromReq(self, argRequestDict):
+        ''' 
+            Description:    Extracts all argument passed to request
+            Arguments:      Request json dict data 
+            usage:          ( extractRequest(<argRequestDict>)
+        '''
+        myStatus = myScreenId = myActionId = myRequestData = ''
+
+        if self.isDict(argRequestDict):
+            myStatus = self.globalInstance._Global__Success
+            myScreenId = argRequestDict['Request']['Header']['ScreenId']
+            myActionId = argRequestDict['Request']['Header']['ActionId']
+            myRequestData = argRequestDict['Request']['MainArg']
+        else:
+            myStatus = self.globalInstance._Global__Error
+
+        return myStatus, myScreenId, myActionId, myRequestData 
+
+    def extMainArgFromReq(self, argRequestDict):
+        ''' 
+            Description:    Extracts Main Argument passed to request
+            Arguments:      Request json dict data 
+            usage:          ( extractRequest(<argRequestDict>)
+        '''
+        return self.extractAllFromReq(argRequestDict)[3]
+
+    def builInternalRequestDict(self, argRequestDict):
+        ''' 
+            Description:    Build request data for internal purpose
+            Arguments:      Request json dict data, will use screenId:99999, ActionId: 99999
+            usage:          ( builRequestData(<argRequestDict>)
+        '''
+        myRequestData = { "Request" :self.envInstance.getTemplateCopy(self.globalInstance._Global__RequestTemplate) }
+        print ('Request:', myRequestData)
+        print ('Internal Scr:', self.globalInstance._Global__InternalScreenId)
+        myRequestData["Request"]["Header"]["ScreenId"] = self.globalInstance._Global__InternalScreenId
+        myRequestData["Request"]["Header"]["ActionId"] = self.globalInstance._Global__InternalActionId 
+        myRequestData["Request"]["Header"]["Page"] = self.globalInstance._Global__InternalPage
+        myRequestData["Request"]["MainArg"] = argRequestDict["Data"]
+
+        return myRequestData
 
     def buildInitHistData(self):
         ''' building initial history data for a given collection '''
-        myHistoryData = self.envInstance.defaultsData["History"]
+        #myHistoryData = self.envInstance.defaultsData["History"]
+        myHistoryData = self.envInstance.getTemplateCopy(self.globalInstance._Global__HistoryTemplate)
+
         myHistoryData["InitChange"]["When"]=datetime.datetime.utcnow()
         myHistoryData["InitChange"]["Message"]="Initial creation"            
         myHistoryData["LastChange"]["When"]=datetime.datetime.utcnow()
@@ -250,57 +229,17 @@ class Utility(object):
         
         return myHistoryData
 
-    def buildInternalRequest(self, argScreenId, argResult, argResultType, argResultData = None):
-       
-        ''' if this is internal request, we should not built the response, response will be built by mehtod whcih
-        was called externally     '''
-
-        #print("Arguments",argResult,argResultType)
-        if (argScreenId == self.globalInstance.InternalScreenId):
-            return argResult
-
-        myResponseData = self.globalInstance.responseTemplate
-        myData = argResultData
-
-        if (argResultType == 'Update'):
-            myResponseStatus = self.getUpdateStatus(argResult)
-            myResponseData['Response']['Header']['Status'] = myResponseStatus
-            myResponseData['Response']['Header']['Message'] = myResponseStatus
-        elif (argResultType == 'Insert'):
-            myResponseStatus = self.getCreateStatus(argResult)
-            myResponseData['Response']['Header']['Status'] = myResponseStatus
-            myResponseData['Response']['Header']['Message'] = myResponseStatus
-        elif (argResultType == 'Find'):
-            myResponseData['Response']['Header']['Status'] = 'Success'
-            myResponseData['Response']['Header']['Message'] = 'Success'
-            myData = argResult
-
-        #end if
-        #print("build response",myData)
-        if (not(myData == None) and 
-            self.isDict(myData['Data']) and myData['Data']):
-                myResponseData['Response']['Data'] = myData['Data']
-        elif (not(myData == None) and 
-            (not self.isDict(myData['Data'])) and myData['Data']):
-                myResponseData['Response']['Data'] = myData['Data'][0]
-        #end if
-
-        if myData['Summary']:
-            myResponseData['Response']['Header']['Summary']= myData['Summary']
-        #end if
-        
-        return myResponseData 
-
     def buildResponseData(self, argScreenId, argResult, argResultType, argResultData = None):
        
         ''' if this is internal request, we should not built the response, response will be built by mehtod whcih
         was called externally     '''
 
-        #print("Arguments",argResult,argResultType)
-        if (argScreenId == self.globalInstance.InternalScreenId):
+        if (argScreenId == self.globalInstance._Global__InternalScreenId):
             return argResult
 
-        myResponseData = self.globalInstance.responseTemplate
+        #myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._ResponseTemplate)
+        myResponseData = {"Response": self.envInstance.getTemplateCopy(self.globalInstance._Global__ResponseTemplate) }
+        print("Response",myResponseData)
         myData = argResultData
 
         if (argResultType == 'Update'):
@@ -312,14 +251,16 @@ class Utility(object):
             myResponseData['Response']['Header']['Status'] = myResponseStatus
             myResponseData['Response']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
-            myResponseData['Response']['Header']['Status'] = 'Success'
-            myResponseData['Response']['Header']['Message'] = 'Success'
+            print("Success",self.globalInstance._Global__Success)
+
+            myResponseData['Response']['Header']['Status'] = self.globalInstance._Global__Success
+            myResponseData['Response']['Header']['Message'] = self.globalInstance._Global__Success
             myData = argResult
 
         #end if
-        print("build response:",myData)
-        print("is Dict:",(self.isDict(myData['Data'])))
-        print('Data' in myData)
+        #print("build response:",myData)
+        #print("is Dict:",(self.isDict(myData['Data'])))
+        #print('Data' in myData)
 
         #if (myData) and '''(self.isDict(myData['Data'])) and''' ('Data' in myData) and (myData['Data']):
         if (myData) and ('Data' in myData) and (myData['Data']):

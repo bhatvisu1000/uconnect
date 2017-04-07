@@ -1,0 +1,72 @@
+{
+    "Member": 
+        {
+            "Main":{},
+            "Address":{},
+            "Contact":{},
+            "Connections":[],
+            "Settings":
+            {
+                "BusyHours":
+                    [
+                        {"Week":"*","WeekDay":["MO","TU","WE","TH","FR"],"StartHours":"09:00","EndHours":"17:00"}
+                    ],
+                "BusyDays":
+                    [
+                        {"BusyType":"ThanksGiving","StartDate": "12/24/2016 11:32AM" ,"EndDate":"","CreatedDt": "12/24/2016 11:32AM" }
+                    ],
+                "Personalize":{"Style":""},
+                "Privacy":{"Picture":"<BSON>"},
+                "Ethnicity":""
+            }
+        },
+    "Group":
+        {
+            "Main":
+                {
+                    "GroupName":"","MemberId":""
+                },
+            "Participants":[], 
+            "Metrics":{"TotalPArticipants":1},    
+            "_History":{}
+        },
+    "Invitation":{
+        "Type":"<Connetion/Schedule>",
+        "Who":{"Id":"","Type":"Member"},
+        "For":{"Id":"","Type":""},
+        "Invitee":{"Id":"","Type":""},
+        "Status":""
+        },
+    "History":
+        {
+            "InitChange":{"When": "", "Message":""},
+            "LastChange":{"when": "", "Message":""}
+        },
+    "Connections":
+        {
+            "Member":{"MemberId":"", "Favorite":0, "Blocked":0,"Type":"Member","Status":"Pending"},
+            "Group":{"GroupId":"", "Favorite":0, "Blocked":0,"Type":"Group","Status":"Pending"},
+            "Vendor":{"LocationId":"", "Favorite":0, "Blocked":0,"Type":"Vendor","Status":"Pending"}
+        },
+    "Response":
+        {
+            "Header":
+                {
+                    "Status":"","Message":"",
+                    "Summary":
+                        {
+                            "TotalDocs":"","TotalPages":"","DocsPerPage":"","CurrentPage":""
+                        }
+                },
+            "Data":{}
+        },
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"","ActionId":"","Page":0
+                },
+            "MainArg": {},
+            "Auth":{}
+        }
+}

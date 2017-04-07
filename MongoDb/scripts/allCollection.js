@@ -76,3 +76,86 @@ db.getCollectionNames().forEach(function(collection) {
    printjson(indexes);
 });
 
+
+AllRequests
+{
+    "_id":"<RequestId>",
+    "<SCHEDULE/INVITE/>":
+        {
+                        
+        }
+    "From":{"Id":"1001","Type":"Member"},
+    "For":{"Join Network"},
+    "To"
+}
+
+Member requests another member for a connection
+Member invites another Family member to join a family group
+Member invites another Member to join a group
+Member requests for an apppointment to Vendor
+Venodr requests an appointment to member (recurring) 
+    (Member must have an exisiting relationship. i.e. Member must have an appointment scheduled already with vendor)
+    Vendor 
+        Doctor
+        Mechanic Shop
+        Small Business Shop
+        Event Organizer
+        Schools
+
+
+Vendor
+{
+    "_id":
+    "Main":{"Name":"","Type":""},
+    "Address":{"Street":"","City":"","State":"","ZipCode":"","Lattitude":"","Longitude":""},
+    "Contact":{"Phone":"","URL":"","Email":""},
+    "Metrics":{"Total Loctions":""}
+}
+
+Location
+{
+    "_id":
+    "Main":
+        {
+            "Name":"","Type":"","Vendor":"",
+            "AgentWorking":"Yes/No","IsWaitList":"YES/NO","WaitListQueueLength":0,
+            "ServiceDuration","ServiceProvided":[],"IsOffHrs":""
+        },
+    "OffHrsService":{"OffHrsContact":"","OffHrsService":[]},
+    "Address":{"Street":"","City":"","State":"","ZipCode":"","Lattitude":"","Longitude":""},
+    "Contact":{"Phone":"","URL":"","Email":""},
+    "Agent":
+        [
+            {"Id":"", "LastName":"","FirstName":"","Title":"", "WorkTitle":"","ServiceDuration":""}
+        ]
+}
+
+LocationSettings:
+{
+    "_id":"LocationId",
+    "WorkHours":
+        [
+            {"Week":"*","Days":"0","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"1","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"2","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"3","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"4","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"5","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"6","StartHours":"","EndHours":""}
+        ]
+}
+
+AgentSettings:
+{
+    "_id":"AgentId",
+    "WorkHours":
+        [
+            {"Week":"*","Days":"0","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"1","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"2","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"3","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"4","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"5","StartHours":"","EndHours":""},
+            {"Week":"*","Days":"6","StartHours":"","EndHours":""}
+        ]
+}

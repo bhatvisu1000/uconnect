@@ -1,5 +1,5 @@
 from com.uconnect.core.singleton import Singleton
-import json, os, sys, logging
+import json, os, sys, logging, copy
 import com.uconnect.utility.ucLogging
 import com.uconnect.core.error
 
@@ -17,19 +17,18 @@ class Environment(object):
                         2. Specific Environment Setting
                         3. Facroty Metadata
                         4. Zipcode
-                        5. Defaults value
+                        5. Template value
         argEnvType:     N/A
         usage:          <called internally during instantiation process>
         Return:         <N/A>
     '''
     ''' Initializing variables '''
 
-    self.globalSettings = {}
-    self.envDetailResult = {}
-    self.infra = {}
-    self.factoryMetaData = {}
-    self.zipCodeData = {}
-    self.defaultsData = {}
+    self._globalSettings = {}
+    self.__infra = {}
+    self.__factoryMetaData = {}
+    self.__zipCodeData = {}
+    self.__templateData = {}
 
     ''' building core path - globals.json'''
     
@@ -50,10 +49,10 @@ class Environment(object):
         raise com.uconnect.core.error.MissingConfigFile("GlobalFile [{globalFile}] is missing !!!".format(globalFile=self.myGlobalFile))
 
       myModuleLogger.info("Reading global configuration file [{globalFile}] ".format(globalFile=self.myGlobalFile))
-      self.globalSettings = json.loads(open(self.myGlobalFile).read())
+      self.__globalSettings = json.loads(open(self.myGlobalFile).read())
 
       # ensure globalsetting has value
-      if not self.globalSettings: 
+      if not self.__globalSettings: 
         raise com.uconnect.core.error.BootStrapError("GlobalSettings dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
@@ -71,16 +70,21 @@ class Environment(object):
 
     ''' Building Infra/FactoryMetadata file with path '''
 
-    self.infraFile = self.globalSettings['Infra']
-    self.factoryMetaFile = self.globalSettings['Factory']
-    self.zipCodeFile = self.globalSettings['ZipCode']
-    self.defaultsFile = self.globalSettings['Defaults']
+    self.infraFile = self.__globalSettings['Infra']
+    self.factoryMetaFile = self.__globalSettings['Factory']
+    self.zipCodeFile = self.__globalSettings['ZipCode']
+    self.templateFile = self.__globalSettings['Template']
 
     self.infraFilewPath = os.path.join(self.configLoc,self.infraFile)
     self.factoryMetaFilewPath = os.path.join(self.configLoc,self.factoryMetaFile)
     self.zipCodeFileWPath = os.path.join(self.configLoc,self.zipCodeFile)
-    self.defaultsFileWPath = os.path.join(self.configLoc,self.defaultsFile)
-    
+    self.templateFileWPath = os.path.join(self.configLoc,self.templateFile)
+    '''    
+    print ("InfraFile:",self.infraFile)
+    print ("FactoryFile:",self.factoryMetaFile)
+    print ("ZipCodeFile:",self.zipCodeFile)
+    print ("TemplateFile:",self.templateFile)
+    '''
     ''' Infra settings - infra.json '''
     try:
       # ensure config file exists
@@ -91,11 +95,11 @@ class Environment(object):
 
       ''' Reading infra file '''
       myModuleLogger.info("Reading infra config file [{infraFile}] ".format(infraFile=self.infraFilewPath)) 
-      self.infra = json.loads(open(self.infraFilewPath).read())
+      self.__infra = json.loads(open(self.infraFilewPath).read())
     
       # check if Infra dictionary is empty, raise error
 
-      if not self.infra: 
+      if not self.__infra: 
         raise com.uconnect.core.error.BootStrapError("InfraSetting dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
@@ -123,11 +127,11 @@ class Environment(object):
         raise com.uconnect.core.error.MissingConfigFile("FactoryMetada File [{factoryFile}] is missing !!!".format(factoryFile=self.factoryMetaFilewPath))
 
       myModuleLogger.info("Reading factory json file [{factoryFile}] ".format(factoryFile=self.factoryMetaFilewPath)) 
-      self.factoryMetaData = json.loads(open(self.factoryMetaFilewPath).read())
+      self.__factoryMetaData = json.loads(open(self.factoryMetaFilewPath).read())
     
       # check if factory metadata dictionary is empty after loading data, raise error
 
-      if not self.factoryMetaData: 
+      if not self.__factoryMetaData: 
         raise com.uconnect.core.error.BootStrapError("FactoryMetada dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
@@ -153,11 +157,11 @@ class Environment(object):
         raise com.uconnect.core.error.MissingConfigFile("Zipcode File [{zipCodeFile}] is missing !!!".format(zipCodeFile=self.zipCodeFileWPath))
 
       myModuleLogger.info("Reading zipcode json file [{myZipFile}] ".format(myZipFile=self.zipCodeFileWPath))
-      self.zipCodeData = json.loads(open(self.zipCodeFileWPath).read())
+      self.__zipCodeData = json.loads(open(self.zipCodeFileWPath).read())
     
       # check if zipcode dictionary is empty after loading data, raise error
 
-      if not self.zipCodeData: 
+      if not self.__zipCodeData: 
         raise com.uconnect.core.error.BootStrapError("ZipCode dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
@@ -173,20 +177,19 @@ class Environment(object):
        myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
        raise
 
-    ''' Loading Defaults value from defaults.json '''
+    ''' Loading Template value from template.json '''
     try:
       # ensure config file exists
-      # defaults.json.json
-      if not (os.path.isfile(self.defaultsFileWPath)):
-        raise com.uconnect.core.error.MissingConfigFile("Defaults File [{defaultsFile}] is missing !!!".format(defaultsFile=self.defaultsFileWPath))
+      # template.json
+      if not (os.path.isfile(self.templateFileWPath)):
+        raise com.uconnect.core.error.MissingConfigFile("Template File [{templateFile}] is missing !!!".format(templateFile=self.templateFileWPath))
 
-      myModuleLogger.info("Reading defaults json file [{defaultsFile}] ".format(defaultsFile=self.defaultsFileWPath))
-      self.defaultsData = json.loads(open(self.defaultsFileWPath).read())
-      #print(self.defaultsData)
-      # check if defaults dictionary is empty after loading data, raise error
+      myModuleLogger.info("Reading template json file [{templateFile}] ".format(templateFile=self.templateFileWPath))
+      self.__templateData = json.loads(open(self.templateFileWPath).read())
+      # check if template dictionary is empty after loading data, raise error
 
-      if not self.defaultsData: 
-        raise com.uconnect.core.error.BootStrapError("Defaults dictionary is empty")
+      if not self.__templateData: 
+        raise com.uconnect.core.error.BootStrapError("Template dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
         myModuleLogger.error("MissingConfigFile Error, [{error}]".format(error=error.errorMsg))
@@ -195,7 +198,7 @@ class Environment(object):
         myModuleLogger.error("BootStrapError, [{error}]".format(error=error.errorMsg))
         raise error     
     except ValueError as error:
-       myModuleLogger.error("Error, loading Defaults file [{defaultsFile}] (value error) ".format(defaultsFile=self.defaultsFileWPath))
+       myModuleLogger.error("Error, loading Template file [{templateFile}] (value error) ".format(templateFile=self.templateFileWPath))
        raise error
     except Exception as error:
        myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
@@ -203,7 +206,20 @@ class Environment(object):
 
     ''' initializing other variables '''
 
-    self.maxPageSize = int(self.globalSettings['maxPageSize'])
+    self.maxPageSize = int(self.__globalSettings['maxPageSize'])
+
+  def getCurrentEnvironment(self):
+    ''' 
+        Description:    Returns current environment
+        usage:          <getCurrentEnvironment()
+        Return:         String <envrionment type>
+    '''
+    myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
+
+    myEnvironment = self.__globalSettings["Environment"]
+    myModuleLogger.info("Current envrionment [{env}] ".format(env=myEnvironment)) 
+    
+    return myEnvironment 
 
   def getEnvironmentDetails(self, argEnvType):
     ''' 
@@ -215,17 +231,42 @@ class Environment(object):
     myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
 
     ''' will build dictionary from globals and infra dictionary for a given env type '''
-    
-    self.envDetailResult = self.globalSettings
-
+    myenvDetailResult = copy.deepcopy(self.__globalSettings)
     myModuleLogger.info("Preparing environment details for [{myEnvironment}] ".format(myEnvironment=argEnvType)) 
+    myenvDetailResult.update(self.__infra[argEnvType])
+    myModuleLogger.debug("Environent details for [{myEnvironment}] is [{myEnvDetails}] ".format(myEnvironment=argEnvType, myEnvDetails=myenvDetailResult)) 
     
-    self.envDetailResult.update(self.infra[argEnvType])
+    return myenvDetailResult
 
-    myModuleLogger.debug("Environent details for [{myEnvironment}] is [{myEnvDetails}] ".format(myEnvironment=argEnvType, myEnvDetails=self.envDetailResult)) 
-    
-    return self.envDetailResult
+  def getTemplateCopy(self, argTemplate):
+    ''' Returns a copy of a template for an entity defined in template.json; For e.g. Member/Group/Vendor/History '''
+    print('Infra;template',argTemplate)
+    if argTemplate in self.__templateData:
+      return copy.deepcopy(self.__templateData[argTemplate])
+    else:
+      return None
 
+  def getConnTemplateCopy(self, argConnectionType):
+    ''' Returns a copy of Member template from template.json '''
+    if argConnectionType in self.__templateData['Connections']:
+      return copy.deepcopy(self.__templateData['Connections'][argConnectionType])
+    else:
+      return None
+
+  def getAddressCityState(self,argZipCode):
+    if argZipCode in self.__zipCodeData:
+      return self.__zipCodeData[argZipCode]['City'], self.__zipCodeData[argZipCode]['State'] 
+    else:
+      return None, None
+
+  def getModuleClassMethod(self, argScreenId, argActionId):
+    if (argScreenId in self.__factoryMetaData) and (argActionId in self.__factoryMetaData[argScreenId]):
+      myLibrary = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
+      myClass   = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Class']
+      myMethod  = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Method']
+      return myLibrary, myClass, myMethod 
+    else:
+      return None, None, None
 
 '''
 if __name__ == "__main__":

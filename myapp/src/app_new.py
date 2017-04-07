@@ -391,7 +391,8 @@ if __name__ == "__main__":
   print "Initializing flask environment ..."
 
   envInstance = Environment.Instance()
-  curEnvDetails = envInstance.getEnvironmentDetails(envInstance.globalSettings['Environment'])
+  curEnvironment = envInstance.getCurrentEnvironment()
+  curEnvDetails = envInstance.getEnvironmentDetails(curEnvironment)
   myFlaskHost = curEnvDetails['FlaskHost']
   myFlaskPort = int(curEnvDetails['FlaskPort'])
 

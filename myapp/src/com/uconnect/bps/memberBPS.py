@@ -32,10 +32,11 @@ class MemberBPS(object):
         self.vendorColl = 'Vendor'
         self.vendorLocColl = 'Location'
         self.locAgentColl = 'Agent'
+        ''''
         self.MemberConnectionsTemplate = self.envInstance.defaultsData['Connections']['Member']
         self.GroupConnectionsTemplate = self.envInstance.defaultsData['Connections']['Group']
         self.VendorConnectionsTemplate = self.envInstance.defaultsData['Connections']['Vendor']
-
+        '''
     def __buildInitMembderData(self,argMainDict,argAddressDict,argContactDict):
 
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
@@ -43,14 +44,12 @@ class MemberBPS(object):
             format(Main=argMainDict,Address=argAddressDict,Contact=argContactDict))
 
         myZipCode = argAddressDict['ZipCode']
-        myCity = self.envInstance.zipCodeData[myZipCode]['City']
-        myState = self.envInstance.zipCodeData[myZipCode]['State']
+        myCityNState = self.envInstance.getAddressCityState(myZipCode)
+        myCity = myCityNState[0]
+        myState = myCityNState[1]
 
-        myInitMemberData = self.envInstance.defaultsData['Member']
-        myModuleLogger.debug('Defaults Member template [{template}]'.format(template=self.envInstance.defaultsData['Member']))        
-        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData))        
-        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData['Connections']))
-        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData['Settings']))
+        myInitMemberData = self.envInstance.getTemplateCopy('Member')
+        myModuleLogger.debug('Defaults Member template [{template}]'.format(template=myInitMemberData))        
 
         ''' Main '''
         if ( 'LastName' in argMainDict ):
@@ -63,9 +62,12 @@ class MemberBPS(object):
             myInitMemberData['Address']['Street'] = argAddressDict['Street']
 
         ''' Address '''
-        myInitMemberData['Address']['City'] = myCity
-        myInitMemberData['Address']['State'] = myState
-        myInitMemberData['Address']['ZipCode'] = myZipCode
+        if (not (myCity == None)) and (not(myState == None)): 
+            myInitMemberData['Address']['City'] = myCity
+            myInitMemberData['Address']['State'] = myState
+            myInitMemberData['Address']['ZipCode'] = myZipCode
+        else:
+            myInitMemberData['Address']['ZipCode'] = myZipCode
 
         ''' Contact '''
         if ( 'Mobile' in argContactDict ):
@@ -91,7 +93,7 @@ class MemberBPS(object):
 
         #if argConnectionType == 'member':
         #    myFromCollection = self.memberColl
-        if argConnectionType == 'Member':
+        if argConnectionType == self.memberColl:
             myFromCollection = self.memberColl
             myPipeLine =  [ 
                     {"$match"  : {"_id":argMemberId}},
@@ -130,7 +132,7 @@ class MemberBPS(object):
 
         myConnectionRawData = argConnectionRawData
 
-        if argConnectionType == "Member":
+        if argConnectionType == self.memberColl:
             myResultStatus = {"Success":myConnectionRawData['ok']}
             myMemberConnRawData =  myConnectionRawData['result']
             if (myMemberConnRawData): 
@@ -306,6 +308,8 @@ class MemberBPS(object):
                 myMemberConnection = {"Data":self.__buildMyConnection('Member',myConnectionRawData)}
 
                 myModuleLogger.info("MyMemberConnection Data: {memberConn}".format(memberConn=myMemberConnection))
+            else:
+                myMemberConnection = {}
 
             myResponse = self.utilityInstance.buildResponseData(
                 argRequestDict['Request']['Header']['ScreenId'],myMemberConnection,'Find')
@@ -419,7 +423,7 @@ class MemberBPS(object):
             myGroupResultStatus = self.utilityInstance.getCreateStatus(myGroupResult)
 
             ''' building link between owner of memeber and newly created group '''
-            if myGroupResultStatus == self.globalInstance.Success:
+            if myGroupResultStatus == self.globalInstance._Global__Success:
                 myLogger.info('Group [{group}] creation is successful, now linking to member[{member}]'.
                     format(group=myGroupId, member=myGroupData['Main']['MemberId']))
 
@@ -432,7 +436,7 @@ class MemberBPS(object):
                 myLinkedResult = self.linkAMember2Group(myLinkedData)
                 myLinkedResultStatus = self.utilityInstance.getUpdateStatus(myLinkedResult)
                 
-                if myLinkedResultStatus == self.globalInstance.UnSuccess:
+                if myLinkedResultStatus == self.globalInstance._Global__UnSuccess:
                     ''' Link was unsuccessful, need to clean up the data (delete group collection just got inserted) '''
                     myLogger.info('Linking group [{group}] to member[{member}] is unsuccessful, removing group'.
                         format(group=myGroupId, member=myGroupData['Main']['MemberId']))
@@ -494,7 +498,7 @@ class MemberBPS(object):
             myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
 
             ''' Preparing document :    '''
-            myConnections = self.MemberConnectionsTemplate
+            myConnections = self.envInstance.getConnTemplateCopy('Member')
             myMemberId = myMainArgData['MemberId']
             myConnectMemberId = myMainArgData['ConnectMemberId']
             myCriteria = {'_id':myMemberId}
@@ -582,7 +586,7 @@ class MemberBPS(object):
             
             ''' will link member to group in member collection, if member was associated '''
 
-            if myUpdateStatus == self.globalInstance.Success:
+            if myUpdateStatus == self.globalInstance._Global__Success:
                 myModuleLogger.info('Member -> Group connection successful, adding participant in group')
 
                 ''' Adding participant in Group collection  '''

@@ -1,0 +1,19 @@
+//MEMBER
+{"_id":'',
+    "Main":{},
+    "Address":"",
+    "Contact":"",
+    "Connections":
+    [
+        {"MemberId":"","Favorite":0,"Blocked":0,"Type":"Member"},
+        {"GroupId":"","Favorite":0,"Blocked":0,"Type":"Group"},
+        {"LocationId":"","Favorite":0,"Blocked":0,"Type":"Vendor"}
+    ],
+    "Settings":"",
+    "_History":
+        [
+            {"Initial":"",
+             "Last":""
+            }
+        ]
+}

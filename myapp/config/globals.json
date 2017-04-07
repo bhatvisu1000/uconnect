@@ -5,5 +5,5 @@
  "mongoCollRepositoty":"myMongoAllCollection.json",
  "Factory":"FactoryMetadata.json",
  "ZipCode":"zipcode.json",
- "Defaults":"defaults.json"
+ "Template":"template.json"
 }
