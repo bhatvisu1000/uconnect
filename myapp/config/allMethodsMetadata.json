@@ -1,0 +1,21 @@
+{"secuirty.py":
+    {"Security":
+        {
+            "__genHashPassword":{"RequiredArg":["Password"]},
+            "__getLoginPassword":{"RequiredArg":["LoginId"]},
+            "__buildInitLoginData":{"RequiredArg":["LoginId","LoginType","EntityType","EntityId","Password"]},
+            "__buildInitAuthData":{"RequiredArg":["LoginId","LoginType","DeviceType","DeviceOs","MacAddress","SessionId","EntityId","AppVer"]},
+            "__buildInitAuthHistData":{"RequiredArg":["_id","LoginId","LoginType","DeviceOs","DeviceType","MacAddress","SessionId","ExpiryDate","EntityId","AppVer"]},
+            "__createLogin":{"RequiredArg":["LoginId","Password","LoginType","DeviceOs","DeviceType","MacAddress","SessionId","EntityType","EntityId","AppVer"]},
+            "__createAuthentication":{"RequiredArg":["LoginId","LoginType","DeviceOs","DeviceType","MacAddress","SessionId","AppVer"]},
+            "__expireAuthentication":{"RequiredArg":["AuthKey"]},
+            "__getAuthKey":{"RequiredArg":["LoginId","LoginType","DeviceType","DeviceOs","MacAddress","SessionId","EntityId","AppVer"]},
+            "isValidLogin":{"RequiredArg":["LoginId","Password"]},
+            "registerEntity":{"RequiredArg":["MainArg"]},
+            "registerMember":{"RequiredArg":["Auth","Main","Address","Contact"]},
+            "validateCredential":{"RequiredArg":["LoginId","LoginType","DeviceType","DeviceOs","MacAddress","SessionId","EntityType","EntityId","AppVer"]},
+            "isValidAuthentication":{"RequiredArg":["LoginId","LoginType","DeviceType","DeviceOs","MacAddress","SessionId","EntityType","EntityId","AppVer"]},
+            "isLoginInUse":{"RequiredArg":["LoginId"]},
+        }
+    }
+}

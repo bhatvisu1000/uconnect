@@ -142,13 +142,15 @@ class MongoDB(object):
             except Exception as error:
                 raise MongoDBError('Error executing ({conn}).system_js.getNextSequence({col})'.format(conn=self.connectionInstance, col=argCollection))
 
-            if myKeyValue == None:
+            ''' we dont need to generate the id for collection which is marked for exclusion'''
+            if not (myKeyValue == None): 
+                # we need to use repr() for a value to be appeared as string character
+                argDictDocument.update({"_id":repr(myKeyValue)})
+            elif myKeyValue == None and (argCollection not in self.envInstance.exclColl4Id):             
                 raise NullKeyValue("Null Key Value found for collection [{coll}]".format(coll=argCollection))
-            
-            # we need to use repr() for a value to be appeared as string character
 
-            argDictDocument.update({"_id":repr(myKeyValue)})            
             myModuleLogger.debug("Results: dictionary document, after updating key value [{dict}]".format(dict=argDictDocument))
+            return argDictDocument
 
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception("MissingArgumentValues: error [{error}]".format(error=error.errorMsg))
@@ -163,7 +165,6 @@ class MongoDB(object):
             myModuleLogger.exception("Error [{error}]".format(error=error.message))
             raise error
 
-        return argDictDocument
 
     def genKeyForCollection(self, argCollection):
         
@@ -432,14 +433,14 @@ class MongoDB(object):
 
             if (self.utilityInstance.isKeyInDict(myArgDocument,'_id')):
                 myKeyValue =  myArgDocument['_id'] 
-                print( myKeyValue )
+                #print( myKeyValue )
                 if (not myKeyValue):
                     myArgDocument = self.__updateKeyValue(argCollection, myArgDocument)
             
             myInsertOneResult = myDb.insert_one(myArgDocument)
 
             myModuleLogger.debug("requested document inserted with [{_id}, {status}]".format(_id=myInsertOneResult.inserted_id, status=myInsertOneResult.acknowledged))
-            myresult = {"_id":myInsertOneResult.inserted_id,"status":myInsertOneResult.acknowledged}
+            myresult = {"_id":myInsertOneResult.inserted_id,"Status":myInsertOneResult.acknowledged}
         
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception("MissingArgumentValues: error [{error}]".format(error=error.errorMsg))
@@ -531,6 +532,8 @@ class MongoDB(object):
                 updOperator='$inc'
             elif (argUpdateOperator == 'addToSet') :
                 updOperator='$addToSet'
+            elif (argUpdateOperator == 'pull') :
+                updOperator='$pull'
             else:
                 raise com.uconnect.core.error.InvalidOperator("Invalid operator [{oper}] passed during update".format(oper=argUpdateOperator))
 

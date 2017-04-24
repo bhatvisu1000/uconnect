@@ -1,12 +1,13 @@
 import datetime, json,logging, com.uconnect.utility.ucLogging, com.uconnect.core.error
-import com.uconnect.core.error
 
 from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.core.globals import Global
 from com.uconnect.bps.factory import Factory
 from com.uconnect.db.mongodb import MongoDB
+from com.uconnect.db.dbutility import DBUtility
 from com.uconnect.utility.ucUtility import Utility
+from com.uconnect.core.security import Security
 
 myLogger = logging.getLogger('uConnect')
 
@@ -25,22 +26,14 @@ class MemberBPS(object):
         self.factoryInstance = Factory.Instance()
         self.utilityInstance = Utility.Instance()
         self.mongoDbInstance = MongoDB.Instance()
+        self.dbutilityInstance = DBUtility.Instance()
         self.globalInstance = Global.Instance()
+        self.securityInstance = Security.Instance()
 
-        self.groupColl = 'Group'
-        self.memberColl = 'Member'
-        self.vendorColl = 'Vendor'
-        self.vendorLocColl = 'Location'
-        self.locAgentColl = 'Agent'
-        ''''
-        self.MemberConnectionsTemplate = self.envInstance.defaultsData['Connections']['Member']
-        self.GroupConnectionsTemplate = self.envInstance.defaultsData['Connections']['Group']
-        self.VendorConnectionsTemplate = self.envInstance.defaultsData['Connections']['Vendor']
-        '''
     def __buildInitMembderData(self,argMainDict,argAddressDict,argContactDict):
 
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.debug('Argument [{Main}], [{Address}], [{Contact}]'.
+        myModuleLogger.debug('Argument [{Main}], [{Address}], [{Contact}] received'.
             format(Main=argMainDict,Address=argAddressDict,Contact=argContactDict))
 
         myZipCode = argAddressDict['ZipCode']
@@ -48,8 +41,8 @@ class MemberBPS(object):
         myCity = myCityNState[0]
         myState = myCityNState[1]
 
-        myInitMemberData = self.envInstance.getTemplateCopy('Member')
-        myModuleLogger.debug('Defaults Member template [{template}]'.format(template=myInitMemberData))        
+        myInitMemberData = self.envInstance.getTemplateCopy(self.globalInstance._Global__member)
+        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData))        
 
         ''' Main '''
         if ( 'LastName' in argMainDict ):
@@ -76,25 +69,25 @@ class MemberBPS(object):
             myInitMemberData['Contact']['Email'] = argContactDict['Email']
 
         ''' lets get the memberid for this member '''
-        myMemberId = self.mongoDbInstance.genKeyForCollection(self.memberColl)
+        myMemberId = self.mongoDbInstance.genKeyForCollection(self.globalInstance._Global__memberColl)
         myInitMemberData['_id'] = myMemberId
 
         ''' build initial history data '''
-        myInitMemberData['_History'] = self.utilityInstance.buildInitHistData() 
-        myModuleLogger.info('Argument [{arg}] returned'.format(arg=myInitMemberData))
+        myInitMemberData[self.globalInstance._Global__HistoryColumn] = self.utilityInstance.buildInitHistData() 
+        myModuleLogger.info('Data [{arg}] returned'.format(arg=myInitMemberData))
 
         return myInitMemberData
 
     def __buildGetAllConnPipeline(self, argMemberId, argConnectionType):
 
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.info('Argument [{member}], [{conntype}]'.format(member=argMemberId,conntype=argConnectionType))
-        myModuleLogger.info('Building pipeline for aggregate function')
+        myModuleLogger.debug('Argument [{member}], [{conntype}]  received'.format(member=argMemberId,conntype=argConnectionType))
+        myModuleLogger.debug('Building pipeline for aggregate function')
 
         #if argConnectionType == 'member':
         #    myFromCollection = self.memberColl
-        if argConnectionType == self.memberColl:
-            myFromCollection = self.memberColl
+        if argConnectionType == self.globalInstance._Global__memberColl:
+            myFromCollection = self.globalInstance._Global__memberColl
             myPipeLine =  [ 
                     {"$match"  : {"_id":argMemberId}},
                     {"$unwind" : {"path":"$Connections","preserveNullAndEmptyArrays":True}},  
@@ -127,12 +120,12 @@ class MemberBPS(object):
     def __buildMyConnection(self, argConnectionType, argConnectionRawData):
 
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.info('Argument [{conn}], [{data}]'.format(conn=argConnectionType, data=argConnectionRawData))
-        myModuleLogger.info('Building [{conn}] Connection '.format(conn=argConnectionType))
+        myModuleLogger.debug('Argument [{conn}], [{data}] received'.format(conn=argConnectionType, data=argConnectionRawData))
+        myModuleLogger.debug('Building [{conn}] Connection '.format(conn=argConnectionType))
 
         myConnectionRawData = argConnectionRawData
 
-        if argConnectionType == self.memberColl:
+        if argConnectionType == self.globalInstance._Global__memberColl:
             myResultStatus = {"Success":myConnectionRawData['ok']}
             myMemberConnRawData =  myConnectionRawData['result']
             if (myMemberConnRawData): 
@@ -155,46 +148,106 @@ class MemberBPS(object):
 
         return myConnection
 
+    def __createAMember(self,argRequestDict):
+        ''' 
+            Description:    Create a member
+            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
+                            {'Request': 
+                                {'Header':{ScreenId':'','ActionId':'',Page:},
+                                {'MainArg': {<Member data 'Main','Address','Contact'>}}
+                            }
+                            We will add 'BusyHours', BusyDays' block from default value
+            usage:          <createAMember(<argReqJsonDict>)
+            Return:         Json object
+
+            Collection:     Member: Insert a record in Member collection
+        '''
+        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
+        try:
+            ## we need to check who called this function, must be from register
+            #print(self.utilityInstance.whoAmi())
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myArgKey = ['Main','Address','Contact']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
+
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
+
+            ''' Preparing value to create a new member build initial data '''
+            myMemberData = self.__buildInitMembderData(myMainArgData['Main'],myMainArgData['Address'],myMainArgData['Contact'])
+            myMemberId = myMemberData['_id'] 
+
+            ''' Creating a member '''
+            myModuleLogger.info('Creating new member, data [{doc}]'.format(doc=myMemberData))
+            myMemberResult =  self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global__memberColl, myMemberData)
+            myModuleLogger.info('Member [{id}] created, result[{result}]'.format(id=myMemberId, result=myMemberResult))
+
+            ''' Building response data, we can not retrieve member information because we dont have Auth ket yet, will return member id created'''
+
+            '''
+            myRequestDict = self.utilityInstance.builInternalRequestDict({'Data':{'_id':myMemberId}})
+            myRequestDict = self.getAMemberDetail(myResponseDataDict)
+            myResponse = self.utilityInstance.buildResponseData(self.globalInstance._Global__InternaRequest,myMemberResult,'Insert',myResponseData)
+            '''
+            myResponse = myMemberResult['_id']
+
+            return myResponse
+
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     def getAMemberDetail(self,argRequestDict):
         ''' 
             Description:    Find a member details
             argRequestDict:     Json/Dict; Following key name is expected in this dict/json object
-                            {'Request': 
-                                {'Header':{ScreenId':'','ActionId':'',Page:},
-                                {'MainArg': {}}
-                            }
+                            {'MemberId','Auth','ResponseMode'}
             usage:          <getAMemberDetail(<argReqJsonDict>)
             Return:         Json object
         '''
         # we need to check which arguments are passed; valid argument is Phone/Email/LastName + FirstName
 
         #print (argRequestDict)
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.info('validating dict argument [{arg}]'.format(arg=argRequestDict))
+        ''' frollowing import is placed here; this is to avoid error while import module in each other '''
 
-        # raise an user defined exception here
         try:
-            myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
+            
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            
+            myArgKey = ['MemberId','Auth','ResponseMode']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
 
-            ''' Extracting MainArg from data from Request '''
-            myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
+            ''' Validate auth key for this request'''
+            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 
-            myModuleLogger.info('Finding a member details [{arg}]'.format(arg=myMainArgData))
-            myCriteria = myMainArgData
-            myFindOne = True
-
+            ''' preparing value needed to find member details'''
+            myCriteria = {'_id':myMainArgData['MemberId']}
+            myFindOne = self.globalInstance._Global__True
             myProjection={"Main":1,"Address":1,"Contact":1}
+            myModuleLogger.info('Finding member [{member}] details'.format (member=myMainArgData['MemberId']))
+            myMemberData = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria,myProjection,myFindOne)
 
-            myMemberData = self.mongoDbInstance.findDocument(self.memberColl, myCriteria,myProjection,myFindOne)
-
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myMemberData,'Find')
+            ''' Building response '''            
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myMemberData,'Find')
             
             return myResponse
 
-        except com.uconnect.core.error.MissingArgumentValues:
+        except com.uconnect.core.error.InvalidAuthKey as error:
+            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
             raise
         except Exception as error:
@@ -217,14 +270,19 @@ class MemberBPS(object):
         # we need to check which arguments are passed; valid argument is Phone/Email/LastName + FirstName
 
         #print (argRequestDict)
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.info('validating dict argument [{arg}]'.format(arg=argRequestDict))
 
         # raise an user defined exception here
         try:
-            myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            
+            myArgKey = ['GroupId','Auth','ResponseMode']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
 
             ''' Extracting MainArg from data from Request '''
             myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
@@ -235,8 +293,8 @@ class MemberBPS(object):
 
             myProjection={'Main':1,'Address':1,'Contact':1}
 
-            myGroupData = self.mongoDbInstance.findDocument(self.groupColl, myCriteria,myProjection,myFindOne)
-        except com.uconnect.core.error.MissingArgumentValues:
+            myGroupData = self.mongoDbInstance.findDocument(self.globalInstance._Global_groupColl, myCriteria,myProjection,myFindOne)
+        except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
             raise
         except Exception as error:
@@ -274,12 +332,13 @@ class MemberBPS(object):
                     '''
         # we need to check which arguments are passed; valid argument is Phone/Email/LastName + FirstName
 
-        print (argRequestDict)
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-        myModuleLogger.info('validating dict argument [{arg}]'.format(arg=argRequestDict))
-
+        #print (argRequestDict)
         # raise an user defined exception here
         try:
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
@@ -300,7 +359,7 @@ class MemberBPS(object):
             #myAggregateDict = {"aggregate":self.memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
             #myConnectionRawData = self.mongoDbInstance.ExecCommand(self.memberColl, myAggregateDict)
             
-            myAggregateDict = {"aggregate":self.memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
+            myAggregateDict = {"aggregate":self.globalInstance._Global__memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
             myConnectionRawData = self.mongoDbInstance.ExecCommand("member", myAggregateDict)
 
             if self.utilityInstance.isAllArgumentsValid(myConnectionRawData):
@@ -317,7 +376,7 @@ class MemberBPS(object):
             print ("response",myResponse)
             return myResponse
 
-        except com.uconnect.core.error.MissingArgumentValues:
+        except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
             raise
         except Exception as error:
@@ -326,57 +385,6 @@ class MemberBPS(object):
 
     def searchMembers(self,argRequestDict):
         pass
-    def createAMember(self,argRequestDict):
-        ''' 
-            Description:    Create a member
-            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
-                            {'Request': 
-                                {'Header':{ScreenId':'','ActionId':'',Page:},
-                                {'MainArg': {<Member data 'Main','Address','Contact'>}}
-                            }
-                            We will add 'BusyHours', BusyDays' block from default value
-            usage:          <createAMember(<argReqJsonDict>)
-            Return:         Json object
-
-            Collection:     Member: Insert a record in Member collection
-        '''
-        try:
-            ''' Validating argument '''
-            #myArgRequestData = argRequestDict
-
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
-            myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
-
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
-
-            ''' Preparing document,
-            Extracting MainArg from data from Request '''            
-            myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
-            ''' build initial data '''
-            myMemberData = self.__buildInitMembderData(myMainArgData['Main'],myMainArgData['Address'],myMainArgData['Contact'])
-            myMemberId = myMemberData['_id'] 
-
-            ''' Executing (creating member)'''
-            myModuleLogger.info('Creating new member, data [{doc}]'.format(doc=myMemberData))
-            myMemberResult =  self.mongoDbInstance.InsertOneDoc(self.memberColl, myMemberData)
-            myModuleLogger.info('Member [{id}] created, result[{result}]'.format(id=myMemberId, result=myMemberResult))
-
-            ''' Building response data '''
-            myResponseDataDict = self.utilityInstance.builInternalRequestDict({'Data':{'_id':myMemberId}})
-            myResponseData = self.getAMemberDetail(myResponseDataDict)
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myMemberResult,'Insert',myResponseData)
-
-            return myResponse
-
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise error
-        except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise error
 
     def createAMemGroup(self,argRequestDict):
         ''' 
@@ -395,7 +403,7 @@ class MemberBPS(object):
 
             ''' Validating argument '''
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
             if not (myArgValidation):
@@ -409,16 +417,16 @@ class MemberBPS(object):
             ''' Preparing document:
             '''
             #myArgRequestData['Request']['MainArg']['Settings']=self.envInstance.defaultsData['Group']['Settings']
-            myGroupData = self.envInstance.defaultsData['Group']
+            myGroupData = self.envInstance.getTemplateCopy('Group')
             myGroupData['Main']['GroupName'] = myMainArgData['Main']['GroupName']
             myGroupData['Main']['MemberId'] = myMainArgData['Main']['MemberId']
             myGroupData['_History'] = self.utilityInstance.buildInitHistData() 
 
-            myGroupId = self.mongoDbInstance.genKeyForCollection(self.groupColl)
+            myGroupId = self.mongoDbInstance.genKeyForCollection(self.globalInstance._Global_groupColl)
             myGroupData['_id'] = myGroupId
 
             myModuleLogger.info('Creating new Group, data [{doc}]'.format(doc=myGroupData))
-            myGroupResult =  self.mongoDbInstance.InsertOneDoc(self.groupColl, myGroupData)
+            myGroupResult =  self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global_groupColl, myGroupData)
             
             myGroupResultStatus = self.utilityInstance.getCreateStatus(myGroupResult)
 
@@ -440,7 +448,7 @@ class MemberBPS(object):
                     ''' Link was unsuccessful, need to clean up the data (delete group collection just got inserted) '''
                     myLogger.info('Linking group [{group}] to member[{member}] is unsuccessful, removing group'.
                         format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-                    myDeleteResult = self.mongoDbInstance.DeleteDoc(self.groupColl,{'_id':myGroupId})
+                    myDeleteResult = self.mongoDbInstance.DeleteDoc(self.globalInstance._Global_groupColl,{'_id':myGroupId})
                 else:
                     myLogger.info('Linking group [{group}] to member[{member}] is successful'.
                         format(group=myGroupId, member=myGroupData['Main']['MemberId']))
@@ -471,7 +479,7 @@ class MemberBPS(object):
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise error
 
-    def linkAMember2Member(self,argRequestDict):
+    def linkAMember2Member(self, argRequestDict):
         ''' 
             Description:    Linke a member 2 existing member
             argRequestDict: Json/Dict; Following key name is expected in this dict/json object
@@ -488,7 +496,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
             if not (myArgValidation):
@@ -508,14 +516,14 @@ class MemberBPS(object):
             myConnectionData = {'Connections':myConnections}            
 
             ''' Saving document in database '''
-            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'addToSet',False)
             myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
                 format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
 
             ''' Preparing document for reverse connection ConnectMember --> Member(requestor):    '''
             myModuleLogger.debug('Creating reverse connection ')
 
-            myConnections = self.MemberConnectionsTemplate
+            myConnections = self.envInstance.getConnTemplateCopy('Member')
             myMemberId = myMainArgData['ConnectMemberId']
             myConnectMemberId = myMainArgData['MemberId']
             myCriteria = {'_id':myMemberId}
@@ -525,7 +533,83 @@ class MemberBPS(object):
             myConnectionData = {'Connections':myConnections}            
 
             ''' Saving document in database '''
-            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'addToSet',False)
+            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
+                format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
+
+            ''' Build response data '''
+            myResponseRequest = self.utilityInstance.builInternalRequestDict({'Data':{'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member'}})
+            myResponseData = self.getAMemberConnections(myResponseRequest)
+            myResponse = self.utilityInstance.buildResponseData(
+                argRequestDict['Request']['Header']['ScreenId'],myBuildConnectStatus,'Update',myResponseData)
+
+            return myResponse
+
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise error
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise error
+
+    def unLinkAMemberFromMember(self,argRequestDict):
+        ''' 
+            Description:    Linke a member 2 existing member
+            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
+                            {'Request': 
+                                {'Header':{ScreenId':'','ActionId':'',Page:},
+                                {'MainArg': {'MemberId':'','ConnectMemberId'}}
+                            }
+            usage:          <unLinkAMemberFromMember(<argReqJsonDict>)
+                            MainArg{'MemberId':'','ConnectMemberId':''}
+            Return:         Json object
+        '''
+        try:
+            
+            ''' Initialization & Validation '''
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
+
+            myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
+
+            ''' Extracting MainArg from data from Request '''            
+            myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
+
+            ''' Preparing document :    '''
+            #myConnections = self.envInstance.getConnTemplateCopy('Member')
+            myMemberId = myMainArgData['MemberId']
+            myConnectMemberId = myMainArgData['ConnectMemberId']
+            
+            myCriteria = {'_id':myMemberId}
+            myConnections = {'MemberId': myConnectMemberId,'Type':'Member'}
+
+            myModuleLogger.debug('Preparing document to remove connection between [{member}] and [{connectMember}]'.format(member=myMemberId, connectMember=myConnectMemberId))
+            myConnectionData = {'Connections':myConnections}            
+
+            ''' Saving document in database '''
+            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'pull',False)
+
+            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] removed, result [{result}]'.
+                format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
+
+            ''' Preparing document for reverse connection removal ConnectMember --> Member(requestor):    '''
+            myModuleLogger.debug('Removing reverse connection ')
+
+            #myConnections = self.envInstance.getConnTemplateCopy('Member')
+            myMemberId = myMainArgData['ConnectMemberId']
+            myConnectMemberId = myMainArgData['MemberId']
+            myCriteria = {'_id':myMemberId}
+            myConnections = {'Connections': {'MemberId': myConnectMemberId}}
+
+            myModuleLogger.debug('Preparing document to remove connection between [{member}] and [{connectMember}]'.format(member=myMemberId, connectMember=myConnectMemberId))
+            myConnectionData = {'Connections':myConnections}            
+
+            ''' Saving document in database '''
+            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'addToSet',False)
             myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
                 format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
 
@@ -561,7 +645,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
             myLinkedData = {}
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
@@ -581,7 +665,7 @@ class MemberBPS(object):
                 memberId=myMemberId, groupId=myGroupId))
 
             ''' Updating document (Group Collection, add participant) '''
-            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myLinkedData, 'addToSet',False)
+            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myLinkedData, 'addToSet',False)
             myUpdateStatus = self.utilityInstance.getUpdateStatus(myLinkedResult)
             
             ''' will link member to group in member collection, if member was associated '''
@@ -598,7 +682,7 @@ class MemberBPS(object):
                 myCriteria = {'_id':myGroupId}
 
                 '''executing update document '''
-                myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.groupColl, myCriteria, myParticipantdData, 'addToSet',False)
+                myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global_groupColl, myCriteria, myParticipantdData, 'addToSet',False)
 
                 myModuleLogger.info('Member [{memberId} linked to group {groupId}]'.format(
                     memberId=myMemberId, groupId=myGroupId))
@@ -633,7 +717,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}]'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -655,7 +739,7 @@ class MemberBPS(object):
 
             ''' Saving document '''
             ##db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
-            myMarkFavoriteStatus =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myFavoriteData, 'set',False)
+            myMarkFavoriteStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myFavoriteData, 'set',False)
 
             ''' build response data '''
             myResponseRequest = self.utilityInstance.builInternalRequestDict({'Data':{'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member'}})
@@ -689,7 +773,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -714,7 +798,7 @@ class MemberBPS(object):
 
             ''' Executing document update '''
 
-            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myFavoriteData, 'pull',False)
+            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myFavoriteData, 'pull',False)
             #myUpdateStatus = self.utilityInstance.getUpdateStatus(myResult)
 
             ''' build response data '''
@@ -747,7 +831,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -771,7 +855,7 @@ class MemberBPS(object):
 
             ''' Executing document update '''
 
-            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myBlockedData, 'set',False)
+            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myBlockedData, 'set',False)
             #myUpdateStatus = self.utilityInstance.getUpdateStatus(myResult)
 
             ''' build response data '''
@@ -805,7 +889,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -829,7 +913,7 @@ class MemberBPS(object):
 
             ''' Executing document update '''
 
-            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myBlockedData, 'set',False)
+            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myBlockedData, 'set',False)
 
             ''' build response data '''
             myResponse = self.utilityInstance.buildResponseData(
@@ -863,7 +947,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -885,7 +969,7 @@ class MemberBPS(object):
 
             ''' Executing document update '''
 
-            myResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myMainData, 'set',False)
+            myResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myMainData, 'set',False)
 
             ''' build response data '''
             myResponse = self.utilityInstance.buildResponseData(
@@ -918,7 +1002,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -943,7 +1027,7 @@ class MemberBPS(object):
 
             ''' Executing document update '''
 
-            myResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myAddressData, 'set',False)
+            myResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myAddressData, 'set',False)
 
             ''' build response data '''
             myResponse = self.utilityInstance.buildResponseData(
@@ -976,7 +1060,7 @@ class MemberBPS(object):
             ''' Initialization & Validation '''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MemberBPS')
-            myModuleLogger.info('validating dict argument [{arg}]'.format(arg = argRequestDict))
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
 
@@ -1004,7 +1088,7 @@ class MemberBPS(object):
 
             ''' Executing document update '''
 
-            myResult =  self.mongoDbInstance.UpdateDoc(self.memberColl, myCriteria, myContactData, 'set',False)
+            myResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myContactData, 'set',False)
 
             ''' build response data '''
             myResponse = self.utilityInstance.buildResponseData(

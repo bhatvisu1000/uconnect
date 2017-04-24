@@ -13,3 +13,54 @@
             ]
     }
 }
+//
+
+1.) vishal/1234
+2.) Validate the Password
+3.) We will generate and send auth Key
+
+4.) give my information for this (auth key)
+
+Authentication
+{
+    "_id":"<EntityId>",
+    "LoginType":"Email/Mobile",
+    "LoginId":"abc@xyz.com",
+    "Password":"<encrypted>",
+    "EntityType":"Member",
+    "Authentication":
+        [
+            {
+                "11111111111111":
+                    {
+                        "AuthMacAddress":"",
+                        "DeviceType":"",
+                        "DeviceOs":"",
+                        "CreatedDate":"",
+                        "ExpiredOn":"",
+                        "uConenctAppVer":""
+                    }
+            }
+        ],
+    "_History":{}
+}
+
+AuthInfoHistory
+{
+    "_id":"",
+    "LoginType":"Email/Mobile",
+    "LoginId":"abc@xyz.com",
+    "Password":"<encrypted>",
+    "EntityType":"Member",
+    "EntityId":"1234",
+    "AuthKey":"11111111111111",
+    "AuthMacAddress":"",
+    "DeviceType":"",
+    "DeviceOs":"",
+    "CreatedDate":"",
+    "ExpiredOn":"",
+    "uConenctAppVer":"",
+    "_History":{}
+}
+
+//AuthenticationHistory

@@ -1,6 +1,6 @@
 from com.uconnect.core.singleton import Singleton
 
-
+#@Singleton
 class ucException(Exception):
     def __init__(self,errorMsg):
         self.errorMsg = errorMsg
@@ -13,21 +13,47 @@ class MissingConfigFile(ucException):
 #@Singleton
 class MissingArgumentValues(ucException):
     pass
-@Singleton
+#@Singleton
 class NullKeyValue(ucException):
     pass
-@Singleton
+#@Singleton
 class BootStrapError(ucException):
     pass
-@Singleton
+#@Singleton
 class InvalidCollection(ucException):
     pass
-@Singleton
+#@Singleton
 class MongoDBError(ucException):
     pass
-@Singleton
+#@Singleton
 class NotListValue(ucException):
     pass
-@Singleton
+#@Singleton
 class InvalidOperator(ucException):
+    pass
+#@Singleton
+class InvalidTemplate(ucException):
+    pass
+#@Singleton
+class InvalidConnectionType(ucException):
+    pass
+#@Singleton
+class InvalidZipCode(ucException):
+    pass
+#@Singleton
+class InvalidScreen(ucException):
+    pass
+#@Singleton
+class InvalidAction(ucException):
+    pass
+#@Singleton
+class InvalidScreenAction(ucException):
+    pass
+class DBError(ucException):
+    pass
+class InvalidAuthKey(ucException):
+    pass
+class InvalidEntity(ucException):
+    pass
+class InvalidLogin(ucException):
     pass

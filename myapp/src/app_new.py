@@ -126,6 +126,28 @@ def processRequestOrig(requestType,memberId,connType):
 
 @app.route('/requestPost', methods=['POST'])
 def requestPost():
+  print (request)
+  print (request.is_json)
+  myRequest = request.get_json()
+  print (myRequest)
+  myMemberId = 10067
+  
+  if not(utilityInstance.isDict(myRequest)):
+    return jsonify({"Status":"Error","Message":"Invalid argument {arg} passed, argument must be type of dictionary !!!".format(arg=myRequest)})
+
+  try:
+    if ( "Request" not in myRequest ) or ("Header" not in myRequest['Request']) or ('MainArg' not in myRequest['Request']):
+      return jsonify({"Status":"Error","Message":"Key error"})
+  except Exception as error:
+    return jsonify({"Status":"Error","Message":"error {error}".format(error=error.message)})
+
+  app.logger.debug('got request {request}'.format(request=myRequest))
+  myFactory = Factory.Instance()
+  MemberData = myFactory.processRequest(myRequest)
+  return jsonify(MemberData)
+
+@app.route('/request1/<requestType>', methods=['POST'])
+def request1(requestType):
   #print(request.headers)
   #print(dict(request))
   #myRequest = eval(request)
@@ -134,16 +156,13 @@ def requestPost():
   #313885
   #313886
   #313888 
-  print (request)
-  print (request.is_json)
-  myRequest = request.get_json()
-  print (myRequest)
-  myMemberId = 10067
-  
-  '''if requestType == "GetConnection":
+
+  myMemberId = 313883
+  print(requestType)
+  if requestType == "GetConnection":
     myRequest = {"Request":
                       {"Header":
-                          {"ScreenId":"MemberConnection","ActionId":"GetMemberConnection","Page":None},
+                          {"ScreenId":"MemberConnection","ActionId":"GetMemberConnection","AuthKey":"","Page":None},
                        "MainArg":
                           {"MemberId":myMemberId,"ConnectionType":'Member'}
                       }
@@ -175,106 +194,10 @@ def requestPost():
                         {"MemberId":myMemberId,"ConnectMemberId":313886}
                     }
                   }
-  elif requestType == "MarkAMemberFavorite":
+  elif requestType == "UnLinkAMember":
     myRequest = {"Request":
                     {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"MarkMemberFavorite","Page":None},
-                     "MainArg":
-                        {"MemberId":myMemberId,"FavoriteMemberId":313884}
-                    }
-                  }
-  elif requestType == "GetAGroupDetail":
-    myRequest = {"Request":
-                    {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"getAMemberDetail","Page":None},
-                     "MainArg":
-                        {"_id":1001}
-                    }
-                  }
-  elif requestType == "CreateGroup":
-    myRequest = {"Request":
-                    {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"getAMemberDetail","Page":None},
-                     "MainArg":
-                        {"_id":1001}
-                    }
-                  }
-  elif requestType == "AddParticipant2Group":
-    myRequest = {"Request":
-                    {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"getAMemberDetail","Page":None},
-                     "MainArg":
-                        {"_id":1001}
-                    }
-                  }
-  else:
-    return jsonify("Sorry !!!, Invalid Request")   ''' 
-
-  #print(request, type(myRequest))
-
-  #myRequest = json.dump(request)
-  #print (myRequest)
-  if not(utilityInstance.isDict(myRequest)):
-    return jsonify({"Status":"Error","Message":"Invalid argument {arg} passed, argument must be type of dictionary !!!".format(arg=myRequest)})
-
-  try:
-    if ( "Request" not in myRequest ) or ("Header" not in myRequest['Request']) or ('MainArg' not in myRequest['Request']):
-      return jsonify({"Status":"Error","Message":"Key error"})
-  except Exception as error:
-    return jsonify({"Status":"Error","Message":"error {error}".format(error=error.message)})
-
-  app.logger.debug('got request {request}'.format(request=myRequest))
-  myFactory = Factory.Instance()
-  MemberData = myFactory.processRequest(myRequest)
-  return jsonify(MemberData)
-
-#@app.route('/processRequest/<request>' , methods=['POST'])
-#def processRequest(request):
-
-@app.route('/request1/<requestType>', methods=['POST'])
-def request1(requestType):
-  #print(request.headers)
-  #print(dict(request))
-  #myRequest = eval(request)
-  #313883
-  #313884
-  #313885
-  #313886
-  #313888 
-
-  myMemberId = 314094
-  print(requestType)
-  if requestType == "GetConnection":
-    myRequest = {"Request":
-                      {"Header":
-                          {"ScreenId":"MemberConnection","ActionId":"GetMemberConnection","Page":None},
-                       "MainArg":
-                          {"MemberId":myMemberId,"ConnectionType":'Member'}
-                      }
-                    }
-  elif requestType == "MemberDetail":
-    myRequest = {"Request":
-                    {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"getAMemberDetail","Page":None},
-                     "MainArg":
-                        {"_id":myMemberId}
-                    }
-                  }
-  elif requestType == "CreateAMember":
-    myRequest = {"Request":
-                    {"Header":
-                        {"ScreenId":"MemberRegistration","ActionId":"CreateMember","Page":None},
-                     "MainArg":
-                        {"Main":{"LastName":"Bhat","FirstName":"Vishal"},
-                         "Address":{"ZipCode":"08820"},
-                         "Contact":{"Mobile":"999-555-1212"}
-                        }
-                    }
-                  }
-  elif requestType == "LinkAMember":
-    myRequest = {"Request":
-                    {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"LinkMember2Member","Page":None},
+                        {"ScreenId":"MemberConnection","ActionId":"UnLinkMemberFromMember","Page":None},
                      "MainArg":
                         {"MemberId":myMemberId,"ConnectMemberId":313886}
                     }

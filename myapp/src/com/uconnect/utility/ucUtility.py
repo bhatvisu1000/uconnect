@@ -1,4 +1,4 @@
-import os, sys, json,datetime
+import os, sys, json,datetime, copy
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucLogging import logging
 from com.uconnect.core.infra import Environment
@@ -12,6 +12,8 @@ class Utility(object):
     def __init__(self):
         self.envInstance = Environment.Instance()
         self.globalInstance = Global.Instance()
+        self.myClass = self.__class__.__name__
+        self.myPythonFile = os.path.basename(__file__)
         '''
         print ("Global Success:",self.globalInstance._Global__Success)
         print ("Global UnSuccess:",self.globalInstance._Global__UnSuccess)
@@ -20,6 +22,10 @@ class Utility(object):
         print ("Global Action:",self.globalInstance._Global__InternalActionId)
         '''
     def isDict(self, argDict):
+        print(self.myClass)
+        print(sys._getframe().f_code.co_name)
+        print(self.myPythonFile)
+
         try:
             if isinstance(argDict,dict): 
                 return True
@@ -74,8 +80,8 @@ class Utility(object):
                             }            
             usage:          ( valBPSArguments(<dictionary object>)
         '''
-        print(type(argRequest))
-        print(argRequest)
+        #print(type(argRequest))
+        #print(argRequest)
 
         ''' we should match the layout of the argument with template defined in globals.py '''
 
@@ -93,6 +99,41 @@ class Utility(object):
 
         myModuleLogger.debug("Validation completed successfully")
         return True
+
+    def valRequiredArg(self, argRequestDict, argKeyList, argIgnoreList = None):
+        ''' 
+            Description:    Validate argument, all argument listed in argKeyList must have a value in argRequest. This method is called internally
+            argReuest:      Dictionary object must be in following format
+            usage:          ( valRequiredArg(<dictionary object>, <keyList>)
+        '''
+
+        #myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Utility')
+        #myModuleLogger.debug("validating dict [{key}] in [{dict}] ".format(dict=argRequestDict, key=argKeyList))
+        ''' another way to check if all key is found in dict '''
+        isValidArgument = False
+
+        ''' lets remove the ignore key from argKeyList, if ignore list is passed '''
+        myArgKeyList = copy.deepcopy(argKeyList)
+        if not(argIgnoreList == None):
+            self.removeKeyFromList(myArgKeyList, argIgnoreList)
+
+        # check if all key in dictionary
+        if all(key in argRequestDict for key in myArgKeyList):
+            # check if any key in dict has None or empty value
+            if argRequestDict == dict ((key, values) for key, values in argRequestDict.iteritems() if values):
+                isValidArgument = True
+
+        '''
+        isValidArgument = True
+        for key in argKeyList:
+            if (not(key in argRequestDict ))  or (argRequestDict[key] == None ):
+                isValidArgument = False
+                break
+        '''
+        return isValidArgument
+
+    def getCopy(self, argDictList):
+        return copy.deepcopy(argDictList)
 
     def isAllArgumentsValid(self,*args):
         ''' 
@@ -207,9 +248,9 @@ class Utility(object):
             Arguments:      Request json dict data, will use screenId:99999, ActionId: 99999
             usage:          ( builRequestData(<argRequestDict>)
         '''
-        myRequestData = { "Request" :self.envInstance.getTemplateCopy(self.globalInstance._Global__RequestTemplate) }
-        print ('Request:', myRequestData)
-        print ('Internal Scr:', self.globalInstance._Global__InternalScreenId)
+        myRequestData = self.envInstance.getTemplateCopy(self.globalInstance._Global__RequestTemplate)
+        #print ('Request:', myRequestData)
+        #print ('Internal Scr:', self.globalInstance._Global__InternalScreenId)
         myRequestData["Request"]["Header"]["ScreenId"] = self.globalInstance._Global__InternalScreenId
         myRequestData["Request"]["Header"]["ActionId"] = self.globalInstance._Global__InternalActionId 
         myRequestData["Request"]["Header"]["Page"] = self.globalInstance._Global__InternalPage
@@ -229,17 +270,17 @@ class Utility(object):
         
         return myHistoryData
 
-    def buildResponseData(self, argScreenId, argResult, argResultType, argResultData = None):
+    def buildResponseData(self, argResponseMode, argResult, argResultType, argResultData = None):
        
         ''' if this is internal request, we should not built the response, response will be built by mehtod whcih
         was called externally     '''
 
-        if (argScreenId == self.globalInstance._Global__InternalScreenId):
+        if (argResponseMode == self.globalInstance._Global__InternalRequest):
             return argResult
 
         #myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._ResponseTemplate)
-        myResponseData = {"Response": self.envInstance.getTemplateCopy(self.globalInstance._Global__ResponseTemplate) }
-        print("Response",myResponseData)
+        myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._Global__ResponseTemplate)
+        #print("Response",myResponseData)
         myData = argResultData
 
         if (argResultType == 'Update'):
@@ -251,7 +292,7 @@ class Utility(object):
             myResponseData['Response']['Header']['Status'] = myResponseStatus
             myResponseData['Response']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
-            print("Success",self.globalInstance._Global__Success)
+            #print("Success",self.globalInstance._Global__Success)
 
             myResponseData['Response']['Header']['Status'] = self.globalInstance._Global__Success
             myResponseData['Response']['Header']['Message'] = self.globalInstance._Global__Success
@@ -263,13 +304,109 @@ class Utility(object):
         #print('Data' in myData)
 
         #if (myData) and '''(self.isDict(myData['Data'])) and''' ('Data' in myData) and (myData['Data']):
-        if (myData) and ('Data' in myData) and (myData['Data']):
-            myResponseData['Response']['Data'] = myData['Data']
-            if ('Summary' in myData) and (myData['Summary']):
-                myResponseData['Response']['Header']['Summary']= myData['Summary']    
+        if (myData) and (self.globalInstance._Global__DataKey in myData) and (myData[self.globalInstance._Global__DataKey]):
+            myResponseData['Response'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
+            if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
+                myResponseData['Response']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
         
         return myResponseData 
 
+    def extrAllDocFromResultSets(self, argResultSets):
+        if (self.globalInstance._Global__DataKey in argResultSets) and (argResultSets[self.globalInstance._Global__DataKey]):
+            return argResultSets[self.globalInstance._Global__DataKey]
+        else:
+            return None
+
+    def extr1stDocFromResultSets(self, argResultSets):
+        if (self.globalInstance._Global__DataKey in argResultSets) and (argResultSets[self.globalInstance._Global__DataKey]):
+            return argResultSets[self.globalInstance._Global__DataKey][0]
+        else:
+            return None
+
+    def extrSummFromResultSets(self, argResultSets):
+        if self.globalInstance._Global__SummaryKey in argResultSets:
+            return argResultSets[self.globalInstance._Global__SummaryKey]
+        else:
+            return None
+
+    def extrStatusFromResultSets(self, argResultSets):
+        if (self.globalInstance._Global__StatusKey in argResultSets[self.globalInstance._Global__SummaryKey]):
+            return argResultSets[self.globalInstance._Global__SummaryKey][self.globalInstance._Global__StatusKey]
+        else:
+            return None
+
+    def whoAmI(self):
+        ''' return callers method/function anme and from line# call is made'''
+        caller = sys._getframe(1).f_code.co_name
+        caller_linenum = sys._getframe(1).f_lineno
+        return caller, caller_linenum
+
+    def buildKeysFromTemplate(self, argTemplateName, argBlockName = None):
+        # get a templaye copy for a given collection
+        try:
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Utility')
+            myEmptyTemplate = self.envInstance.getTemplateCopy(argTemplateName)
+            #print(myEmptyTemplate)
+            if not (argBlockName == None) and argBlockName in myEmptyTemplate:
+                myEmptyTemplate = myEmptyTemplate[argBlockName]
+            
+            ## lets build the keys
+            myAllKeys = []
+            for myKey in myEmptyTemplate:
+                myAllKeys.append(myKey)
+
+            return myAllKeys
+
+        except Exception as error:
+            myModuleLogger.exception('An error [{error}] occurred'.format(error=error.message))
+            raise
+
+    def buildAuth(self, argLoginId, argLoginType, argDeviceType, argDeviceOs, argMacAddress, argSessionId, argEntityType, argEntityId,argAppVer):
+        try:
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Utility')            
+            myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','SessionId','EntityType','EntityId','AppVer']
+            myFrame = inspect.currentframe()
+            myAllArgs, _, _, myValues = inspect.getargvalues(myFrame)
+            for myArg in myAllArgs:
+                if self.isEmptyKey(myValues[myArg]):
+                    raise com.uconnect.error.MissingArg('Argument [{arg}] is empty !!!'.format(arg=myArg))
+
+            myAuth = {
+                'LoginId':argLoginId,
+                'LoginType':argLoginType,
+                'DeviceType':argDeviceType,
+                'DeviceOs':argDeviceOs,
+                'MacAddress':argMacAddress,
+                'SessionId':argSessionId,
+                'EntityType':argEntityType,
+                'EntityId':argEntityId,
+                'AppVer':argAppVer}
+            return myAuth
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+
+    def getNonEmptyKeyFromDict(self, argRequestDict):
+        ''' return all non empty key from dictionary, passed argument is not changed'''
+        return dict ((k,v) for k, v in argRequestDict.iteritems() if v)
+
+    def removeKeyFromList(self, argRequestList, argRemoveKeyList):
+        ''' remove key(s) from list '''
+        for myKey in argRemoveKeyList:
+            if myKey in argRequestList: 
+                argRequestList.remove(myKey)
+
+        return argRequestList
+
+    def removeKeyFromDict(self, argRequestDict, argRemoveKeyList):
+        ''' remove key(s) from Dict '''
+        for myKey in argRemoveKeyList:
+            if myKey in argRequestDict:
+                del argRequestDict[myKey]
+
+        return argRequestDict
+
+    ''' Security Utility '''
 
 ''' Pop dict items
 >>> for x in a.keys():

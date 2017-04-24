@@ -1,34 +1,29 @@
 {
-  "MemberRegistration": {
-    "ValidateZipCode": {
-      "Description": "Validate zip code",
+  "Registration": {
+    "RegisterEntity": {
+      "Description": "Register/Create a new Entity",
       "BPS": {
-        "Module": "com.uconnect.utility.ucUtility",
-        "Class": "Utility",
-        "Method": "isValidZipCode"
-      },
-      "DB": {}
+        "Module": "com.uconnect.core.security",
+        "Class": "Security",
+        "Method": "registerEntity"
+      }
     },
     "GenerateSecCode": {
       "Description": "Generate sec code for this session",
       "BPS": {
-        "Module": "com.uconnect.utility.ucUtility",
-        "Class": "Utility",
+        "Module": "com.uconnect.core.security",
+        "Class": "Security",
         "Method": "generateSecCode"
-      },
-      "DB": {}
-    },
-    "CreateMember": {
-      "Description": "Create a new Member during ",
+      }
+    }
+  },
+  "Login":  {
+    "Authenticate": {
+      "Description": "Authenticate login id",
       "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "createAMember"
-      },
-      "DB": {
-        "Module": "com.uconnect.db.mongodb",
-        "Class": "MongoDB",
-        "Method": "InsertOneDoc"
+        "Module": "com.uconnect.core.security",
+        "Class": "Security",
+        "Method": "validateCredential"
       }
     }
   },
@@ -52,6 +47,19 @@
         "Module": "com.uconnect.bps.memberBPS",
         "Class": "MemberBPS",
         "Method": "linkAMember2Member"
+      },
+      "DB": {
+        "Module": "com.uconnect.db.mongodb",
+        "Class": "MongoDB",
+        "Method": "findDocument"
+      }
+    },
+    "UnLinkMemberFromMember": {
+      "Description": "Remove a member from connection",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "unLinkAMemberFromMember"
       },
       "DB": {
         "Module": "com.uconnect.db.mongodb",

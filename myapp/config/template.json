@@ -1,9 +1,48 @@
 {
+    "LoginInfo":
+        {
+            "_id":"<def: emailid/phonenumber>",
+            "LoginType":"<def: Email/Mobile>",
+            "Password":"<def: encrypted>",
+            "EntityType":"<def: Member/Agent>",
+            "EntityId":"<def: MemberId/AgentId>",
+            "Acccess":
+                [
+                    {"ScreenId":"","ActionId":""}
+                ]
+        },
+    "Auth":
+        {
+            "LoginId":"<def: LoginInfo.loginid>",
+            "LoginType":"<def: Email/Mobile>",
+            "DeviceType":"<def: Mobile/Web/App>",
+            "DeviceOs":"<def: OS/Android/Windows",
+            "MacAddress":"<def:34342423423423423423>",
+            "SessionId":"<def:4342342xfadsf233423>",
+            "ExpiryDate":"<def: current date>",
+            "EntityType":"<def: Member/Agent>",
+            "EntityId":"<def: MemberId/AgentId>",
+            "AppVer":"1.0"
+        },
+    "AuthHistory":
+        {
+            "AuthId":"<def:authid>",
+            "LoginId":"<def: LoginInfo.loginid>",
+            "LoginType":"<def: Email/Mobile",
+            "DeviceType":"<def: Mobile/Web/App>",
+            "DeviceOs":"<def: OS/Android/Windows",
+            "MacAddress":"<def:34342423423423423423>",
+            "SessionId":"<def:4342342xfadsf233423>",
+            "ExpiryDate":"<def: current date>",
+            "EntityType":"<def: Member/Agent>",
+            "EntityId":"<def: MemberId/AgentId>",
+            "AppVer":"1.0"
+        },
     "Member": 
         {
-            "Main":{},
-            "Address":{},
-            "Contact":{},
+            "Main":{"LastName":"<def: lastname>","FirstName":"<def: firstname>", "NickName":"<def: firstname>"},
+            "Address":{"Street":"<def: streetname && ##>","City":"<def: city>","State":"<def: state>","ZipCode":"<def: zipcode>","Country":"<def: country>"},
+            "Contact":{"Email":"<def emailid>","Mobile":"<def: mobile>","Other":"<def: other contact>"},
             "Connections":[],
             "Settings":
             {
@@ -18,7 +57,14 @@
                 "Personalize":{"Style":""},
                 "Privacy":{"Picture":"<BSON>"},
                 "Ethnicity":""
-            }
+            },
+            "_History":{}
+        },
+    "Connections":
+        {
+            "Member":{"MemberId":"", "Favorite":0, "Blocked":0,"Type":"Member","Status":"Pending"},
+            "Group":{"GroupId":"", "Favorite":0, "Blocked":0,"Type":"Group","Status":"Pending"},
+            "Vendor":{"LocationId":"", "Favorite":0, "Blocked":0,"Type":"Vendor","Status":"Pending"}
         },
     "Group":
         {
@@ -30,6 +76,53 @@
             "Metrics":{"TotalPArticipants":1},    
             "_History":{}
         },
+    "Vendor":
+        {
+            "Main":{"Name":"","Type":""},
+            "Address":{"Street":"","City":"","State":"","ZipCode":"","Lattitude":"","Longitude":""},
+            "Contact":{"Phone":"","URL":"","Email":""},
+            "Metrics":{"Total Loctions":""}
+        },
+    "Location":
+        {
+            "Main":{"Name":"","Type":"","Vendor":"","AgentWorking":"Yes/No","IsWaitList":"YES/NO","WaitListQueueLength":0,
+                    "ServiceDuration":"<in minutes>","ServiceProvided":["<list all the services provided>"],"IsOffHrs":"<YES/NO>"},
+            "OffHrsService":{"OffHrsContact":"","OffHrsService":["<List all off hrs services provided>"]},
+            "Address":{"Street":"","City":"","State":"","ZipCode":"","Lattitude":"","Longitude":""},
+            "Contact":{"Phone":"","URL":"","Email":""},
+            "Agent":
+                [
+                    {"Id":"", "LastName":"","FirstName":"","Title":"", "WorkTitle":"","ServiceDuration":""}
+                ]
+        },
+    "LocationSettings":
+        {
+            "_id":"LocationId",
+            "WorkHours":
+                [
+                    {"Week":"*","Days":"0","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"1","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"2","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"3","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"4","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"5","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"6","StartHours":"","EndHours":""}
+                ]
+        },
+    "AgentSettings":
+        {
+            "_id":"AgentId",
+            "WorkHours":
+                [
+                    {"Week":"*","Days":"0","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"1","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"2","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"3","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"4","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"5","StartHours":"","EndHours":""},
+                    {"Week":"*","Days":"6","StartHours":"","EndHours":""}
+                ]
+        },        
     "Invitation":{
         "Type":"<Connetion/Schedule>",
         "Who":{"Id":"","Type":"Member"},
@@ -42,31 +135,28 @@
             "InitChange":{"When": "", "Message":""},
             "LastChange":{"when": "", "Message":""}
         },
-    "Connections":
-        {
-            "Member":{"MemberId":"", "Favorite":0, "Blocked":0,"Type":"Member","Status":"Pending"},
-            "Group":{"GroupId":"", "Favorite":0, "Blocked":0,"Type":"Group","Status":"Pending"},
-            "Vendor":{"LocationId":"", "Favorite":0, "Blocked":0,"Type":"Vendor","Status":"Pending"}
-        },
     "Response":
         {
-            "Header":
+            "Response":
                 {
-                    "Status":"","Message":"",
-                    "Summary":
+                    "Header":
                         {
-                            "TotalDocs":"","TotalPages":"","DocsPerPage":"","CurrentPage":""
-                        }
-                },
-            "Data":{}
+                            "Status":"","Message":"",
+                            "Summary":
+                                {
+                                    "TotalDocs":"","TotalPages":"","DocsPerPage":"","CurrentPage":""
+                                },
+                            "Auth":{}
+                        },
+                    "Data":{}
+                }
         },
     "Request":
         {
-            "Header":
+            "Request":
                 {
-                    "ScreenId":"","ActionId":"","Page":0
-                },
-            "MainArg": {},
-            "Auth":{}
+                    "Header":{"ScreenId":"","ActionId":"","Page":0,"AuthKey":""},
+                    "MainArg": {}
+                }
         }
 }

@@ -3,7 +3,9 @@
  "Infra":"infra.json",
  "maxPageSize":10,
  "mongoCollRepositoty":"myMongoAllCollection.json",
- "Factory":"FactoryMetadata.json",
+ "Factory":"factoryMetadata.json",
  "ZipCode":"zipcode.json",
- "Template":"template.json"
+ "Template":"template.json",
+ "ExclColl4Id":["Authentication"],
+ "AuthValidDuration":30
 }

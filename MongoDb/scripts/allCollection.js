@@ -80,10 +80,7 @@ db.getCollectionNames().forEach(function(collection) {
 AllRequests
 {
     "_id":"<RequestId>",
-    "<SCHEDULE/INVITE/>":
-        {
-                        
-        }
+    "RequestType":"<SCHEDULE/INVITE/>"
     "From":{"Id":"1001","Type":"Member"},
     "For":{"Join Network"},
     "To"

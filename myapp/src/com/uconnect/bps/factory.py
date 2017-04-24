@@ -58,6 +58,7 @@ class Factory(object):
 
         try:
             myLibClassMethod = self.envInstance.getModuleClassMethod(argScreenId, argActionId)
+            print(myLibClassMethod)
             if not( myLibClassMethod[0] == None):
                 myLibrary = myLibClassMethod[0]
                 myClass   = myLibClassMethod[1]
@@ -65,12 +66,12 @@ class Factory(object):
             else:
                 raise KeyError
         except KeyError as error:
-            print(error)
             myModuleLogger.error("KeyError while navigating in Factory data, error[{err}]".format(err=error.message))
             raise
-        except Exception as Error:
+        except Exception as error:
+            print("error",error)
             myModuleLogger.error("Error occurred while extracting module/class/method [{err}]".format(err=error.message))
-            raise Error
+            raise
 
         return myLibrary, myClass, myMethod
 
@@ -95,8 +96,11 @@ class Factory(object):
 
         # get the method from this class
         myMethod = getattr(myCallableClass,argMethod)
+        ''' Only MainArg need to be passed  '''
+        myMainArg = {'MainArg':self.utilityInstance.extMainArgFromReq(argReqJsonDict)}
+        print(myMainArg)
         # execute the method
-        myRetval = myMethod(argReqJsonDict)
+        myResults = myMethod(myMainArg)
 
-        return (myRetval)
+        return (myResults)
 
