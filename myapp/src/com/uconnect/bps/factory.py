@@ -2,6 +2,7 @@ import importlib,logging, com.uconnect.utility.ucLogging, com.uconnect.core.erro
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
+from com.uconnect.core.globals import Global
 
 
 #from com.uconnect.bps.scheduleBPS import Schedule
@@ -14,9 +15,10 @@ class Factory(object):
     This is Factory class, this will execute a BO process as mapped in config/FactoryMetadata.json
     '''
     def __init__(self):
-       self.utilityInstance = Utility.Instance()
-       self.envInstance = Environment.Instance()
-    
+        self.utilityInstance = Utility.Instance()
+        self.envInstance = Environment.Instance()
+        self.globalInstance = Global.Instance()
+
     def processRequest(self, argReqJsonDict):
         ''' 
             Description:    Update key in dictDocument for a given collection, this is a private method
@@ -98,7 +100,9 @@ class Factory(object):
         myMethod = getattr(myCallableClass,argMethod)
         ''' Only MainArg need to be passed  '''
         myMainArg = {'MainArg':self.utilityInstance.extMainArgFromReq(argReqJsonDict)}
-        print(myMainArg)
+        ''' need to mark that this response is external '''
+        myMainArg['MainArg'].update({'ResponseMode':self.globalInstance._Global__ExternalRequest})
+        print('Factory',myMainArg)
         # execute the method
         myResults = myMethod(myMainArg)
 

@@ -75,8 +75,8 @@ db.member.insert(
     }
 )
 
-//Member
 
+//Member
 db.member.aggregate([
     {$match: {"_id":1001}},
     {$unwind : {path:"$Connections",preserveNullAndEmptyArrays:true}},  
@@ -95,7 +95,9 @@ db.member.aggregate([
      }],
    {allowDiskUse:true}
 ).toArray()
+
 //Group
+
 db.member.aggregate([
     {$match: {"_id":1001}},
     {$unwind : {path:"$Connections",preserveNullAndEmptyArrays:true}},  
@@ -136,7 +138,7 @@ db.member.aggregate([
    {allowDiskUse:true}
 ).toArray()
 
-
+// All Member + Group + Venodr
 db.member.aggregate([
     {$match: {"_id":1001}},
     {$unwind : {path:"$Connections",preserveNullAndEmptyArrays:true}},  
@@ -204,6 +206,25 @@ db.member.aggregate([
    {allowDiskUse:true}
 )
 
+
+// Find all group4amember
+db.Group.aggregate([
+    {$match: {$or : [{"Main.MemberId":313854}, {"Participants.MemberId":313854}]} },
+    {$unwind : {path:"$Participants",preserveNullAndEmptyArrays:true}},  
+    {$lookup:{
+        from:"Member",
+        localField:"_id",                  
+        foreignField:"Participants.MemberId",                  
+        as:"Participants"}      
+    },
+    {$project: 
+        {
+            "_id":1, "Main":1,"Participants":1,
+            "Participants.Main":1,"Participants.Address":1,"Participants.Contact":1                    
+        }
+     }],
+   {allowDiskUse:true}
+).toArray()
 
 from pymongo import MongoClient
 import json

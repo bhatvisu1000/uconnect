@@ -367,6 +367,35 @@ class Security(object):
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise
 
+    def __updateAuthEntity(self, argRequestDict):
+        '''
+            argRequestDict = {'Auth':'','EntityType':'', 'EntityId':''}
+        '''
+        try:
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
+
+            myArgKey = ['Auth','EntityType','EntityId']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+
+            ''' lets inject EntityType and EnttyId in Auth Dict'''
+
+            myMainArgData['Auth']['EntityType'] = myMainArgData['EntityType']
+            myMainArgData['Auth']['EntityId'] = myMainArgData['EntityId']
+
+            return myMainArgData['Auth']
+
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     def isValidLogin(self, argRequestDict):
         '''
             argRequestDict = {'LoginId':'','Password':''}
@@ -522,7 +551,7 @@ class Security(object):
             myMainArgData['Auth'].update({'AuthKey':myAuthKey})
             #print('MainArgData',myMainArgData)
             myMemberData = memberBPSInstance.getAMemberDetail(
-                {'MemberId':myMemberId,'Auth':myMainArgData['Auth'],'ResponseMode':self.globalInstance._Global__ExternalRequest})
+                {'MemberId':myMemberId,'Auth':myMainArgData['Auth'],'ResponseMode':myMainArgData['ResponseMode']})
             myMemberData['Response']['Header']['Auth'].update({'AuthKey':myAuthKey}) 
             #print('MemberData',myMemberData)
             myMemberData['Response']['Header']['Auth'].update({'AuthKey':myAuthKey})
@@ -592,6 +621,8 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myAuthArgKey = self.utilityInstance.buildKeysFromTemplate('Auth')
+            #print('sec key',myAuthArgKey)
+            #print('sec arg',myMainArgData)
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKey,['ExpiryDate','_id'])
 
             if not (myArgValidation):
@@ -615,7 +646,7 @@ class Security(object):
             myResultsData = self.utilityInstance.extr1stDocFromResultSets(myResults)
             '''if argkey passed and argkey from db is not matching return False '''
             #print('valid auth key',myResultsData,myMainArgData['AuthKey'])
-            if str(myMainArgData['AuthKey']) == str(myResultsData['_id']):
+            if myResultsData and ('_id' in myResultsData) and (str(myMainArgData['AuthKey']) == str(myResultsData['_id'])):
                 return True
             else:
                 return False

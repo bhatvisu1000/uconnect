@@ -35,3 +35,14 @@ class Global(object):
         self.__OkStatus = 'OK'
         self.__hashPassPrefix='2b'
         self.__HistoryColumn='_History'
+
+        ### Invitee --> to whom invitation has been sent to
+        ### Requestor --> Member who has sent the invitation
+        ### Initial connection status of invitee in requestor doc. 
+        self.__Default_Requestor_MemConnectionStatus = 'Awaiting Response'   
+        ### Initial connection status of requestor in invitee doc. 
+        self.__Default_Invitee_MemConnectionStatus = 'Pending'
+        ### connection status of invitee in requestor doc, after invitee accepted invitation. 
+        self.__Accepted_Requestor_MemConnectionStatus = 'Accepted'
+        ### connection status of requestor in invitee doc, after invitee accepted invitation. 
+        self.__Accepted_Invitee_MemConnectionStatus = 'Valid'

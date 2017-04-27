@@ -314,6 +314,8 @@ class MongoDB(object):
             myModuleLogger.debug("Document [{data}] type[{type}] ".format(data=myResults, type=type(myResults)))
             myModuleLogger.debug("completed, returning document")
 
+            return myResults
+
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception("MissingArgumentValues: error [{error}]".format(error=error.errorMsg))
             raise error
@@ -323,8 +325,6 @@ class MongoDB(object):
         except Exception as error:
             myModuleLogger.exception("Error [{error}]".format(error=error.message))
             raise error
-
-        return myResults
 
     def findAllDocuments4Page(self, argCollection, argCriteria = None, argProjection = None, argPage = None, argSort = None):
 

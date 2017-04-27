@@ -308,6 +308,8 @@ class Environment(object):
     myModuleLogger.debug("Argument(s) [{arg}] received ".format(arg=(argScreenId + ',' + argActionId)))
 
     try:
+      print(argScreenId,argActionId)
+      print(self.__factoryMetaData[argScreenId][argActionId])
       if (argScreenId in self.__factoryMetaData) and (argActionId in self.__factoryMetaData[argScreenId]):
         myLibrary = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
         myClass   = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Class']

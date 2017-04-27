@@ -1,4 +1,10 @@
 {
+    "Activity":
+    {
+      "MemberId":"",
+      "ActivityDate":"",
+      "Activity"  
+    },
     "LoginInfo":
         {
             "_id":"<def: emailid/phonenumber>",

@@ -114,19 +114,25 @@ class Utility(object):
 
         ''' lets remove the ignore key from argKeyList, if ignore list is passed '''
         myArgKeyList = copy.deepcopy(argKeyList)
-        if not(argIgnoreList == None):
-            self.removeKeyFromList(myArgKeyList, argIgnoreList)
+        myIgnoredArgKeyList = copy.deepcopy(argIgnoreList)
+        myMainArgData = copy.deepcopy(argRequestDict)
+        if not(myIgnoredArgKeyList == None):
+            self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
+
+        #print(myArgKeyList)
+        #print(myIgnoredArgKeyList)
+        #print(myMainArgData)
 
         # check if all key in dictionary
-        if all(key in argRequestDict for key in myArgKeyList):
+        if all(key in myMainArgData for key in myArgKeyList):
             # check if any key in dict has None or empty value
-            if argRequestDict == dict ((key, values) for key, values in argRequestDict.iteritems() if values):
+            if myMainArgData == dict ((key, values) for key, values in myMainArgData.iteritems() if values):
                 isValidArgument = True
 
         '''
         isValidArgument = True
         for key in argKeyList:
-            if (not(key in argRequestDict ))  or (argRequestDict[key] == None ):
+            if (not(key in myMainArgData ))  or (myMainArgData[key] == None ):
                 isValidArgument = False
                 break
         '''
@@ -198,23 +204,24 @@ class Utility(object):
             usage:          ( isKeyInDict(<argDict, argKeyName>)
         '''
         return (not argKeyName[argDict])
+        
     def getCurrentIsoDate(self, argDict, argKeyName):
         myIsoDateString = request.GET.isoDateString
         myIsoDate = datetime.datetime.strptime(myIsoDateString, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     def getCreateStatus(self,argCreateResult):
+        myCreateStatus = self.globalInstance._Global__UnSuccess
+        if argCreateResult and ('_id' in argCreateResult):
+            myCreateStatus = self.globalInstance._Global__UnSuccess
 
-        if argCreateResult["_id"]:
-            return self.globalInstance._Global__Success
-        else:
-            return self.globalInstance._Global__UnSuccess
+        return myCreateStatus
 
     def getUpdateStatus(self,argUdateResult):
-
-        if (int(argUdateResult['modified'])) > 0:
-            return self.globalInstance._Global__Success
-        else:
-            return self.globalInstance._Global__UnSuccess
+        myUpdateStatus = self.globalInstance._Global__UnSuccess
+        if argUdateResult and ('modified' in argUdateResult) and (int(argUdateResult['modified'])) > 0:
+            myUpdateStatus = self.globalInstance._Global__Success
+        
+        return myUpdateStatus
 
     def extractAllFromReq(self, argRequestDict):
         ''' 
