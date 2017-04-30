@@ -17,11 +17,13 @@ class Security(object):
         self.utilityInstance = Utility.Instance()
         self.globalInstance = Global.Instance()
 
+        self.myClass = self.__class__.__name__
+
     def __genHashPassword(self, argRequestDict):
 
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -45,7 +47,7 @@ class Security(object):
 
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -78,7 +80,7 @@ class Security(object):
 
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -114,7 +116,7 @@ class Security(object):
 
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -156,7 +158,7 @@ class Security(object):
 
         try:
             
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -201,7 +203,7 @@ class Security(object):
         
         try:
             
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -242,7 +244,7 @@ class Security(object):
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -282,7 +284,7 @@ class Security(object):
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -334,7 +336,7 @@ class Security(object):
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -373,7 +375,7 @@ class Security(object):
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -396,13 +398,54 @@ class Security(object):
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise
 
+    def __isValAuthKeyInternal(self, argRequestDict):
+        '''
+            argRequestDict = {'AuthKey':''}
+        '''
+
+        try:
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
+            myAuthArgKey = ['AuthKey']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKey)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+
+            ''' we also need to check if caller is internal, if not return auth key is invalid
+            if caller class name and module file is not in list, return Invalid Auth Key
+            '''
+
+            '''Preparing value '''
+            myCriteria = { '_id':ObjectId(str(myMainArgData['AuthKey'])) }
+            myProjection = {'_id':1}
+            #print('criteria',myCriteria)
+            myResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__authColl, myCriteria, myProjection,False)
+            myResultsData = self.utilityInstance.extr1stDocFromResultSets(myResults)
+           
+            '''if argkey passed and argkey from db is not matching return False '''
+            #print('valid auth key',myResultsData,myMainArgData['AuthKey'])
+            if myResultsData and ('_id' in myResultsData) and (str(myMainArgData['AuthKey']) == str(myResultsData['_id'])):
+                return True
+            else:
+                return False
+
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     def isValidLogin(self, argRequestDict):
         '''
             argRequestDict = {'LoginId':'','Password':''}
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -440,7 +483,7 @@ class Security(object):
         
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -492,7 +535,7 @@ class Security(object):
             myArgKey = myMainArgKey = myAddressArgKey = myContactArgKey = []
             myAuthKey = ''
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -581,7 +624,7 @@ class Security(object):
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -616,7 +659,7 @@ class Security(object):
 
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
@@ -664,7 +707,7 @@ class Security(object):
         '''
         try:
 
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Security')
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myArgKey = ['LoginId']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)

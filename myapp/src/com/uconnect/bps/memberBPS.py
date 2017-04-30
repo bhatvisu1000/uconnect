@@ -291,7 +291,7 @@ class MemberBPS(object):
         try:
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
             
             myConnectionResult = self.globalInstance._Global__False
@@ -299,7 +299,7 @@ class MemberBPS(object):
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
 
             ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
@@ -310,70 +310,12 @@ class MemberBPS(object):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 
-            ''' Preparing document for connections '''
-            ''' Requestor '''
-            myRequestorConnArgData = myInviteeConnArgData = self.utilityInstance.getCopy(myMainArgData)
-            myRequestorConnArgData.update({'ConnectionStatus':self.globalInstance.__Global__Default_Requestor_MemConnectionStatus})
+            myConnectionResults = self.memberUtilInstance._MemberUtility__ConnectAMemebr2Member(myMainArgData)
 
-            ''' Invitee  (reverse connection)'''
-            myInviteeConnArgData.update({'MemberId':myMainArgData['ConnectMemberId']})
-            myInviteeConnArgData.update({'ConnectMemberId':myMainArgData['MemberId']})
-            myInviteeConnArgData.update({'ConnectionStatus':self.globalInstance.__Global__Default_Invitee_MemConnectionStatus})
-
-            ''' build connection Member --> ConnectMember, status = 'Awaiting response' '''
-            myConnectionResults = self.MemberUtilInstance._MemberUtility__ConnectAMemebr2Member(myRequestorConnArgData)
-
-            if self.utility.getUpdateStatus(myConnectionResults) == self.globalInstance._Global__Success:
-                ''' build connection ConnectMember --> Member, status = 'Pending' '''
-                myConnectionResults = self.MemberUtilInstance._MemberUtility__ConnectAMemebr2Member(myInviteeConnArgData)
-            else:
-                ''' Invitee connection is unsuccessful, we need to remove the connection created for requestor '''
-                self.MemberUtilInstance._MemberUtility__remAMemConnFromMember(myRequestorConnArgData)
-
-            ''' Building response '''            
+            ''' building respone; get all the connection for this memner'''
+            
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myConnectionResults,'Update')
 
-            '''
-
-            myConnections = self.envInstance.getConnTemplateCopy('Member')
-            myMemberId = myMainArgData['MemberId']
-            myConnectMemberId = myMainArgData['ConnectMemberId']
-            myCriteria = {'_id':myMemberId}
-            myConnections['MemberId'] = myConnectMemberId
-
-            myModuleLogger.debug('Preparing document for connection between [{member}] and [{connectMember}]'.format(member=myMemberId, connectMember=myConnectMemberId))
-            myConnectionData = {'Connections':myConnections}            
-
-            Saving document in database
-            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'addToSet',False)
-            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
-                format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
-
-            Preparing document for reverse connection ConnectMember --> Member(requestor):
-            myModuleLogger.debug('Creating reverse connection ')
-
-            myConnections = self.envInstance.getConnTemplateCopy('Member')
-            myMemberId = myMainArgData['ConnectMemberId']
-            myConnectMemberId = myMainArgData['MemberId']
-            myCriteria = {'_id':myMemberId}
-            myConnections['MemberId'] = myConnectMemberId
-
-            myModuleLogger.debug('Preparing document for connection between [{member}] and [{connectMember}]'.format(member=myMemberId, connectMember=myConnectMemberId))
-            myConnectionData = {'Connections':myConnections}            
-
-            Saving document in database
-            myBuildConnectStatus =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'addToSet',False)
-            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] created, result [{result}]'.
-                format(member=myMemberId, connectMember=myConnectMemberId, result=myBuildConnectStatus))
-
-            Build response data
-            myResponseRequest = self.utilityInstance.builInternalRequestDict({'Data':{'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member'}})
-            myResponseData = self.getAMemberConnections(myResponseRequest)
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myBuildConnectStatus,'Update',myResponseData)
-
-            return myResponse
-            '''
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
             raise error

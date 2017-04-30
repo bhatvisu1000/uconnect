@@ -1,10 +1,10 @@
 {
     "Activity":
-    {
-      "MemberId":"",
-      "ActivityDate":"",
-      "Activity"  
-    },
+        {
+            "MemberId":"<MemberId>",
+            "ActivityDate":"<activity date>",
+            "Activity":"<Activity Desc>"  
+        },
     "LoginInfo":
         {
             "_id":"<def: emailid/phonenumber>",

@@ -215,12 +215,12 @@ db.Group.aggregate([
         from:"Member",
         localField:"_id",                  
         foreignField:"Participants.MemberId",                  
-        as:"Participants"}      
+        as:"MemberParticipants"}      
     },
     {$project: 
         {
             "_id":1, "Main":1,"Participants":1,
-            "Participants.Main":1,"Participants.Address":1,"Participants.Contact":1                    
+            "MemberParticipants.Main":1,"MemberParticipants.Address":1,"MemberParticipants.Contact":1                    
         }
      }],
    {allowDiskUse:true}
