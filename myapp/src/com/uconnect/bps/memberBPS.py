@@ -277,14 +277,68 @@ class MemberBPS(object):
     def updateMemberSettings(self,argRequestDict):
         pass    
 
-    def InviteMember2Member(self, argRequestDict):
+    def AddANewMemberConnection(self, argRequestDict):
         ''' 
             Description:    Linke a member 2 existing member
                             Requestor --> MemberId (member made request)
                             Invitee   --> ConnectMemberId (member to whom request was made)
             argRequestDict: Json/Dict; Following key name is expected in this dict/json object
                             {'MainArg': {'MemberId':'','ConnectMemberId':'','Auth':'','ResponseMode'}}
-            usage:          <InviteMember2Member(<argReqJsonDict>)
+            usage:          <AddANewMemberConnection(<argRequestDict>)
+            Return:         Json object
+
+        '''
+        try:
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            
+            myConnectionResult = self.globalInstance._Global__False
+            myArgKey = ['MemberId','ConnectMemberId','Auth','ResponseMode']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+
+            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
+            myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
+                {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
+
+            ''' Validate auth key for this request'''
+            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+
+            myConnectionResults = self.memberUtilInstance._MemberUtility__AddMember2MemberConnection(myMainArgData)
+            #print(myConnectionResults)
+            ''' building respone; get all the connection for this memner, in future Connection type ned to be changed to ALL ???'''
+            if myConnectionResults == self.globalInstance._Global__Success:
+                myResponseArgData = {'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member','ResponseMode':self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
+                myResponseData = self.getAMemberConnections(myResponseArgData)
+                myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myResponseData,'Find')
+            else:
+                myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myConnectionResults,'Error')
+                pass
+            #fi
+            return myResponse                            
+
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise error
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise error
+
+    def AcceptConnection(self, argRequestDict):
+        ''' 
+            Description:    Accept connections (Only Invitee can accept the connection)
+                            Requestor --> MemberId (Invitee)
+                            Invitee   --> ConnectMemberId (Requestor, member who requeste connection initially)
+            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
+                            {'MainArg': {'MemberId':'','ConnectMemberId':'','Auth':'','ResponseMode'}}
+            usage:          <AcceptConnection(<argReqJsonDict>)
             Return:         Json object
 
         '''
@@ -310,9 +364,9 @@ class MemberBPS(object):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 
-            myConnectionResults = self.memberUtilInstance._MemberUtility__ConnectAMemebr2Member(myMainArgData)
+            myConnectionResults = self.memberUtilInstance._MemberUtility__AcceptInvitation(myMainArgData)
 
-            ''' building respone; get all the connection for this memner'''
+            ''' building respone; get all the connection for this member'''
             
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myConnectionResults,'Update')
 
@@ -692,22 +746,6 @@ class MemberBPS(object):
                                 {'MainArg': {}}
                             }
             usage:          <getsAMemberDetail(<argReqJsonDict>)
-            Return:         Json object
-                    {
-                      "_id": 1008,
-                      "MyConnections": 
-                      [
-                        {
-                          "_id": 1001,
-                          "Type": "Member",
-                          "Main": {}
-                          "Address": {},
-                          "Contact": {},
-                          Favorite: 0
-                          "Metrics": {<Only for group>
-                        }
-                      ]
-                    }  
                     http://www.jsoneditoronline.org/?id=ae36cfdc68b1255530150d286d14bab8          
                     '''
         # we need to check which arguments are passed; valid argument is Phone/Email/LastName + FirstName
@@ -717,24 +755,33 @@ class MemberBPS(object):
         try:
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            
+            myArgKey = ['MemberId','ConnectionType','Auth','ResponseMode']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
-            myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
 
-            ''' Extracting MainArg from data from Request '''            
-            myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
+            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
+            myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
+                {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
 
+            ''' Validate auth key for this request'''
+            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+
+            ''' preparing value needed to find member connections'''
             myModuleLogger.info('Finding a members connection [{arg}]'.format(arg=myMainArgData))
             ''' we need threading for following request using threading of python '''
-            ''' Find Linked Member '''
             myMemberId = myMainArgData['MemberId']
             myConnectionType = myMainArgData['ConnectionType']
             
             ''' build aggregate pipeline '''
-            myAggregatePipeLine = self.__buildGetAllConnPipeline(myMemberId,myConnectionType)
-            myModuleLogger.debug("Pipeline: {pipeline} will be used to execute the aggregate function")
+            myAggregatePipeLine = self.memberUtilInstance._MemberUtility__buildGetAllConnPipeline(myMemberId,myConnectionType)
+            myModuleLogger.debug("Pipeline [{pipeline}] will be used to execute the aggregate function")
 
             #myAggregateDict = {"aggregate":self.memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
             #myConnectionRawData = self.mongoDbInstance.ExecCommand(self.memberColl, myAggregateDict)
@@ -744,16 +791,14 @@ class MemberBPS(object):
 
             if self.utilityInstance.isAllArgumentsValid(myConnectionRawData):
 
-                myMemberConnection = {"Data":self.__buildMyConnection('Member',myConnectionRawData)}
-
+                myMemberConnection = {"Data":self.memberUtilInstance._MemberUtility__buildMyConnection('Member',myConnectionRawData)}
                 myModuleLogger.info("MyMemberConnection Data: {memberConn}".format(memberConn=myMemberConnection))
             else:
                 myMemberConnection = {}
 
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myMemberConnection,'Find')
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myMemberConnection,'Find')
 
-            print ("response",myResponse)
+            #print ("response",myResponse)
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:

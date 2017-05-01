@@ -150,9 +150,9 @@ class MemberUtility(object):
 
         return myConnection
 
-    def __getConnectionInfo(self, argRequestDict):
+    def __getMemberConnectionInfo(self, argRequestDict):
         '''
-        Need to find if connectmember is already an accepted connection
+        Returns current Member connection status
         RequestorMemberId, InviteeMemberId, CheckConnectionFor, Auth
         '''
         try:
@@ -160,7 +160,7 @@ class MemberUtility(object):
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
-            myArgKey = ['RequestorMemberId', 'InviteeMemberId', 'CheckConnectionFor', 'Auth']
+            myArgKey = ['MemberId', 'ConnectMemberId', 'Auth']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
             ''' validating arguments '''
@@ -177,30 +177,13 @@ class MemberUtility(object):
                 myCriteria = {'_id':myMainArgData['RequestorMemberId'], 'Connections.MemberId':myMainArgData['InviteeMemberId'], 'Connections.Type':'Member'}                
             elif (myMainArgData['CheckConnectionFor'] == self.globalInstance._Global__InviteeMember):
                 myCriteria = {'_id':myMainArgData['InviteeMemberId'], 'Connections.MemberId':myMainArgData['RequestorMemberId'], 'Connections.Type':'Member'}                
-            myProjection = {'_id':1,'Connections.Status':1}
+            myProjection = {'_id':1,'Connections':1}
 
             ''' Finding document '''
             myResult = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria, myProjection, True)
-            myMemberConnData = self.utilityInstance.extr1stDocFromResultSets(myResult)
+            myMemberConnection = self.utilityInstance.extr1stDocFromResultSets(myResult)
 
-            ''' 
-            performing check; 
-                If request is for Requestor and connection status is "Accepted", then this is vald connection 
-                If request is for Invitee and connection status is "Valid", then this is vald connection 
-            '''
-
-            if myMemberConnData and ('Connections' in myMemberConnData) and ('Status' in myMemberConnData['Connections'][0]  ):
-                myMemberConnStatus = {'Exists':True,'Status': myMemberConnData['Connections'][0]['Status']}
-            else
-                myMemberConnStatus = {'Exists':False,'Status':None}     
-                '''if (myMainArgData['CheckConnectionFor'] == self.globalInstance._Global__RequestorMember):
-                    if  myMemberConnStatus == self.globalInstance._Global__Accepted_Requestor_MemConnectionStatus:
-                        isMemberAConnection = self.globalInstance._Global__True
-                elif (myMainArgData['CheckConnectionFor'] == self.globalInstance._Global__InviteeMember):
-                    if  myMemberConnStatus == self.globalInstance._Global__Accepted_Invitee_MemConnectionStatus:
-                        isMemberAConnection = self.globalInstance._Global__True
-                '''
-            return myMemberConnStatus
+            return myMemberConnection
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
@@ -212,66 +195,24 @@ class MemberUtility(object):
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise
         
-        def __getMemberConnStatus4Action(self, argRequestDict):
-        
-        try:
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
-            myArgKey = ['ConnectionExists','CurrentStatus','Action','ActionBy','Auth']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
-            ''' validating arguments '''
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
-
-            ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal( {'AuthKey':myMainArgData['Auth']['AuthKey'] } )):
-                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
-                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
-
-            ''' we need to validate if right action and actionby key is passed'''
-            if not (myMainArgData['ActionBy'] in self.globalInstance._Global__MemberConnections.get('New').keys() ):
-                raise com.uconnect.core.error.MissingArgumentValues('Expecting [{expectVal}] in [ActionBy] key, got [{argActionBy}] '.
-                    format(expectVal=self.globalInstance._Global__MemberConnections.get('New').keys(), argActionBy=myMainArgData['ActionBy']))
-
-            if not ( myMainArgData['Action'] in self.globalInstance._Global__MemberConnections.keys() ):
-                raise com.uconnect.core.error.MissingArgumentValues('Expecting [{expectVal}] in [ActionBy] key, got [{argActionBy}] '.
-                    format(expectVal=self.globalInstance._Global__MemberConnections.keys(), argActionBy=myMainArgData['Action']))
-
-            ''' we need to determine the next status for a member connection for a given connection'''
-            if myMainArgData and myMainArgData['Action'] in self.globalInstance._Global__MemberConnections:
-                myNextStatus = self.globalInstance._Global__MemberConnections.get(myMainArgData['Action']).
-                                    get(myMainArgData['ActionBy']).
-                                    replace('CurrentStatus',myMainArgData['CurrentStatus'])
-
-            if myMainArgData['Action'] == 'New Connection':
-            elif myMainArgData['']
-        except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
-            raise
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise
-        except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise
-
-    def __ConnectAMemebr2Member(self, argRequestDict):
-        ''' This is being called for invitation status will be as "Pending
-            usage:          <__linkAMember2Member(<argReqJsonDict>)
+    def __AddMember2MemberConnection(self, argRequestDict):
+        ''' This mehtod is for building a fresh new connection
+            usage:          <__AddMember2MemberConnection(<argReqJsonDict>)
                             MainArg['MemberId','ConnectMemberId','Auth']
-            Return:         Json object
+            Return:         Success/UnSuccess
         '''
         try:
             
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
             
-            myConnectionResult = self.globalInstance._Global__False
-            isReqConnectionAdded = False
+            isReqConnectionAdded = self.globalInstance._Global__False
+            isInvConnectionAdded = self.globalInstance._Global__False
+            isCleanUpDone = self.globalInstance._Global__False
+
             myArgKey = ['MemberId','ConnectMemberId','Auth','ResponseMode']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
@@ -290,65 +231,62 @@ class MemberUtility(object):
             ''' Requestor connection '''
             myRequestorCriteria = {'_id':myMainArgData['MemberId']}
             myRequestorConn['MemberId'] = myMainArgData['ConnectMemberId']
-            myRequestorConn['Status'] = self.globalInstance._Global__Default_Requestor_MemConnectionStatus
+            myRequestorConn['Status'] = self.utilityInstance.getMemberConnStatus4Action('New Connection','Requestor')
+            myRequestorConnData = {'Connections': myRequestorConn}
 
             ''' Invitee  (reverse connection)'''
             myInviteeCriteria = {'_id':myMainArgData['ConnectMemberId']}
             myInviteeConn['MemberId'] = myMainArgData['MemberId']
-            myInviteeConn['Status'] = self.globalInstance._Global__Default_Invitee_MemConnectionStatus
+            myInviteeConn['Status'] = self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')
+            myInviteeConnData = {'Connections': myInviteeConn}
 
             myModuleLogger.debug('Requestor [{requestor}] connection document [{doc}] prepared'.
                 format(requestor=myMainArgData['MemberId'], doc=myRequestorConn))
             myModuleLogger.debug('Invitee [{invitee}] connection document [{doc}] prepared'.
                 format(invitee=myMainArgData['ConnectMemberId'],doc=myInviteeConn))
 
-            ''' checking, if Requestor/Invitee connection exists. Add connection if it doesnt exist  '''
+            ''' persisiting connection data'''
 
-            if self.__isAValidMemberConnection(
-                    {'RequestorMemberId':myMainArgData['MemberId'],
-                     'InviteeMemberId':myMainArgData['ConnectMemberId'],
-                     'CheckConnectionFor':self.globalInstance._Global__RequestorMember}): 
-                ''' Requestor's connection found, skiping adding this connection '''
-                isReqConnSkipped = self.globalInstance._Global__True 
-            else:
-                ''' Requestor's connection not document, will add a requestor's connection '''
-                isReqConnSkipped = self.globalInstance._Global__False
-                myConnectionResult =  self.mongoDbInstance.UpdateDoc(
-                    self.globalInstance._Global__memberColl, myRequestorCriteria, {'Connections':myRequestorConn}, 'addToSet',False)
+            myReqConnectionResult = self.mongoDbInstance.UpdateDoc(
+                self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'addToSet',False)
                 
-                myModuleLogger.debug('Requestor connection [{conn}] creation result [{result}]'.
-                    format(conn = str(myMainArgData['MemberId'])  + ' -> ' + str(myMainArgData['ConnectMemberId']), result=myConnectionResult))
+            if self.utilityInstance.getUpdateStatus(myReqConnectionResult) == self.globalInstance._Global__Success:
+                
+                myModuleLogger.debug('Requestor connection [{conn}] created successfully, result [{result}]'.
+                    format(conn = str(myMainArgData['MemberId'])  + ' -> ' + str(myMainArgData['ConnectMemberId']), result=myReqConnectionResult))
+                isReqConnectionAdded = self.globalInstance._Global__True
 
-                if self.utilityInstance.getUpdateStatus(myConnectionResult) == self.globalInstance._Global__Success:
-                    isReqConnectionSuccess = True
-                else:
-                    isReqConnectionSuccess = False
+                ''' building invitee connection (revese of requestor)'''
+                myInvConnectionResult =  self.mongoDbInstance.UpdateDoc(
+                    self.globalInstance._Global__memberColl, myInviteeCriteria, myInviteeConnData, 'addToSet',False)
+
+                if self.utilityInstance.getUpdateStatus(myInvConnectionResult) == self.globalInstance._Global__Success:
+
+                    ''' invitee connection is successful '''
+                    isInvConnectionAdded = self.globalInstance._Global__True
+                    myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not build Invitee [{inv}] while performing "Add Connection" task'.
+                            format(inv=myMainArgData['ConectMemberId']))
+
+                else:                    
+                    ''' invitee connection is not successful, remvoving requestor connection to maintain the data integrity '''
+                    myModuleLogger.debug('Invitee connection [{conn}] creation unsuccessful, result [{result}]'.
+                        format(conn = str(myMainArgData['ConnectMemberId'])  + ' -> ' + str(myMainArgData['MemberId']), result=myInvConnectionResult))
+
+                    self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'pull',False)
+
+                    isCleanUpDone = self.globalInstance._Global__True
+                    myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not build Invitee [{inv}] while performing "Add Connection" task'.
+                            format(inv=myMainArgData['ConectMemberId']))
                 #fi
-            #fi
-
-            if self.__isAValidMemberConnection(
-                {'RequestorMemberId':myMainArgData['MemberId'],
-                 'InviteeMemberId':myMainArgData['ConnectMemberId'],
-                'CheckConnectionFor':self.globalInstance._Global__InviteeMember}): 
-                ''' Invitee's connection found, skiping adding this connection '''
             else:
-                ''' Requestor's connection not document, will add a requestor's connection '''
-                myConnectionResult =  self.mongoDbInstance.UpdateDoc(
-                    self.globalInstance._Global__memberColl, myInviteeCriteria, {'Connections':myInviteeConn}, 'addToSet',False)
-                myModuleLogger.debug('Invitee connection [{conn}] creation result [{result}]'.
-                    format(conn = str(myMainArgData['ConnectMemberId'])  + ' -> ' + str(myMainArgData['MemberId']), result=myConnectionResult))
-
-                ''' 
-                if invitee connection is unsuccessful, we need to remove the Requestor connection, only if we built in this request.
-                This is to ensure the data consistency
-                '''
-                if self.utilityInstance.getUpdateStatus(myConnectionResult) == self.globalInstance._Global__UnSuccess:
-                    if (not isReqConnSkipped) and (isReqConnectionSuccess == self.globalInstance._Global__True):
-                        self.__remAMemConnFromMember(myMainArgData)
-                    #fi
-                #fi
+                myModuleLogger.debug('Requestor connection [{conn}] creation unsuccesful, result [{result}]'.
+                    format(conn = str(myMainArgData['MemberId'])  + ' -> ' + str(myMainArgData['ConnectMemberId']), result=myReqConnectionResult))
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not build Requestor [{req}] while performing "Add Connection" task'.
+                            format(req=myMainArgData['MemberId']))
             #fi
-            return myConnectionResult
+
+            ''' Return RequestStatus'''
+            return myRequestStatus
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
@@ -358,29 +296,228 @@ class MemberUtility(object):
             raise
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
+            if isReqConnectionAdded and (not isInvConnectionAdded) and (not isCleanUpDone):
+                print(isReqConnectionAdded,isInvConnectionAdded,isCleanUpDone)
+                self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'pull',False)                
+            #fi
             raise
 
-            ''' Build response data 
-            myResponseRequest = self.utilityInstance.builInternalRequestDict({'Data':{'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member'}})
-            myResponseData = self.getAMemberConnections(myResponseRequest)
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myBuildConnectStatus,'Update',myResponseData)
-
-            return myResponse
-            '''
-    def __remAMemConnFromMember(self, argRequestDict):
-        ''' This is being called for invitation status will be as "Pending
-            usage:          <__linkAMember2Member(<argReqJsonDict>)
+    def __AcceptInvitation(self, argRequestDict):
+        ''' This method is invoked by Invitee; update the status of connection status in each other (Requestor/Invitee)'s connection list 
+            usage:          <__AcceptInvitation(<argReqJsonDict>)
                             MainArg['MemberId','ConnectMemberId','Auth']
-            Return:         Json object
+                                <Invitee => MemberId, Requestor => ConnectMemberId>
+            Return:         Success/UnSuccess
         '''
         try:
             
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
             
-            myConnectionResult = self.globalInstance._Global__False
+            isInvConnStatusUpdated = self.globalInstance._Global__False
+            isReqConnStatusUpdated = self.globalInstance._Global__False
+            isCleanUpDone = self.globalInstance._Global__False            
+
+            myArgKey = ['MemberId','ConnectMemberId','Auth']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+            #fi
+            ''' Validate auth key for this request'''
+            if not (self.securityInstance.__isValAuthKeyInternal( { 'AuthKey':myMainArgData['Auth']['AuthKey'] } )):
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+            #fi
+            ''' Building Invitee (reverse connection) connection data'''
+            myInviteeCriteria = {'_id':myMainArgData['MemberId'],'Connections.MemberId':myMainArgData['ConnectMemberId'], 'Connections.Status': self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')}
+            myInviteeConnData = {'Connections.$.Status':self.utilityInstance.getMemberConnStatus4Action('Accept Connection','Invitee')}
+
+            ''' Building Requestor connection data '''
+            myRequestorCriteria = {'_id':myMainArgData['ConnectMemberId'], 'Connections.MemberId':myMainArgData['MemberId'], 'Connections.Status': self.utilityInstance.getMemberConnStatus4Action('New Connection','Requestor')}
+            myRequestorConnData = {'Connections.$.Status':self.utilityInstance.getMemberConnStatus4Action('Accept Connection','Requestor')}
+
+            ''' persisitng changes in database '''
+
+            ''' Updating invitee's connection status '''
+            myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInviteeCriteria, myInviteeConnData, 'set',False)
+
+            myModuleLogger.debug('Invitee connection status updated, [{conn}], result [{result}] '.
+                format(conn = str(myMainArgData['MemberId'])  + ' -> ' + str(myMainArgData['ConnectMemberId']), result=myConnectionResult))
+
+            if self.utilityInstance.getUpdateStatus(myConnectionResult) == self.globalInstance._Global__Success:
+
+                isInvConnStatusUpdated = self.globalInstance._Global__True
+
+                ''' Invitee connection update is successful, persisiting Requestor's connection status update'''
+                myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'set',False)
+
+                myModuleLogger.debug('Requestor connection status updated, [{conn}], result [{result}] '.
+                    format(conn = str(myMainArgData['ConnectMemberId'])  + ' -> ' + str(myMainArgData['MemberId']), result=myConnectionResult))
+
+                if self.utilityInstance.getUpdateStatus(myConnectionResult) == self.globalInstance._Global__Success:
+
+                    ''' Requestor connection update is successful, undo Invitee connection change '''
+                    isInvConnStatusUpdated = self.globalInstance._Global__True
+                    myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
+
+                else:
+                    ''' Requestor connection update is not successful, undo Invitee connection change '''
+                    myModuleLogger.debug('Requestor [{req}] connection update unsuccessful, results [{result}]'.
+                        format(req=myMainArgData['ConnectMemberId'], result=myReqConnResults ))
+
+                    myInviteeCriteria = {'_id':myMainArgData['MemberId'],'Connections.MemberId':myMainArgData['ConnectMemberId'], 'Connections.Status': self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')}
+                    myInviteeConnData = {'Connections.$.Status':self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')}
+                    myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInviteeCriteria, myInviteeConnData, 'set',False)
+                
+                    isCleanUpDone = self.globalInstance._Global__True
+                    myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not update Requestor [{req}] connection status to [{status}] while performing "Accpetance Connection" task'.
+                                        format(req=myMainArgData['ConnectMemberId'], status=self.globalInstance._Global__Accepted_Req_MemConnectionStatus))
+                    myModuleLogger.debug('undo changes to Invitee\'s connection successful, result [{result}]'.format(result=myReqConnResults))
+                #fi
+            else:
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not update Invitee [{inv}] connection status to [{status}] while performaing "Accpetance Connection" task'.
+                                    format(inv=myMainArgData['MemberId'], status=self.globalInstance._Global__Accepted_Inv_MemConnectionStatus))
+            #fi
+
+            return myRequestStatus
+
+        except com.uconnect.core.error.InvalidAuthKey as error:
+            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+
+            ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
+            
+            if isInvConnStatusUpdated and (not isReqConnStatusUpdated) and (not isCleanUpDone):
+            
+                myInviteeCriteria = {'_id':myMainArgData['MemberId'],'Connections.MemberId':myMainArgData['ConnectMemberId'], 'Connections.Status': self.utilityInstance.getMemberConnStatus4Action('Accept Connection','Invitee')}
+                myInviteeConnData = {'Connections.$.Status':self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')}
+                myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInviteeCriteria, myInviteeConnData, 'set',False)
+            #fi
+            raise
+
+    def __rejectInvitation(self, argRequestDict):
+        ''' This method is invoked by Invitee; remove the connection from each other (Requestor/Invitee)'s connection list 
+            usage:          <__acceptInvitation(<argReqJsonDict>)
+                            MainArg['MemberId','ConnectMemberId','Auth']
+                                <Invitee => MemberId, Requestor => ConnectMemberId>
+            Return:         Success/UnSuccess
+        '''
+        try:
+            
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            
+            isReqConnRemoved = self.globalInstance._Global__False
+            isInvConnRemoved = self.globalInstance._Global__False
+            isCleanUpDone = self.globalInstance._Global__False
+            myRequestorConn = self.envInstance.getConnTemplateCopy(self.globalInstance._Global__member)
+            myInviteeConn = self.envInstance.getConnTemplateCopy(self.globalInstance._Global__member)
+
+            myArgKey = ['MemberId','ConnectMemberId','Auth']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+            #fi
+            
+            ''' Validate auth key for this request'''
+            if not (self.securityInstance.__isValAuthKeyInternal( { 'AuthKey':myMainArgData['Auth']['AuthKey'] } )):
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+            #fi
+
+            ''' Building Invitee (reverse connection) connection data'''
+            myInviteeCriteria = {'_id':myMainArgData['MemberId'],'Connections.MemberId':myMainArgData['ConnectMemberId'], 'Connections.Status': self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')}
+            myInviteeConnData = {'Connections':{'MemberId': myMainArgData['ConnectMemberId'],'Status':self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')}}
+
+            ''' Building Requestor connection data '''
+            myRequestorCriteria = {'_id':myMainArgData['ConnectMemberId'], 'Connections.MemberId':myMainArgData['MemberId'], 'Connections.Status': self.utilityInstance.getMemberConnStatus4Action('New Connection','Requestor')}
+            myRequestorConnData = {'Connections':{'MemberId': myMainArgData['MemberId'],'Status':self.utilityInstance.getMemberConnStatus4Action('New Connection','Requestor')}}
+
+            ''' persisitng changes in database '''
+            ''' removing connections '''
+            myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInviteeCriteria, myInviteeConnData, 'pull',False)
+            myModuleLogger.debug('Invitee connection removed, [{conn}], result [{result}] '.
+                format(conn = str(myMainArgData['MemberId'])  + ' -> ' + str(myMainArgData['ConnectMemberId']), result=myConnectionResult))
+
+            if self.utilityInstance.getUpdateStatus(myConnectionResult) == self.globalInstance._Global__Success:
+                
+                isInvConnRemoved = self.globalInstance._Global__True
+
+                ''' Invitee connection removed, removing requestors connection'''                
+                myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'pull',False)
+
+                if self.utilityInstance.getUpdateStatus(myConnectionResult) == self.globalInstance._Global__Success:
+
+                    ''' Requestor connection update is successful '''
+                    isReqConnRemoved = self.globalInstance._Global__True
+                    myModuleLogger.debug('Requestor [{req}] connection remove successful, results [{result}]'.
+                        format(req=myMainArgData['ConnectMemberId'], result=myReqConnResults ))
+                else:
+                    ''' Requestor connection update is not successful, undo Invitee connection removal (adding a new connection to invitees list)'''
+                    myModuleLogger.debug('Requestor [{req}] connection remove unsuccessful, results [{result}]'.
+                        format(req=myMainArgData['ConnectMemberId'], result=myReqConnResults ))
+
+                    myInviteeCriteria = {'_id':myMainArgData['MemberId']}
+                    myInviteeConn['MemberId'] = myMainArgData['ConnectMemberId']
+                    myInviteeConn['Status'] = self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')                    
+                    myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInviteeCriteria, {'Connections':myInviteeConn}, 'addToSet',False)
+                    
+                    isCleanUpDone = self.globalInstance._Global__True
+                    myModuleLogger.debug('undo changes to Invitee\'s connection successful, result [{result}]'.format(result=myReqConnResults))
+                #fi
+            else:
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not remove invitee [{inv}]\'s connection while performing Reject task'.
+                                    format(inv=myMainArgData['MemberId'])) 
+            #fi
+
+            return self.utilityInstance.getUpdateStatus(myConnectionResult)
+
+        except com.uconnect.core.error.InvalidAuthKey as error:
+            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
+            if isInvConnRemoved (not isReqConnRemoved) and (not isCleanUpDone):
+                myInviteeCriteria = {'_id':myMainArgData['MemberId']}
+                myInviteeConn['MemberId'] = myMainArgData['ConnectMemberId']
+                myInviteeConn['Status'] = self.utilityInstance.getMemberConnStatus4Action('New Connection','Invitee')                    
+                myConnectionResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInviteeCriteria, {'Connections':myInviteeConn}, 'addToSet',False)
+            raise
+
+    def __remAMemConnFromMember(self, argRequestDict):
+        ''' This method will remove connection from each other (Requestor/Invitee)'s connection list 
+            usage:          <___remAMemConnFromMember(<argReqJsonDict>)
+                            MainArg['MemberId','ConnectMemberId','Auth']
+            Return:         Success/UnSuccess
+        '''
+        try:
+            
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            
+            isMemberConnRemoved = self.globalInstance._Global__False
+            isConnectMemberConnRemoved = self.globalInstance._Global__False
+            isCleanUpDone = self.globalInstance._Global__False
+
             myArgKey = ['MemberId','ConnectMemberId','Auth']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
@@ -392,22 +529,54 @@ class MemberUtility(object):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 
-            ''' deleting Requestors connections '''
-            myCriteria = {'_id':myMainArgData['MemberId']}
-            myConnections = {'MemberId': myMainArgData['ConnectMemberId'],'Type':self.globalInstance._Global__member}
-            myConnectionData = {'Connections':myConnections}            
-            myReqConnResults =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl,myCriteria, myConnectionData, 'pull',False)
+            ''' preparing document for removing connections '''
+            myReqCriteria = {'_id':myMainArgData['MemberId']}
+            myReqConnections = {'MemberId': myMainArgData['ConnectMemberId'],'Type':self.globalInstance._Global__member}
+            myReqConnectionData = {'Connections':myConnections}            
 
-            ''' deleting Invitee connections '''
-            myCriteria = {'_id':myMainArgData['ConnectMemberId']}
-            myConnections = {'MemberId': myMainArgData['MemberId'],'Type':self.globalInstance._Global__member}
-            myConnectionData = {'Connections':myConnections}            
-            myInviteeConnResults =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myConnectionData, 'pull',False)
+            ''' backing up exisiting connection '''
+            myReqMemberConnectionInfo = self.__getMemberConnectionInfo({'MemberId':myMainArgData['MemberId'],'ConnectMemberId':myMainArgData['ConnectMemberId'],'Auth':myMainArgData['Auth']})['Connections'][0]
 
-            myModuleLogger.debug('Connection between [{member}] and [{connectMember}] removed, result [{result}]'.
-                format(member=myMemberId, connectMember=myConnectMemberId, result=myReqConnResults + ',' + myInviteeConnResults))
+            ''' deleting connection '''
+            myReqConnectionResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl,myReqCriteria, myReqConnectionData, 'pull',True)
 
-            return myInviteeConnResults
+            if self.utilityInstance.getUpdateStatus(myReqConnectionResult) == self.globalInstance._Global__Success:
+                
+                isMemberConnRemoved = self.globalInstance._Global__True
+                myModuleLogger.debug('Connection between [{member}] and [{connectMember}] removed, result [{result}]'.
+                    format(member=myMainArgData['MemberId'], connectMember=myMainArgData['ConnectMemberId'], result=myResults))
+
+                ''' preparing doc for deleting reverse connections '''
+                myInvCriteria = {'_id':myMainArgData['ConnectMemberId']}
+                myInvConnections = {'MemberId': myMainArgData['MemberId'],'Type':self.globalInstance._Global__member}
+                myInvConnectionData = {'Connections':myConnections}            
+                
+                ''' deleting reverse connection '''
+                myInvConnectionResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myInvCriteria, myInvConnectionData, 'pull',True)
+
+                if self.utilityInstance.getUpdateStatus(myInvConnectionResult) == self.globalInstance._Global__Success: 
+
+                    ''' reverse connection removal is successful '''
+                    isConnectMemberConnRemoved = self.globalInstance._Global__True
+                    myModuleLogger.debug('Connection between [{member}] and [{connectMember}] removed, result [{result}]'.
+                        format(member=myMainArgData['ConnectMemberId'], connectMember=myMainArgData['myMemberId'], result=myResults))
+                else:
+                    ''' rollback previous deletion of connection '''
+                    self.mongoDbInstance.UpdateDoc(
+                        self.globalInstance._Global__memberColl,'_id':{'Connections':myMemberConnectionInfo}, 'addToSet',False)
+
+                    myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not remove rever connection for member [{member}]'.
+                                        format(member=myMainArgData['ConnectMemberId']))
+                    isCleanUpDone = self.globalInstance._Global__True
+
+                #fi
+            else:
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not remove member [{member}]\'s connection'.
+                                    format(member=myMainArgData['MemberId']))
+            #fi
+            
+            return myRequestStatus
+
         except com.uconnect.core.error.InvalidAuthKey as error:
             myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
             raise
@@ -416,12 +585,11 @@ class MemberUtility(object):
             raise
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            if isMemberConnRemoved (not isConnectMemberConnRemoved) and (not isCleanUpDone):
+                ''' rollback previous deletion of connection '''
+                self.mongoDbInstance.UpdateDoc(
+                    self.globalInstance._Global__memberColl,'_id':{'Connections':myMemberConnectionInfo}, 'addToSet',False)
             raise
-
-    def __acceptInvitation(self, argRequestDict):
-        pass
-    def __rejectInvitation(self, argRequestDict):
-        pass
 
     def isAValidMember(self,argRequestDict):
         ''' 
@@ -438,7 +606,7 @@ class MemberUtility(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
             myArgKey = ['MemberId','Auth','ResponseMode']
-            isValidMember = False 
+            isValidMember = self.globalInstance._Global__False 
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
             if not (myArgValidation):
@@ -462,7 +630,7 @@ class MemberUtility(object):
             myMemberId = self.utilityInstance.extr1stDocFromResultSets(myMemberData)['_id'] 
 
             if myMemberId and (myMemberId == myMainArgData['MemberId']):
-                  isValidMember = True 
+                  isValidMember = self.globalInstance._Global__True 
 
             ''' build response data '''            
             return isValidMember

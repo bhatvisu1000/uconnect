@@ -21,8 +21,6 @@ class Global(object):
         self.__Success = "Success"
         self.__UnSuccess = "UnSuccess"
         self.__Error = "Error"
-        self.__InternalScreenId='Internal'
-        self.__InternalActionId='Internal'
         self.__InternalPage=99999
         self.__InternalRequest='I'
         self.__ExternalRequest='E'
@@ -39,11 +37,9 @@ class Global(object):
         ### Invitee --> to whom invitation has been sent to
         ### Requestor --> Member who has sent the invitation
         ### Initial connection status of invitee in requestor doc.
-        self.__RequestorMember = 'ReqMember' 
-        self.__InviteeMember = 'InvMember' 
-        self.__Default_Requestor_MemConnectionStatus = 'Awaiting Response'   
+        self.__Initial_Requestor_MemConnectionStatus = 'Awaiting Response'   
         ### Initial connection status of requestor in invitee doc. 
-        self.__Default_Invitee_MemConnectionStatus = 'Pending'
+        self.__Initial_Invitee_MemConnectionStatus = 'Pending'
         ### connection status of invitee in requestor doc, after invitee accepted invitation. 
         self.__Accepted_Requestor_MemConnectionStatus = 'Accepted'
         ### connection status of requestor in invitee doc, after invitee accepted invitation. 
@@ -51,7 +47,10 @@ class Global(object):
         ''' MemberConnectin = {'Event':{'Record Exists':{'ActionBy':'Requestor/Invitee'}} 
         this is to find the next status 
         '''
-        self.__MemberConnectionStatus = {'New Connection':{'Requestor':'Awaiting Response','Invitee':'Pending'},
-                 'Accept Connection':{'Requestor':'Accepted','Invitee':'Valid'},
-                 'Reject Connection':{'Requestor':'Rejected','Invitee':'Invalid'} }
+        self.__MemberConnectionStatus = {
+                'New Connection':{'Requestor':'Awaiting Response','Invitee':'Pending'},
+                'Accept Connection':{'Requestor':'Accepted','Invitee':'Valid'},
+                'Reject Connection':{'Requestor':'Rejected','Invitee':'Invalid'}
+                 }
+        self.__RequestStatus = {'Status':'','Message':''}
 

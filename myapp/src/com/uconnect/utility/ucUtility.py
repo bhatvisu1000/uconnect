@@ -1,4 +1,5 @@
-import os, sys, json,datetime, copy
+import os, sys, json,datetime, copy, com.uconnect.core.error
+
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucLogging import logging
 from com.uconnect.core.infra import Environment
@@ -204,7 +205,7 @@ class Utility(object):
             usage:          ( isKeyInDict(<argDict, argKeyName>)
         '''
         return (not argKeyName[argDict])
-        
+
     def getCurrentIsoDate(self, argDict, argKeyName):
         myIsoDateString = request.GET.isoDateString
         myIsoDate = datetime.datetime.strptime(myIsoDateString, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -277,6 +278,21 @@ class Utility(object):
         
         return myHistoryData
 
+    def getRequestStatus(self, argStatus, argStatusMessage = None):
+        myRequestStatus = self.getCopy(self.globalInstance._Global__RequestStatus)
+        if argStatus:
+            if argStatus == self.globalInstance._Global__Success:
+                myRequestStatus['Status'] = self.globalInstance._Global__Success:
+                myRequestStatus['Message'] = self.globalInstance._Global__Success:
+            elif argStatus == self.globalInstance._Global__UnSuccess:
+                myRequestStatus['Status'] = self.globalInstance._Global__UnSuccess:
+                if argStatusMessage:
+                    myRequestStatus['Message'] = argStatusMessage
+                #fi
+            #fi
+        #fi
+        return myRequestStatus
+
     def buildResponseData(self, argResponseMode, argResult, argResultType, argResultData = None):
        
         ''' if this is internal request, we should not built the response, response will be built by mehtod whcih
@@ -300,17 +316,16 @@ class Utility(object):
             myResponseData['Response']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
             #print("Success",self.globalInstance._Global__Success)
-
             myResponseData['Response']['Header']['Status'] = self.globalInstance._Global__Success
             myResponseData['Response']['Header']['Message'] = self.globalInstance._Global__Success
             myData = argResult
+        elif (argResultType == 'Error'):
+            #print("Success",self.globalInstance._Global__Success)
+            myResponseData['Response']['Header']['Status'] = argResult['Status']
+            myResponseData['Response']['Header']['Message'] = argResult['Message']
+            myData = []
 
-        #end if
-        #print("build response:",myData)
-        #print("is Dict:",(self.isDict(myData['Data'])))
-        #print('Data' in myData)
-
-        #if (myData) and '''(self.isDict(myData['Data'])) and''' ('Data' in myData) and (myData['Data']):
+        ''' if data element passed, we will copy the "Data" to "Data" section, "Data.Summary" to "Header.Summary" secton'''
         if (myData) and (self.globalInstance._Global__DataKey in myData) and (myData[self.globalInstance._Global__DataKey]):
             myResponseData['Response'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
             if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
@@ -412,6 +427,38 @@ class Utility(object):
                 del argRequestDict[myKey]
 
         return argRequestDict
+
+    ''' Member Utility '''
+
+    def getMemberConnStatus4Action(self, argAction, argActionBy):
+        '''
+            we dont need auth validation since we dont have a way to find this request for which memberid
+        '''
+        try:
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argAction + ',' + argActionBy))
+
+            myAllowedConnection = self.globalInstance._Global__MemberConnectionStatus.keys()
+
+            ''' validating arguments '''
+            if (not argAction) or (not argActionBy) :
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, got null expecting values arg[{arg}]'.
+                    format(arg=argAction + ',' + argActionBy))
+
+            ''' we need to validate if right action and actionby key is passed'''
+            if not(argAction in myAllowedConnection):
+                raise com.uconnect.core.error.MissingArgumentValues('Action key must have either on of this value {expectVal}, got [{arg}] '.
+                    format(expectVal=myAllowedConnection, arg=argAction))
+
+            if not(argActionBy in self.globalInstance._Global__MemberConnectionStatus.get(argAction).keys()):
+                raise com.uconnect.core.error.MissingArgumentValues('ActionBy key must have either one of this value [{expectVal}], got [{arg}] '.
+                    format(expectVal=self.globalInstance._Global__MemberConnectionStatus.get(argAction).keys(),
+                           arg=argActionBy))
+
+            return self.globalInstance._Global__MemberConnectionStatus.get(argAction).get(argActionBy)
+
+        except Exception as error:
+            raise
 
     ''' Security Utility '''
 

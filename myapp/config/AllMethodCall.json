@@ -138,5 +138,6 @@ arg = {"MainArg":
                         }
                 }
             }
-member.isAValidMember(arg)
+myConnection = member.AddANewMemberConnection(arg)
+print(myConnection)
 exit()
