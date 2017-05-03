@@ -3,7 +3,8 @@
         {
             "MemberId":"<MemberId>",
             "ActivityDate":"<activity date>",
-            "Activity":"<Activity Desc>"  
+            "Activity":"<Activity Desc>",
+            "Acknowledged":""
         },
     "LoginInfo":
         {

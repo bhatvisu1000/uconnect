@@ -37,13 +37,13 @@ class Global(object):
         ### Invitee --> to whom invitation has been sent to
         ### Requestor --> Member who has sent the invitation
         ### Initial connection status of invitee in requestor doc.
-        self.__Initial_Requestor_MemConnectionStatus = 'Awaiting Response'   
+        self.__Initial_Req_MemConnectionStatus = 'Awaiting Response'   
         ### Initial connection status of requestor in invitee doc. 
-        self.__Initial_Invitee_MemConnectionStatus = 'Pending'
+        self.__Initial_Inv_MemConnectionStatus = 'Pending'
         ### connection status of invitee in requestor doc, after invitee accepted invitation. 
-        self.__Accepted_Requestor_MemConnectionStatus = 'Accepted'
+        self.__Accepted_Req_MemConnectionStatus = 'Accepted'
         ### connection status of requestor in invitee doc, after invitee accepted invitation. 
-        self.__Accepted_Invitee_MemConnectionStatus = 'Valid'
+        self.__Accepted_Inv_MemConnectionStatus = 'Valid'
         ''' MemberConnectin = {'Event':{'Record Exists':{'ActionBy':'Requestor/Invitee'}} 
         this is to find the next status 
         '''
@@ -53,4 +53,8 @@ class Global(object):
                 'Reject Connection':{'Requestor':'Rejected','Invitee':'Invalid'}
                  }
         self.__RequestStatus = {'Status':'','Message':''}
-
+        self.__ArgIsAValidMember = {"MemberId":"","AuthKey":"","EntityId":"","EntityType":""}
+        self.__Connection_Action = ['Accept','Reject','Remove']
+        self.__Connection_Action_Accepted = 'Accept'
+        self.__Connection_Action_Rejected = 'Reject'
+        self.__Connection_Action_Removed = 'Remove'

@@ -282,10 +282,10 @@ class Utility(object):
         myRequestStatus = self.getCopy(self.globalInstance._Global__RequestStatus)
         if argStatus:
             if argStatus == self.globalInstance._Global__Success:
-                myRequestStatus['Status'] = self.globalInstance._Global__Success:
-                myRequestStatus['Message'] = self.globalInstance._Global__Success:
+                myRequestStatus['Status'] = self.globalInstance._Global__Success
+                myRequestStatus['Message'] = self.globalInstance._Global__Success
             elif argStatus == self.globalInstance._Global__UnSuccess:
-                myRequestStatus['Status'] = self.globalInstance._Global__UnSuccess:
+                myRequestStatus['Status'] = self.globalInstance._Global__UnSuccess
                 if argStatusMessage:
                     myRequestStatus['Message'] = argStatusMessage
                 #fi
@@ -361,7 +361,7 @@ class Utility(object):
         ''' return callers method/function anme and from line# call is made'''
         caller = sys._getframe(1).f_code.co_name
         caller_linenum = sys._getframe(1).f_lineno
-        return caller, caller_linenum
+        return caller
 
     def buildKeysFromTemplate(self, argTemplateName, argBlockName = None):
         # get a templaye copy for a given collection

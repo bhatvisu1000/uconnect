@@ -69,20 +69,7 @@
             "MainArg":
                 {
                     "MemberId":314188,
-                    "Auth":
-                        {  
-                            "AuthKey":"58fd4f52df9bba3dec2d36a8",
-                            "LoginId":"vishal",
-                            "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
-                            "EntityId":314188,
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
-                        }
+                    "Auth":{"AuthKey":"58fd4f52df9bba3dec2d36a8"}
                 }
         }
 }
@@ -96,17 +83,7 @@ arg = {"MainArg":
                     "ResponseMode":"I",
                     "Auth":
                         {  
-                            "AuthKey":"58fd4f52df9bba3dec2d36a8",
-                            "LoginId":"vishal",
-                            "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
-                            "EntityId":314188,
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
+                            "AuthKey":"58fd4f52df9bba3dec2d36a8"
                         }
                 }
             }
@@ -132,7 +109,6 @@ arg = {"MainArg":
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314188,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
@@ -141,3 +117,64 @@ arg = {"MainArg":
 myConnection = member.AddANewMemberConnection(arg)
 print(myConnection)
 exit()
+
+// Accept/Reject/Remove Invitation
+python
+from com.uconnect.bps.memberBPS import MemberBPS
+member = MemberBPS.Instance()
+arg = {"MainArg":
+                {
+                    "MemberId":314187,
+                    "ConnectMemberId":314188,
+                    "Action":"Accept",
+                    "ResponseMode":"E",
+                    "Auth":
+                        {  
+                            "AuthKey":"58fd0da2df9bba388c0ff35d",
+                            "EntityType" : "Member",
+                            "SessionId" : "aaabbbccc",
+                            "LoginType" : "Mobile",
+                            "AppVer" : "1.0",
+                            "DeviceType" : "OS2",
+                            "EntityId" : 314187,
+                            "LoginId" : "anil2",                            
+                            "Password":"anil2",
+                            "DeviceOs":"Mobile",
+                            "MacAddress" : "SDFSDKLGHASKLDFGHSAKLFG214ADFA"
+                        }
+                }
+            }
+myConnection = member.AcceptConnection(arg)
+print(myConnection)
+exit()
+
+// Reject Invitation
+python
+from com.uconnect.bps.memberBPS import MemberBPS
+member = MemberBPS.Instance()
+arg = {"MainArg":
+                {
+                    "MemberId":314187,
+                    "ConnectMemberId":314188,
+                    "ResponseMode":"E",
+                    "Auth":
+                        {  
+                            "AuthKey":"58fd0da2df9bba388c0ff35d",
+                            "EntityType" : "Member",
+                            "SessionId" : "aaabbbccc",
+                            "LoginType" : "Mobile",
+                            "AppVer" : "1.0",
+                            "DeviceType" : "OS2",
+                            "EntityId" : 314187,
+                            "LoginId" : "anil2",                            
+                            "Password":"anil2",
+                            "DeviceOs":"Mobile",
+                            "MacAddress" : "SDFSDKLGHASKLDFGHSAKLFG214ADFA"
+                        }
+                }
+            }
+myConnection = member.AcceptConnection(arg)
+print(myConnection)
+exit()
+
+

@@ -400,7 +400,7 @@ class Security(object):
 
     def __isValAuthKeyInternal(self, argRequestDict):
         '''
-            argRequestDict = {'AuthKey':''}
+            argRequestDict = {'AuthKey':'','EntityId':'','EntityType':''}
         '''
 
         try:
@@ -408,7 +408,7 @@ class Security(object):
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
-            myAuthArgKey = ['AuthKey']
+            myAuthArgKey = ['AuthKey','EntityId','EntityType']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKey)
 
             if not (myArgValidation):
@@ -419,7 +419,7 @@ class Security(object):
             '''
 
             '''Preparing value '''
-            myCriteria = { '_id':ObjectId(str(myMainArgData['AuthKey'])) }
+            myCriteria = { '_id':ObjectId(str(myMainArgData['AuthKey'])), 'EntityId': myMainArgData['EntityId'],'EntityType':myMainArgData['EntityType']}
             myProjection = {'_id':1}
             #print('criteria',myCriteria)
             myResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__authColl, myCriteria, myProjection,False)

@@ -1,0 +1,121 @@
+def a1 ():
+    matched = True
+    key = ['a', 'b', 'c', 'd']
+    a = {'a': 1, 'c': 3, 'b': None}
+    for x in key:
+        if not(x in a) or (not(a[x] == None)):
+            matched = False
+            break
+    return matched
+
+
+
+from pymongo import MongoClient
+
+from pymongo import write_concern
+from pymongo import results
+import datetime
+
+db = "test"
+collection="temp"
+criteria={'_id':1,'when':{'$lte': datetime.datetime.utcnow() } }
+projection = {"_id":1}
+mongoUri="mongodb://localhost:27017/test?connectTimeoutMS=300000&maxPoolSize=100&minPoolSize=10&w=1"
+conn = MongoClient(mongoUri)
+conn1 = conn.get_database(db)
+result = conn1.temp.find(criteria)
+for x in result:
+  print(x)
+
+from com.uconnect.core.security import Security
+Sec = Security.Instance()
+arg = {'LoginId':'anil',
+       'LoginType':'Mobile',
+       'Password':'anil',
+       'DeviceOs':'Mobile',
+       'DeviceType':'OS2',
+       'MacAddress':'SDFSDKLGHASKLDFGHSAKLFG214ADFA',
+       'EntityType':'Member',
+       'AppVer':'1.0',
+       'SessionId':'aaabbbccc',
+       'Main':{'LastName':''},
+       'Address':{'LastName':''},
+       'Contact':{'LastName':''},
+       } 
+myArgKey = ['LoginId','Password','LoginType','DeviceOs','SessionId']
+myArgKey = ['LoginId','LolginType','DeviceOs','SessionId','AppVer'] 
+result = Sec.registerember(arg)
+#result = Sec._Security__createLogin(arg)
+#result = Sec.validateCredential(arg)
+print(result)
+
+
+def whoAmI():
+  import sys
+  me = sys._getframe(1).f_code.co_name
+  linenum = sys._getframe(1).f_lineno
+  return me, linenum
+
+def test():
+  me = whoAmI()
+  return me
+
+test()
+
+''' who called me '''
+def whocalledme():
+  import sys
+  import sys
+  print(sys._getframe(0).f_code.co_name)
+  print(sys._getframe(1).f_code.co_name)
+  print(sys._getframe(2).f_code.co_name)
+  method = sys._getframe(2).f_code.co_name
+  linenum = sys._getframe(2).f_lineno
+  return method, linenum
+
+def a ():
+  print(whocalledme())
+
+def b ():
+  a()
+
+''' get list of all parameters
+import inspect
+
+def func(a, b, c):
+    frame = inspect.currentframe()
+    args, _, _, values = inspect.getargvalues(frame)
+    print 'function name "%s"' % inspect.getframeinfo(frame)[2]
+    for i in args:
+        print "    %s = %s" % (i, values[i])
+    return [(i, values[i]) for i in args]
+'''
+
+
+python
+from com.uconnect.core.security import Security
+Sec = Security.Instance()
+arg = {'MainArg':
+            {
+                'EntityType':'Member',
+                'Auth':
+                    {
+                        'LoginId':'anil1',
+                        'LoginType':'Mobile',
+                        'Password':'anil',
+                        'DeviceOs':'Mobile',
+                        'DeviceType':'OS2',
+                        'MacAddress':'SDFSDKLGHASKLDFGHSAKLFG214ADFA',
+                        'EntityType':'Member',
+                        'AppVer':'1.0',
+                        'SessionId':'aaabbbccc'
+                    },
+                'Main':{'LastName':'Smith','FirstName':'John','NickName':'John'},
+                'Address':{'ZipCode':'08820','Country':'USA'},
+                'Contact':{'Email':'a@x.com'}
+            }
+       } 
+result = Sec.registerEntity(arg)
+exit()
+
+print(result)
