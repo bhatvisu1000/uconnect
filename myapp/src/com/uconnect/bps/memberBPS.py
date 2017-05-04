@@ -73,7 +73,7 @@ class MemberBPS(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             ''' Preparing value to create a new member build initial data '''
-            myMemberData = self.__buildInitMembderData(myMainArgData['Main'],myMainArgData['Address'],myMainArgData['Contact'])
+            myMemberData = self.memberUtilInstance._MemberUtility__buildInitMembderData(myMainArgData['Main'],myMainArgData['Address'],myMainArgData['Contact'])
             myMemberId = myMemberData['_id'] 
 
             ''' Creating a member '''

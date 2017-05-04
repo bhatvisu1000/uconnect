@@ -140,7 +140,7 @@ class MongoDB(object):
             try:
                 myKeyValue = int(self.connectionInstance.system_js.getNextSequence(argCollection))
             except Exception as error:
-                raise MongoDBError('Error executing ({conn}).system_js.getNextSequence({col})'.format(conn=self.connectionInstance, col=argCollection))
+                raise com.uconnect.core.error.MongoDBError('Error executing ({conn}).system_js.getNextSequence({col})'.format(conn=self.connectionInstance, col=argCollection))
 
             ''' we dont need to generate the id for collection which is marked for exclusion'''
             if not (myKeyValue == None): 
@@ -193,7 +193,7 @@ class MongoDB(object):
             try:
                 myKeyValue = int(self.connectionInstance.system_js.getNextSequence(argCollection))
             except Exception as error:
-                raise MongoDBError('Error executing ({conn}).system_js.getNextSequence({col})'.format(conn=self.connectionInstance, col=argCollection))
+                raise com.uconnect.core.error.MongoDBError('Error executing ({conn}).system_js.getNextSequence({col})'.format(conn=self.connectionInstance, col=argCollection))
 
             if myKeyValue == None:
                 raise NullKeyValue("Null Key Value found for collection [{coll}]".format(coll=argCollection))

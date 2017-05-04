@@ -120,9 +120,9 @@ class Utility(object):
         if not(myIgnoredArgKeyList == None):
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
 
-        #print(myArgKeyList)
-        #print(myIgnoredArgKeyList)
-        #print(myMainArgData)
+        print(myArgKeyList)
+        print(myIgnoredArgKeyList)
+        print(myMainArgData)
 
         # check if all key in dictionary
         if all(key in myMainArgData for key in myArgKeyList):

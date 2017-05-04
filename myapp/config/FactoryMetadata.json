@@ -8,14 +8,6 @@
         "Method": "registerEntity"
       }
     },
-    "GetAGroupDetail": {
-      "Description": "Get a groiup detail",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "getAGroupDetail"
-      }
-    },
     "GenerateSecCode": {
       "Description": "Generate sec code for this session",
       "BPS": {
@@ -44,39 +36,23 @@
         "Method": "getAMemberDetail"
         }
       },
-    "IsAValidMember": {
-      "Description": "Check if this Memeber id exists",
+    "AddANewConnection": {
+      "Description": "Add a new Member connection",
       "BPS": {
         "Module": "com.uconnect.bps.memberBPS",
         "Class": "MemberBPS",
-        "Method": "isAValidMember"
+        "Method": "AddANewMemberConnection"
         }
       },
-    "LinkMember2Member": {
-      "Description": "Find a Member Details",
+    "ActionOnAMemberConnection": {
+      "Description": "Perform an action Accept/Reject/Remove a member connection",
       "BPS": {
         "Module": "com.uconnect.bps.memberBPS",
         "Class": "MemberBPS",
-        "Method": "linkAMember2Member"
+        "Method": "ExecConnectionAction"
         }
       },
-    "UnLinkMemberFromMember": {
-      "Description": "Remove a member from connection",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "unLinkAMemberFromMember"
-        }
-      },
-    "LinkMember2Group": {
-      "Description": "Find a Member Details",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "linkAMember2Group"
-        }
-      },
-    "MarkMemberFavorite": {
+    "FavoriteMemberConnection": {
       "Description": "Find a Member Details",
       "BPS": {
         "Module": "com.uconnect.bps.memberBPS",
@@ -106,6 +82,14 @@
         "Module": "com.uconnect.bps.memberBPS",
         "Class": "MemberBPS",
         "Method": "unBlockMember"
+        }
+      },      
+    "LinkMember2Group": {
+      "Description": "Link a Member to your group or group to which you are a member",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "linkAMember2Group"
         }
       },    
     "BlockGroup": {

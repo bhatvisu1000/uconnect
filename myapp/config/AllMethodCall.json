@@ -1,4 +1,19 @@
 //Register Member
+// Client Action
+//  WEB:
+//      1. User inputs desired loginid/password: Validate LoginId/Password
+//      2.) If success, Gather following information
+//          a. LastName
+//          b. First Name
+//          c. Zip Code
+//          d. Contact (Phone/Email)
+//      3.) Submit data for registration, following response will be returned 
+//          _Id (MemberId)
+//          Main
+//          Address
+//          Contact
+//          Connections
+//          AuthKey
 {
     "Request":
         {
@@ -24,6 +39,32 @@
                     "Main":{"LastName":"Bhat","FirstName":"Vishal","NickName":"VB"},
                     "Address":{"ZipCode":"08820","Country":"USA"},
                     "Contact":{"Email":"vishal@uconnect.com"}
+                }
+        }
+}
+// validate login
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Login","ActionId":"Authenticate","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Auth":
+                        {
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314190,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
                 }
         }
 }
@@ -126,7 +167,7 @@ arg = {"MainArg":
                 {
                     "MemberId":314187,
                     "ConnectMemberId":314188,
-                    "Action":"Accept",
+                    "Action":"Remove",
                     "ResponseMode":"E",
                     "Auth":
                         {  
@@ -147,34 +188,4 @@ arg = {"MainArg":
 myConnection = member.AcceptConnection(arg)
 print(myConnection)
 exit()
-
-// Reject Invitation
-python
-from com.uconnect.bps.memberBPS import MemberBPS
-member = MemberBPS.Instance()
-arg = {"MainArg":
-                {
-                    "MemberId":314187,
-                    "ConnectMemberId":314188,
-                    "ResponseMode":"E",
-                    "Auth":
-                        {  
-                            "AuthKey":"58fd0da2df9bba388c0ff35d",
-                            "EntityType" : "Member",
-                            "SessionId" : "aaabbbccc",
-                            "LoginType" : "Mobile",
-                            "AppVer" : "1.0",
-                            "DeviceType" : "OS2",
-                            "EntityId" : 314187,
-                            "LoginId" : "anil2",                            
-                            "Password":"anil2",
-                            "DeviceOs":"Mobile",
-                            "MacAddress" : "SDFSDKLGHASKLDFGHSAKLFG214ADFA"
-                        }
-                }
-            }
-myConnection = member.AcceptConnection(arg)
-print(myConnection)
-exit()
-
 

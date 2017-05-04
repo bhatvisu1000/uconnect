@@ -64,7 +64,7 @@ class Security(object):
             if self.utilityInstance.extrStatusFromResultSets(myResults) == self.globalInstance._Global__OkStatus:
                 myResultsData = self.utilityInstance.extr1stDocFromResultSets(myResults)
             
-            if not(myData == None) and self.utilityInstance.isKeyInDict(myData,'Password'):
+            if not(myResultsData == None) and self.utilityInstance.isKeyInDict(myResultsData,'Password'):
                 return myResultsData['Password']
             else:
                 return None
@@ -533,6 +533,7 @@ class Security(object):
             from com.uconnect.bps.memberBPS import MemberBPS
             memberBPSInstance = MemberBPS.Instance()
             myArgKey = myMainArgKey = myAddressArgKey = myContactArgKey = []
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myAuthKey = ''
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
@@ -603,7 +604,9 @@ class Security(object):
 
         except com.uconnect.core.error.InvalidLogin as error:
             myModuleLogger.exception('InvalidLogin: error [{error}]'.format(error=error.errorMsg))
-            raise
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
+            return myRequestStatus            
+            #raise
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
             raise
@@ -625,7 +628,11 @@ class Security(object):
         try:
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            if 'MainArg' in argRequestDict:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            else:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            #fi
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myAuthArgKey = self.utilityInstance.buildKeysFromTemplate('Auth')
