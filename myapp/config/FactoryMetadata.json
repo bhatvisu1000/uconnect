@@ -15,7 +15,15 @@
         "Class": "Security",
         "Method": "generateSecCode"
       }
-    }
+    },
+    "IsLoginInUse": {
+      "Description": "Check if loginid is currenty in use",
+      "BPS": {
+        "Module": "com.uconnect.core.security",
+        "Class": "Security",
+        "Method": "isLoginInUse"
+      }
+    }    
   },
   "Login":  {
     "Authenticate": {

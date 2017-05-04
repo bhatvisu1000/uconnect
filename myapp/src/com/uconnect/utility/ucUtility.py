@@ -326,11 +326,15 @@ class Utility(object):
             myData = []
 
         ''' if data element passed, we will copy the "Data" to "Data" section, "Data.Summary" to "Header.Summary" secton'''
-        if (myData) and (self.globalInstance._Global__DataKey in myData) and (myData[self.globalInstance._Global__DataKey]):
-            myResponseData['Response'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
-            if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
-                myResponseData['Response']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
-        
+        try:
+            # if myData is not iterable, exception will be raised, will ignore the exception 
+            if (myData) and (self.globalInstance._Global__DataKey in myData) and (myData[self.globalInstance._Global__DataKey]):
+                myResponseData['Response'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
+                if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
+                    myResponseData['Response']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
+        except TypeError:
+            pass
+
         return myResponseData 
 
     def extrAllDocFromResultSets(self, argResultSets):

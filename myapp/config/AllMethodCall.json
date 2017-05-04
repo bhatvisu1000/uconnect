@@ -14,6 +14,19 @@
 //          Contact
 //          Connections
 //          AuthKey
+
+// isValidLogin
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Registration","ActionId":"IsLoginInUse","Page":"None"
+                },
+            "MainArg":{"LoginId":"vishal"}
+        }
+}
+// Register Member
 {
     "Request":
         {
