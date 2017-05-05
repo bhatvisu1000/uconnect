@@ -315,10 +315,9 @@ class Utility(object):
             myResponseData['Response']['Header']['Status'] = myResponseStatus
             myResponseData['Response']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
-            #print("Success",self.globalInstance._Global__Success)
-            myResponseData['Response']['Header']['Status'] = self.globalInstance._Global__Success
-            myResponseData['Response']['Header']['Message'] = self.globalInstance._Global__Success
-            myData = argResult
+            myResponseData['Response']['Header']['Status'] = argResult['Status']
+            myResponseData['Response']['Header']['Message'] = argResult['Message']
+            #myData = argResult
         elif (argResultType == 'Error'):
             #print("Success",self.globalInstance._Global__Success)
             myResponseData['Response']['Header']['Status'] = argResult['Status']
@@ -332,6 +331,14 @@ class Utility(object):
                 myResponseData['Response'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
                 if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
                     myResponseData['Response']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
+            elif (myData) and (self.globalInstance._Global__DataKey not in myData):
+                ''' we got data but "data" key is missing '''
+                if self.isDict:
+                    myResponseData['Response'][self.globalInstance._Global__DataKey] = [myData]
+                else:
+                    myResponseData['Response'][self.globalInstance._Global__DataKey] = myData
+                #fi
+            #fi                    
         except TypeError:
             pass
 

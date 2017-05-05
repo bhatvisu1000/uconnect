@@ -15,7 +15,7 @@
 //          Connections
 //          AuthKey
 
-// isValidLogin
+// isLoginIuse
 {
     "Request":
         {
@@ -55,6 +55,33 @@
                 }
         }
 }
+// IsValidAuthentication
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Login","ActionId":"isValidAuthentication","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Auth":
+                        {   "AuthKey":"590be5c7df9bba4da4a9e9dd",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314190,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
 // validate login
 {
     "Request":

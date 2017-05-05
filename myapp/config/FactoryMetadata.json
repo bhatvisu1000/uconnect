@@ -33,7 +33,15 @@
         "Class": "Security",
         "Method": "validateCredential"
       }
-    }
+    },
+    "IsValidAuthentication": {
+      "Description": "Verify if this is valid authentication",
+      "BPS": {
+        "Module": "com.uconnect.core.security",
+        "Class": "Security",
+        "Method": "isValidAuthentication"
+      }
+    }    
   },
   "Member": {
     "getAMemberDetail": {
