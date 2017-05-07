@@ -296,7 +296,7 @@ class Security(object):
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
-            myArgKey = ['AuthKey','LoginId','LoginType','DeviceType','DeviceOs','MacAddress','EntityId','EntityType']
+            myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','EntityId','EntityType']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
