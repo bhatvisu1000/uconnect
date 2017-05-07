@@ -6,30 +6,43 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>myConnection</ion-title>
-  </ion-navbar>
-  <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+  <ion-navbar no-border-bottom>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-segment [(ngModel)]="segment" (ionChange)="updateSchedule()">
+      <ion-segment-button value="All">
+        All
+      </ion-segment-button>
+      <ion-segment-button value="Favorite">
+        Favorite
+      </ion-segment-button>
+      
+    </ion-segment>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="presentFilter()">
+        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
+      </button>
+    </ion-buttons>
+  
+   </ion-navbar>
+  <ion-toolbar no-border-top>
+    <ion-searchbar color="primary"
+                   [(ngModel)]="queryText"
+                   (ionInput)="updateSchedule()"
+                   placeholder="Search">
+    </ion-searchbar>
+    </ion-toolbar>
+    
+ 
+
+  
 </ion-header>
 
 
 <ion-content padding>
 
-<ion-segment [(ngModel)]="icons" color="secondary">
-    <ion-segment-button value="People">
-      People
-    </ion-segment-button>
-    <ion-segment-button value="Group">
-      Group
-    </ion-segment-button>
-    <ion-segment-button value="Favorite">
-      Favorite
-    </ion-segment-button>
-    <ion-segment-button value="Business">
-      Business  
-    </ion-segment-button>
-  </ion-segment>
- 
   <ion-list>
     <ion-item-sliding *ngFor="let item of listItems; let i = index" (click)="onCheckItem(i)">
     <ion-item>
