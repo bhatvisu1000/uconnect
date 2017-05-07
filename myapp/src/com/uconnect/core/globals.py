@@ -14,6 +14,7 @@ class Global(object):
         self.__loginColl = self.__login = 'LoginInfo'
         self.__authColl = self.__auth = 'Auth'
         self.__authHistColl = self.__authHist = 'AuthHistory'
+        self.__activityLogColl = self.__activityLog = 'ActivityLog'        
 
         self.__True = True
         self.__TrueStatus = True
@@ -52,7 +53,7 @@ class Global(object):
                 'Accept Connection':{'Requestor':'Accepted','Invitee':'Valid'},
                 'Reject Connection':{'Requestor':'Rejected','Invitee':'Invalid'}
                  }
-        self.__RequestStatus = {'Status':'','Message':''}
+        self.__RequestStatus = {'Status':'','Message':'','data':''}
         self.__ArgIsAValidMember = {"MemberId":"","AuthKey":"","EntityId":"","EntityType":""}
         self.__Connection_Action = ['Accept','Reject','Remove']
         self.__Connection_Action_Accepted = 'Accept'

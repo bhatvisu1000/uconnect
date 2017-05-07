@@ -1,10 +1,13 @@
 {
-    "Activity":
+    "ActivityLog":
         {
-            "MemberId":"<MemberId>",
+            "EntityId":"<EntityId>",            
+            "EntityType":"<EntityId>",
             "ActivityDate":"<activity date>",
             "Activity":"<Activity Desc>",
-            "Acknowledged":""
+            "Acknowledged":"",
+            "ActivityType":"",
+            "Auth":""
         },
     "LoginInfo":
         {
@@ -13,9 +16,21 @@
             "Password":"<def: encrypted>",
             "EntityType":"<def: Member/Agent>",
             "EntityId":"<def: MemberId/AgentId>",
+            "AccountStatus":"Open",
+            "PasswordRetryCount":0,
             "Acccess":
                 [
                     {"ScreenId":"","ActionId":""}
+                ],
+            "Device":
+                [
+                    {
+                        "MacAddress":"<MAC ADDRESS>",
+                        "DeviceType":"<DEVICE TYPE>",
+                        "DeviceOs":"<DEVICE OS>",
+                        "Status":"Pending",
+                        "ValidationCode":"<VAL CODE>"
+                    }
                 ]
         },
     "Auth":

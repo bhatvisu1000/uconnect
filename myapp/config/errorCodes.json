@@ -1,0 +1,5 @@
+{
+    "LoginError-001":"Invalid LoginId/Password","Description":"Invalid LoginId",
+    "LoginError-002":"Invalid LoginId/Password","Description":"Invalid Password",
+    "LoginError-003":"Account is locked","Description":"Account is locked"
+}    

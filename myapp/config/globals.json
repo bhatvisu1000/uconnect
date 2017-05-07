@@ -6,6 +6,7 @@
  "Factory":"factoryMetadata.json",
  "ZipCode":"zipcode.json",
  "Template":"template.json",
+ "ErrorCodes":"errorCodes.json",
  "ExclColl4Id":["Authentication"],
  "AuthValidDuration":30
 }

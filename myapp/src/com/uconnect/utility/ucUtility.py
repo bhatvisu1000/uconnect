@@ -23,9 +23,9 @@ class Utility(object):
         print ("Global Action:",self.globalInstance._Global__InternalActionId)
         '''
     def isDict(self, argDict):
-        print(self.myClass)
-        print(sys._getframe().f_code.co_name)
-        print(self.myPythonFile)
+        #print(self.myClass)
+        #print(sys._getframe().f_code.co_name)
+        #print(self.myPythonFile)
 
         try:
             if isinstance(argDict,dict): 
@@ -120,10 +120,11 @@ class Utility(object):
         if not(myIgnoredArgKeyList == None):
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
 
-        print(myArgKeyList)
-        print(myIgnoredArgKeyList)
-        print(myMainArgData)
-
+        '''
+        print('val',myArgKeyList)
+        print('val',myIgnoredArgKeyList)
+        print('val',myMainArgData)
+        '''
         # check if all key in dictionary
         if all(key in myMainArgData for key in myArgKeyList):
             # check if any key in dict has None or empty value
@@ -278,28 +279,46 @@ class Utility(object):
         
         return myHistoryData
 
-    def getRequestStatus(self, argStatus, argStatusMessage = None):
+    def buildActivityArg(self,argEntityId, argEntityType, argActivityType, argActivity, argAuth):
+
+        myActivityLogData = self.envInstance.getTemplateCopy(self.globalInstance._Global__activityLogColl)
+
+        myActivityLogData["EntityType"]=argEntityType
+        myActivityLogData["EntityId"]=argEntityId            
+        myActivityLogData["ActivityType"]=argActivityType
+        myActivityLogData["Activity"]=argActivity           
+        myActivityLogData["Auth"]=argAuth            
+        self.removeKeyFromDict(myActivityLogData, ['Acknowledged','ActivityDate'])
+        return myActivityLogData
+
+    def getRequestStatus(self, argStatus, argStatusMessage = None, argData = None):
         myRequestStatus = self.getCopy(self.globalInstance._Global__RequestStatus)
         if argStatus:
             if argStatus == self.globalInstance._Global__Success:
-                myRequestStatus['Status'] = self.globalInstance._Global__Success
-                myRequestStatus['Message'] = self.globalInstance._Global__Success
+                myRequestStatus.update({'Status' :self.globalInstance._Global__Success})
+                myRequestStatus.update({'Message' : self.globalInstance._Global__Success})
+                myRequestStatus.update({'Data' : argData})
             elif argStatus == self.globalInstance._Global__UnSuccess:
-                myRequestStatus['Status'] = self.globalInstance._Global__UnSuccess
+                myRequestStatus.update({'Status' : self.globalInstance._Global__UnSuccess})
                 if argStatusMessage:
-                    myRequestStatus['Message'] = argStatusMessage
+                    myRequestStatus.update({'Message' : argStatusMessage})
                 #fi
             #fi
         #fi
         return myRequestStatus
 
-    def buildResponseData(self, argResponseMode, argResult, argResultType, argResultData = None):
+    def buildResponseData(self, argResponseMode, argResultStatus, argResultType, argResultData = None):
        
         ''' if this is internal request, we should not built the response, response will be built by mehtod whcih
         was called externally     '''
 
         if (argResponseMode == self.globalInstance._Global__InternalRequest):
-            return argResult
+            if argResultData:
+                return argResultData
+            else:
+                return argResultStatus
+            #fi
+        #fi
 
         #myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._ResponseTemplate)
         myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._Global__ResponseTemplate)
@@ -315,13 +334,13 @@ class Utility(object):
             myResponseData['Response']['Header']['Status'] = myResponseStatus
             myResponseData['Response']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
-            myResponseData['Response']['Header']['Status'] = argResult['Status']
-            myResponseData['Response']['Header']['Message'] = argResult['Message']
+            myResponseData['Response']['Header']['Status'] = argResultStatus['Status']
+            myResponseData['Response']['Header']['Message'] = argResultStatus['Message']
             #myData = argResult
         elif (argResultType == 'Error'):
             #print("Success",self.globalInstance._Global__Success)
-            myResponseData['Response']['Header']['Status'] = argResult['Status']
-            myResponseData['Response']['Header']['Message'] = argResult['Message']
+            myResponseData['Response']['Header']['Status'] = argResultStatus['Status']
+            myResponseData['Response']['Header']['Message'] = argResultStatus['Message']
             myData = []
 
         ''' if data element passed, we will copy the "Data" to "Data" section, "Data.Summary" to "Header.Summary" secton'''
@@ -471,6 +490,13 @@ class Utility(object):
         except Exception as error:
             raise
 
+    def getErrorCodeDescription(self, argErrorCode):
+        myErrorDescription = ''
+        if argErrorCode in self.envInstance._Environment__errorCodesData:
+            myErrorDescription = self.envInstance._Environment__errorCodesData.get(argErrorCode)    
+
+        print(argErrorCode,self.envInstance._Environment__errorCodesData,myErrorDescription)
+        return myErrorDescription
     ''' Security Utility '''
 
 ''' Pop dict items

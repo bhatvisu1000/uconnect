@@ -77,6 +77,7 @@ class Environment(object):
     self.factoryMetaFile = self.__globalSettings['Factory']
     self.zipCodeFile = self.__globalSettings['ZipCode']
     self.templateFile = self.__globalSettings['Template']
+    self.errorCodesFile = self.__globalSettings['ErrorCodes']
     self.exclColl4Id = self.__globalSettings['ExclColl4Id']
     self.AuthValidDuration = self.__globalSettings['AuthValidDuration']
 
@@ -84,6 +85,8 @@ class Environment(object):
     self.factoryMetaFilewPath = os.path.join(self.configLoc,self.factoryMetaFile)
     self.zipCodeFileWPath = os.path.join(self.configLoc,self.zipCodeFile)
     self.templateFileWPath = os.path.join(self.configLoc,self.templateFile)
+    self.errorCodesFileWPath = os.path.join(self.configLoc,self.errorCodesFile)
+
     '''    
     print ("InfraFile:",self.infraFile)
     print ("FactoryFile:",self.factoryMetaFile)
@@ -209,6 +212,33 @@ class Environment(object):
        myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
        raise
 
+    ''' Loading Error codes from errorCodes.json '''
+    try:
+      # ensure config file exists
+      # errorCodes.json
+      if not (os.path.isfile(self.errorCodesFileWPath)):
+        raise com.uconnect.core.error.MissingConfigFile("Error code File [{errorCodesFile}] is missing !!!".format(errorCodesFile=self.templateFileWPath))
+
+      myModuleLogger.info("Reading error codes json file [{errorCodesFile}] ".format(errorCodesFile=self.errorCodesFileWPath))
+      self.__errorCodesData = json.loads(open(self.errorCodesFileWPath).read())
+      # check if error codes dictionary is empty after loading data, raise error
+
+      if not self.__errorCodesData: 
+        raise com.uconnect.core.error.BootStrapError("Error Code dictionary is empty")
+
+    except com.uconnect.core.error.MissingConfigFile as error:
+        myModuleLogger.error("MissingConfigFile Error, [{error}]".format(error=error.errorMsg))
+        raise error 
+    except com.uconnect.core.error.BootStrapError as error:
+        myModuleLogger.error("BootStrapError, [{error}]".format(error=error.errorMsg))
+        raise error     
+    except ValueError as error:
+       myModuleLogger.error("Error, loading Error code file [{errorCodesFile}] (value error) ".format(errorCodesFile=self.errorCodesFileWPath))
+       raise error
+    except Exception as error:
+       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+       raise
+
     ''' initializing other variables '''
 
     self.maxPageSize = int(self.__globalSettings['maxPageSize'])
@@ -308,15 +338,15 @@ class Environment(object):
     myModuleLogger.debug("Argument(s) [{arg}] received ".format(arg=(argScreenId + ',' + argActionId)))
 
     try:
-      print(argScreenId,argActionId)
-      print(self.__factoryMetaData[argScreenId][argActionId])
+      #print(argScreenId,argActionId)
+      #print(self.__factoryMetaData[argScreenId][argActionId])
       if (argScreenId in self.__factoryMetaData) and (argActionId in self.__factoryMetaData[argScreenId]):
         myLibrary = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
         myClass   = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Class']
         myMethod  = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Method']
         return myLibrary, myClass, myMethod 
       else:
-        print("Screen/Action not found")
+        #print("Screen/Action not found")
         raise com.uconnect.core.error.InvalidScreenAction('Invalid Screen/Action Id [{screen}],[{action}] !!!'.format(screen = argScreenId, action = argActionId))
     
     except com.uconnect.core.error.InvalidScreenAction as error:

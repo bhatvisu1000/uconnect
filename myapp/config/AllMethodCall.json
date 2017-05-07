@@ -55,34 +55,8 @@
                 }
         }
 }
-// IsValidAuthentication
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Login","ActionId":"isValidAuthentication","Page":"None"
-                },
-            "MainArg":
-                {
-                    "Auth":
-                        {   "AuthKey":"590be5c7df9bba4da4a9e9dd",
-                            "LoginId":"vishal",
-                            "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
-                            "EntityId":314190,
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
-                        }
-                }
-        }
-}
-
-// validate login
+// ValidateCredential
+314201
 {
     "Request":
         {
@@ -91,53 +65,47 @@
                     "ScreenId":"Login","ActionId":"Authenticate","Page":"None"
                 },
             "MainArg":
-                {
-                    "Auth":
-                        {
-                            "LoginId":"vishal",
-                            "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
-                            "EntityId":314190,
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
-                        }
+                {"Auth":
+                    {
+                        "LoginId":"vishal",
+                        "LoginType":"Web",
+                        "Password":"bhatt",
+                        "DeviceOs":"Mobile",
+                        "DeviceType":"OS2",
+                        "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                        "EntityType":"Member",
+                        "AppVer":"1.0",
+                        "SessionId":"aaabbbccc"
+                    }
                 }
         }
 }
 
-// Get a Group Detail
+// Get A Member Detail
 {
     "Request":
         {
             "Header":
                 {
-                    "ScreenId":"Registration","ActionId":"GetAGroupDetail","Page":"None"
+                    "ScreenId":"Member","ActionId":"getAMemberDetail","Page":"None"
                 },
             "MainArg":
                 {
-                    "GroupId":10012,
+                    "MemberId":314201,
                     "Auth":
-                        {  
-                            "AuthKey":"58fd4f52df9bba3dec2d36a8",
-                            "LoginId":"vishal",
+                        {
+                            "AuthKey":"590dfaacdf9bba4cf0280c1e",
                             "LoginType":"Web",
-                            "Password":"bhatt",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314188,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
                 }
         }
 }
-
 
 // isAValidMember
 {
@@ -175,31 +143,41 @@ exit()
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()
-arg = {"MainArg":
+
+{
+    "Request":
+        {
+            "Header":
                 {
-                    "MemberId":314188,
+                    "ScreenId":"Member","ActionId":"AddANewConnection","Page":"None"
+                },
+            "MainArg":
+                {
+                    "MemberId":314200,
                     "ConnectMemberId":314187,
                     "ResponseMode":"I",
                     "Auth":
                         {  
-                            "AuthKey":"58fd4f52df9bba3dec2d36a8",
+                            "AuthKey":"590cf9cddf9bba541cb3018b",
                             "LoginId":"vishal",
                             "LoginType":"Web",
                             "Password":"bhatt",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
                 }
-            }
+        }
+}
+
 myConnection = member.AddANewMemberConnection(arg)
 print(myConnection)
 exit()
 
 // Accept/Reject/Remove Invitation
+
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()

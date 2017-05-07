@@ -309,8 +309,8 @@ class MemberBPS(object):
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
-                print(self.utilityInstance.whoAmI())
+            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
+                #print(self.utilityInstance.whoAmI())
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.myClass+'.'+self.utilityInstance.whoAmI()))
 
@@ -319,20 +319,30 @@ class MemberBPS(object):
 
             ''' check if building connection was successful; get all the connection for this memner, in future Connection type ned to be changed to ALL ???'''
             if myConnectionResults.get('Status') == self.globalInstance._Global__Success:
-                myResponseArgData = {'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
-                myResponseData = self.getAMemberConnections(myResponseArgData)
-                myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myResponseData,'Find')
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             else:
-                myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myConnectionResults,'Error')
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Can not add requested connection')
             #fi
+
+            # will return all the existing connection any way
+            myResponseArgData = {'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
+            myMemberConnections = self.getAMemberConnections(myResponseArgData)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnections)
+
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise error
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, error.errorMsg)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            #raise error
+            return myResponse
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise error
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, error.message)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            #raise error
+            return myResponse
 
     def ExecConnectionAction(self, argRequestDict):
         ''' 
@@ -368,7 +378,7 @@ class MemberBPS(object):
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
+            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.myClass+'.'+self.utilityInstance.whoAmI()))
 
@@ -646,45 +656,66 @@ class MemberBPS(object):
         try:
             
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
-            
+
+            if 'MainArg' in argRequestDict:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            else:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            #fi
+
             myArgKey = ['MemberId','Auth','ResponseMode']
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
 
             ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
 
+            #print(self.myClass,myMainArgData)
             ''' Validate auth key for this request'''
-            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
-                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
-                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
-
+            if myMainArgData['ResponseMode']  == self.globalInstance._Global__InternalRequest:
+                if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
+                    raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth [{auth}] for this request [{me}]'.
+                        format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+                #fi
+            else:
+                if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
+                    raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth [{auth}] for this request [{me}]'.
+                        format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+                #fi
+            #fi
             ''' preparing value needed to find member details'''
             myCriteria = {'_id':myMainArgData['MemberId']}
             myFindOne = self.globalInstance._Global__True
             myProjection={"Main":1,"Address":1,"Contact":1}
             myModuleLogger.info('Finding member [{member}] details'.format (member=myMainArgData['MemberId']))
             myMemberData = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria,myProjection,myFindOne)
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
 
-            ''' Building response '''            
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myMemberData,'Find')
+            ''' Building response '''           
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',myMemberData)
             
             return myResponse
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
-            raise
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
+            return myResponse
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
+            return myResponse
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
+            return myResponse
 
     def getAMemberConnections(self,argRequestDict):
         ''' 
@@ -704,24 +735,38 @@ class MemberBPS(object):
         try:
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            if 'MainArg' in argRequestDict:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            else:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            #fi
+
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
             
             myArgKey = ['MemberId','ConnectionType','Auth','ResponseMode']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
+            ''' validating arguments '''
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myAuthArgKey))
 
             ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
-                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
-                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
-
+            if myMainArgData['ResponseMode'] == self.globalInstance._Global__InternalRequest:
+                if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
+                    raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                        format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+                #fi
+            else:
+                if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
+                    raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                        format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+                #fi
+            #fi             
             ''' preparing value needed to find member connections'''
             myModuleLogger.info('Finding a members connection [{arg}]'.format(arg=myMainArgData))
             ''' we need threading for following request using threading of python '''
@@ -739,23 +784,26 @@ class MemberBPS(object):
             myConnectionRawData = self.mongoDbInstance.ExecCommand("member", myAggregateDict)
 
             if self.utilityInstance.isAllArgumentsValid(myConnectionRawData):
-
                 myMemberConnection = {"Data":self.memberUtilInstance._MemberUtility__buildMyConnection('Member',myConnectionRawData)}
-                myModuleLogger.info("MyMemberConnection Data: {memberConn}".format(memberConn=myMemberConnection))
             else:
                 myMemberConnection = {}
+            #fi
 
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myMemberConnection,'Find')
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
 
-            #print ("response",myResponse)
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
+            return myResponse
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
+            return myResponse
 
     def searchMembers(self,argRequestDict):
         pass
@@ -803,7 +851,7 @@ class MemberBPS(object):
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
+            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 
@@ -848,7 +896,7 @@ class MemberBPS(object):
 
                     myResponseDataDict = self.utilityInstance.builInternalRequestDict({'Data':{'_id':myGroupId}})
                     myResponseData = self.getAGroupDetail(myResponseDataDict)
-                    print('response data',myResponseData)
+                    #print('response data',myResponseData)
                     myResponse = self.utilityInstance.buildResponseData(argRequestDict['Request']['Header']['ScreenId'],myGroupResult,'Insert', myResponseData)
 
                     return myResponse
@@ -901,7 +949,7 @@ class MemberBPS(object):
                     format(arg=myMainArgData, key=myArgKey))
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance.isValidAuthentication(myMainArgData['Auth'])):
+            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 

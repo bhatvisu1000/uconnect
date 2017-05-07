@@ -3,7 +3,6 @@ import datetime, json,logging, com.uconnect.utility.ucLogging, com.uconnect.core
 from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.core.globals import Global
-from com.uconnect.bps.factory import Factory
 from com.uconnect.db.mongodb import MongoDB
 from com.uconnect.db.dbutility import DBUtility
 from com.uconnect.utility.ucUtility import Utility
@@ -23,7 +22,6 @@ class MemberUtility(object):
             Return:         N/A
         '''        
         self.envInstance = Environment.Instance()
-        self.factoryInstance = Factory.Instance()
         self.utilityInstance = Utility.Instance()
         self.mongoDbInstance = MongoDB.Instance()
         self.dbutilityInstance = DBUtility.Instance()
@@ -176,18 +174,17 @@ class MemberUtility(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal(
-                         {'AuthKey':myMainArgData['Auth']['AuthKey'], 'EntityId':myMainArgData['MemberId'], 'EntityType':self.globalInstance._Global__member } )):
+            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
 
             ''' Preparing '''
             myCriteria = {'_id':myMainArgData['MemberId'], 'Connections.MemberId':myMainArgData['ConnectMemberId'], 'Connections.Type':'Member'}                
             myProjection = {'_id':1,'Connections':1}
-            print(myCriteria,myProjection)
+            #print(myCriteria,myProjection)
             ''' Finding document '''
             myResult = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria, myProjection, True)
-            print(myResult)
+            #print(myResult)
             myMemberConnection = self.utilityInstance.extr1stDocFromResultSets(myResult)
 
             return myMemberConnection
@@ -253,8 +250,7 @@ class MemberUtility(object):
             #fi
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal(
-                         {'AuthKey':myMainArgData['Auth']['AuthKey'], 'EntityId':myMainArgData['Auth']['EntityId'], 'EntityType':myMainArgData['Auth']['EntityType']} )):
+            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
             #fi
@@ -337,7 +333,7 @@ class MemberUtility(object):
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             if isReqConnectionAdded and (not isInvConnectionAdded) and (not isCleanUpDone):
-                print(isReqConnectionAdded,isInvConnectionAdded,isCleanUpDone)
+                #print(isReqConnectionAdded,isInvConnectionAdded,isCleanUpDone)
                 self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'pull',False)                
             #fi
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)            
@@ -395,8 +391,7 @@ class MemberUtility(object):
             #fi
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal(
-                         {'AuthKey':myMainArgData['Auth']['AuthKey'], 'EntityId':myMainArgData['Auth']['EntityId'], 'EntityType':myMainArgData['Auth']['EntityType']} )):
+            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
             #fi
@@ -530,8 +525,7 @@ class MemberUtility(object):
             #fi
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal(
-                         {'AuthKey':myMainArgData['Auth']['AuthKey'], 'EntityId':myMainArgData['Auth']['EntityId'], 'EntityType':myMainArgData['Auth']['EntityType']} )):
+            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
             #fi
@@ -657,8 +651,7 @@ class MemberUtility(object):
             #fi
 
             ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal(
-                         {'AuthKey':myMainArgData['Auth']['AuthKey'], 'EntityId':myMainArgData['Auth']['EntityId'], 'EntityType':myMainArgData['Auth']['EntityType']} )):
+            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
             #fi
@@ -771,8 +764,7 @@ class MemberUtility(object):
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(myMainArgData.get('Auth'),'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
             '''
             ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValAuthKeyInternal(
-                         {'AuthKey':myMainArgData['AuthKey'],'EntityId':myMainArgData['EntityId'],'EntityType':myMainArgData['EntityType'] } )):
+            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['AuthKey'], me=self.utilityInstance.whoAmI()))
             #fi
@@ -796,11 +788,13 @@ class MemberUtility(object):
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
-            raise
+            isValidMember = self.globalInstance._Global__Error
+            return isValidMember
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
             raise
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise
+            isValidMember = self.globalInstance._Global__Error
+            return isValidMember
     # isAValidMember Ends here

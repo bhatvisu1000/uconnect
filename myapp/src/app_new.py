@@ -126,10 +126,10 @@ def processRequestOrig(requestType,memberId,connType):
 
 @app.route('/requestPost', methods=['POST'])
 def requestPost():
-  print (request)
-  print (request.is_json)
+  #print (request)
+  #print (request.is_json)
   myRequest = request.get_json()
-  print (myRequest)
+  #print (myRequest)
   myMemberId = 10067
   
   if not(utilityInstance.isDict(myRequest)):
