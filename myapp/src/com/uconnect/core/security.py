@@ -286,6 +286,43 @@ class Security(object):
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise
     
+    def __expireAllAuthentication(self,argRequestDict):
+        '''
+            argRequestDict = {'AuthKey':''}
+        '''
+        try:
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
+
+            myArgKey = ['AuthKey','LoginId','LoginType','DeviceType','DeviceOs','MacAddress','EntityId','EntityType']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+
+            ''' Finding all Auth document '''
+            myAllAuthKey = self.__getAuthKey(myMainArgData)
+
+            if myAllAuthKey:
+                for myAuthKey in myAllAuthKey:
+                    myExpireResult = self.__expireAuthentication({'AuthKey':myAuthKey['_id']})
+                    #print(myExpireResult)
+                    if myExpireResult['deleted'] == 0:
+                        raise com.uconnect.core.error.DBError('Failed to expire auth document AuthKey[{authKey}]'.format(authKey=myAuthKey))
+                    #fi
+                #end for loop
+            #fi
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise
+        except com.uconnect.core.error.DBError as error:
+            myModuleLogger.exception('DBError: error [{error}]'.format(error=error.errorMsg))
+            raise            
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     def __expireAuthentication(self,argRequestDict):
         '''
             argRequestDict = {'AuthKey':''}
@@ -348,21 +385,19 @@ class Security(object):
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
-            myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','SessionId','EntityId','AppVer']
+            myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','SessionId','EntityId','EntityType','AppVer']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
 
             '''Preparing value '''
-            myCriteria = {'LoginId':myMainArgData['LoginId'], 
+            myCriteria = {'LoginId':myMainArgData['LoginId'],
                           'LoginType':myMainArgData['LoginType'], 
                           'DeviceType':myMainArgData['DeviceType'],
                           'DeviceOs':myMainArgData['DeviceOs'],
                           'MacAddress':myMainArgData['MacAddress'],
-                          'SessionId':myMainArgData['SessionId'],
                           'EntityId':myMainArgData['EntityId'],
-                          'EntityType':myMainArgData['EntityType'],
-                          'AppVer':myMainArgData['AppVer']}
+                          'EntityType':myMainArgData['EntityType']}
             myProjection = {'_id':1}
 
             myAuthResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__authColl, myCriteria, myProjection,False)
@@ -524,7 +559,7 @@ class Security(object):
             myArgKey = ['LoginId','Password']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
 
             ''' Retrieving/preparing  value for login id/password'''
             
@@ -535,7 +570,12 @@ class Security(object):
             myLoginInfo = self.__getLoginInfo(myLoginArgData)
             myValidLoginRetVal = 0
 
-            if myLoginInfo.get('AccountStatus') == 'Open':
+            if myLoginInfo:
+                myMainArgData.update({'EntityId':myLoginInfo['EntityId']})
+                myMainArgData.update({'EntityType':myLoginInfo['EntityType']})
+            #fi
+
+            if myLoginInfo and myLoginInfo.get('AccountStatus') == 'Open':
                 myStoredHashPassword = myLoginInfo.get('Password')
                 #print (myPasswordText,myStoredHashPassword)
 
@@ -545,7 +585,6 @@ class Security(object):
                     ''' we got valid login we need to create authentication'''
                     myValidLoginRetVal = "Success" 
                 else:
-                    myValidLogin = False
                     myValidLoginRetVal = "LoginError-002"                     
                     ''' we got invalid password, lets increase the invalid count by 1 '''            
                     myDbResults = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__loginColl, myLoginCriteria, {'PasswordRetryCount':1}, 'inc')
@@ -553,11 +592,15 @@ class Security(object):
                     print('passretry',myLoginInfo.get('PasswordRetryCount'))
                     if myLoginInfo.get('PasswordRetryCount') >= 3:
                         myDbResults = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__loginColl, myLoginCriteria, {'AccountStatus':'Locked'}, 'set')
+                        # expire all authentication
+                        self.__expireAllAuthentication(myMainArgData)                        
                     #fi
                 #fi
-            elif myLoginInfo.get('AccountStatus') == 'Locked':
+            elif myLoginInfo and myLoginInfo.get('AccountStatus') == 'Locked':
                 myValidLoginRetVal = "LoginError-003"                     
-
+            else:
+                myValidLoginRetVal = "LoginError-001"                     
+            #fi
             return myValidLoginRetVal
 
         except com.uconnect.core.error.MissingArgumentValues as error:
@@ -787,11 +830,11 @@ class Security(object):
 
             '''we need either LoginId/Auth's required argument '''
             if 'LoginId' in myMainAuthArgData and 'Password' in myMainAuthArgData:
-                myArgValidation = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','EntityType','AuthKey'])
+                myArgValidation = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','AuthKey'])
                 if not (myArgValidation):
                     raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, arg[{arg}], key[{key}]'.format(arg=myMainAuthArgData.keys(), key=myAuthArgKey))
                 #fi
-                ''' lets perform loginid/password check'''
+
                 myValidateLoginStatus = self.__isValidLogin(myMainAuthArgData)
 
                 if myValidateLoginStatus == self.globalInstance._Global__Success:
