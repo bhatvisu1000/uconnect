@@ -36,7 +36,6 @@
                 },
             "MainArg":
                 {
-                    "EntityType":"Member",
                     "Auth":
                         {
                             "LoginId":"vishal",
@@ -69,7 +68,7 @@
                     {
                         "LoginId":"vishal",
                         "LoginType":"Web",
-                        "Password":"bhatt",
+                        "Password":"bhatt1",
                         "DeviceOs":"Mobile",
                         "DeviceType":"OS2",
                         "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
@@ -91,15 +90,16 @@
                 },
             "MainArg":
                 {
-                    "MemberId":314201,
                     "Auth":
                         {
-                            "AuthKey":"590dfaacdf9bba4cf0280c1e",
+                            "AuthKey":"590f2724df9bba5498d99fab",
                             "LoginType":"Web",
+                            "LoginId":"vishal",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
+                            "EntityId":314241,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }

@@ -664,7 +664,7 @@ class MemberBPS(object):
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
 
-            myArgKey = ['MemberId','Auth','ResponseMode']
+            myArgKey = ['Auth','ResponseMode']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
@@ -672,8 +672,8 @@ class MemberBPS(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
 
             ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
-            myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
-                {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
+            #myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
+            #    {'Auth':myMainArgData['Auth']})
 
             #print(self.myClass,myMainArgData)
             ''' Validate auth key for this request'''
@@ -689,10 +689,10 @@ class MemberBPS(object):
                 #fi
             #fi
             ''' preparing value needed to find member details'''
-            myCriteria = {'_id':myMainArgData['MemberId']}
+            myCriteria = {'_id':myMainArgData['Auth']['EntityId']}
             myFindOne = self.globalInstance._Global__True
             myProjection={"Main":1,"Address":1,"Contact":1}
-            myModuleLogger.info('Finding member [{member}] details'.format (member=myMainArgData['MemberId']))
+            myModuleLogger.info('Finding member [{member}] details'.format (member=myMainArgData['Auth']['EntityId']))
             myMemberData = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria,myProjection,myFindOne)
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
 

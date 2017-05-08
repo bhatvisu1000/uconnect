@@ -210,24 +210,35 @@ class Security(object):
             
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myMainAuthArgData = self.utilityInstance.getCopy(myMainArgData['Auth'])
+            print ('login',myMainArgData)
+            print ('login',myMainAuthArgData)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
-            myArgKey =  ['LoginId','Password','LoginType','DeviceOs','DeviceType','MacAddress','SessionId','EntityType','EntityId','AppVer']
+            myArgKey = ['Auth']
+            myAuthArgKey =  ['LoginId','Password','LoginType','DeviceOs','DeviceType','MacAddress','SessionId','EntityType','EntityId','AppVer']
+
+            ''' validating arguments '''
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+
+            ''' validating Auth arguments '''
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth arg validation error arg[{arg}], key[{key}]'.format(arg=myMainAuthArgData.keys(), key=myArgKey))
 
             ''' This is to ensure if password is encrypted. Do we need this ?'''
             #if not(len(myMainArgData['Password']) == 60 and myMainArgData['Password'].startswith('$2b$')):
             #    myMainArgData['Password'] = self.__genHashPassword({'Password':myMainArgData['Password']})
 
             ''' Buildkng LoginInfo document'''
-            myLoginData = self.__buildInitLoginData(myMainArgData)
+            myLoginData = self.__buildInitLoginData(myMainAuthArgData)
             myDbResult = self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global__loginColl, myLoginData)
 
             ''' if login creation is successful, create authentication and return Auth Id'''
             if myDbResult[self.globalInstance._Global__StatusKey] == self.globalInstance._Global__TrueStatus:
-                myAuthKey = self.__createAuthentication(argRequestDict)
+                myAuthKey = self.__createAuthentication(myMainAuthArgData)
             else:
                 raise com.connect.core.error.DBError('Login creation failed loginifo[{login}]'.format(login=myLoginData))
 
@@ -253,7 +264,7 @@ class Security(object):
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
-            myArgKey =  ['LoginId','LoginType','DeviceOs','DeviceType','MacAddress','SessionId','AppVer']
+            myArgKey =  ['LoginId','LoginType','EntityType','EntityId','DeviceOs','DeviceType','MacAddress','SessionId','AppVer']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
@@ -273,6 +284,16 @@ class Security(object):
             myModuleLogger.debug('Argument validated, preparing Auth document')
             myAuthDoc = self.__buildInitAuthData(myMainArgData)
             myAuthResult = self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global__authColl, myAuthDoc)
+            
+            ''' recording activity'''
+            self.activityInstance._Activity__logActivity(
+                {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                 'ActivityType':self.globalInstance._Global__Internal, 
+                 'Activity':'Generating new Auth key [{auth}] for [{entity}]'.
+                        format(auth=str(myAuthResult['_id']),
+                                entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
+                 'Auth': myMainArgData})
+
             ''' we need to return string value of object_id '''
             return str(myAuthResult['_id'])
 
@@ -464,7 +485,7 @@ class Security(object):
             myAuthArgKeys.append('AuthKey')
 
             ''' validating arguments '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKeys,['ExpiryDate','_id','EntityType','EntityId','LoginId'])
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKeys,['ExpiryDate','_id'])
             #print('In Auth: argkeys',myMainArgData.keys())
             #print('In Auth: expected',myAuthArgKeys)            
             if not (myArgValidation):
@@ -581,23 +602,66 @@ class Security(object):
 
                 if myStoredHashPassword == None:
                     myValidLoginRetVal = "LoginError-001" 
+
+                    ''' recording activity'''
+                    self.activityInstance._Activity__logActivity(
+                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                             'ActivityType':self.globalInstance._Global__Internal, 
+                             'Activity':' Invalid loginid [{entity}]'.
+                                        format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
+                             'Auth': myMainArgData})
+
                 elif checkpw(str(myPasswordText), str(myStoredHashPassword)):
                     ''' we got valid login we need to create authentication'''
                     myValidLoginRetVal = "Success" 
+
+                    ''' recording activity'''
+                    ''' recording activity'''
+                    self.activityInstance._Activity__logActivity(
+                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                             'ActivityType':self.globalInstance._Global__Internal, 
+                             'Activity':'Invalid loginid [{entity}]'.
+                                        format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
+                             'Auth': myMainArgData})
                 else:
                     myValidLoginRetVal = "LoginError-002"                     
                     ''' we got invalid password, lets increase the invalid count by 1 '''            
                     myDbResults = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__loginColl, myLoginCriteria, {'PasswordRetryCount':1}, 'inc')
                     myLoginInfo = self.__getLoginInfo(myLoginArgData)
-                    print('passretry',myLoginInfo.get('PasswordRetryCount'))
+
+                    ''' recording activity'''
+                    self.activityInstance._Activity__logActivity(
+                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                             'ActivityType':self.globalInstance._Global__Internal, 
+                             'Activity':'Invalid password for Login [{login}] !!! Maximum password try count; current value [{current}] '.
+                                    format(login=myMainArgData['LoginId'], current=myLoginInfo.get('PasswordRetryCount')),
+                             'Auth': myMainArgData})
+
                     if myLoginInfo.get('PasswordRetryCount') >= 3:
                         myDbResults = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__loginColl, myLoginCriteria, {'AccountStatus':'Locked'}, 'set')
                         # expire all authentication
-                        self.__expireAllAuthentication(myMainArgData)                        
+                        self.__expireAllAuthentication(myMainArgData)
+
+                        ''' recording activity'''
+                        self.activityInstance._Activity__logActivity(
+                                {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                                 'ActivityType':self.globalInstance._Global__Internal, 
+                                 'Activity':'Account is locked for [{login}] !!! Expiring all valid authentication '.
+                                        format(login=myMainArgData['LoginId']),
+                                 'Auth': myMainArgData})
                     #fi
                 #fi
             elif myLoginInfo and myLoginInfo.get('AccountStatus') == 'Locked':
                 myValidLoginRetVal = "LoginError-003"                     
+
+                ''' recording activity'''
+                ''' recording activity'''
+                self.activityInstance._Activity__logActivity(
+                        {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                         'ActivityType':self.globalInstance._Global__Internal, 
+                         'Activity':'Password verification attempt, account is locked for [{login}] !!!'.
+                                format(login=myMainArgData['LoginId']),
+                         'Auth': myMainArgData})
             else:
                 myValidLoginRetVal = "LoginError-001"                     
             #fi
@@ -626,13 +690,12 @@ class Security(object):
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
 
-
             ''' extract entity type form mainArgument '''
-            if ('EntityType' in myMainArgData['MainArg']):
+            if ('EntityType' in myMainArgData['MainArg']['Auth']):
                 '''Register entity '''
-                if myMainArgData['MainArg']['EntityType'] == self.globalInstance._Global__member:
+                if myMainArgData['MainArg']['Auth']['EntityType'] == self.globalInstance._Global__member:
                     myEntityData = self.registerMember(argRequestDict['MainArg'])
-                elif myMainArgData['MainArg']['EntityType'] == self.globalInstance._Global__vendor:
+                elif myMainArgData['MainArg']['Auth']['EntityType'] == self.globalInstance._Global__vendor:
                     myMemberData = self.registerVendor(argRequestDict)
                 else:
                     raise com.uconnect.core.error.InvalidEntity('Invalid entity passed during registration [{entity}]'.format(entity=myMainArgData['EntityType'])) 
@@ -691,6 +754,9 @@ class Security(object):
             '''
             myAuthArgKey = self.utilityInstance.buildKeysFromTemplate('Auth')
 
+            ''' encrypt password '''
+            myMainArgData['Auth']['Password'] = self.__genHashPassword({'Password':myMainArgData['Auth']['Password']})            
+
             ''' validating arguments '''
             # Main Arg validation
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
@@ -738,28 +804,30 @@ class Security(object):
             myMemberData = {'Main':myMainArgData['Main'], 'Address':myMainArgData['Address'], 'Contact':myMainArgData['Contact']}
             myMemberId = memberBPSInstance._MemberBPS__createAMember(myMemberData)
             myMainArgData['Auth'].update({'EntityId':myMemberId})
+            myMainArgData['Auth'].update({'EntityType':self.globalInstance._Global__member})
+
+            ''' building auth dictionary '''
+            myMainAuthArgData = {'Auth':self.utilityInstance.getCopy(myMainArgData['Auth'])}
 
             self.activityInstance._Activity__logActivity(self.utilityInstance.buildActivityArg(
-                myMemberId,self.globalInstance._Global__member, 'Internal','Member [{member}] created'.
-                format(member=myMemberId),myMainArgData['Auth']))
+                myMemberId,self.globalInstance._Global__member,self.globalInstance._Global__Internal,'Member [{member}] created'.
+                format(member=myMemberId), myMainAuthArgData))
 
-            ''' create login, encrypt password '''
-            myMainArgData['Auth']['Password'] = self.__genHashPassword({'Password':myMainArgData['Auth']['Password']})            
-            myAuthKey = self.__createLogin(myMainArgData['Auth'])
-            #print('MyAuthKey',myAuthKey)
+            ''' create login for this member '''
+            myAuthKey = self.__createLogin(myMainAuthArgData)
 
             ''' Building response
             we got Auth key, we need to inject it to get this memeber information from database '''
 
-            myMainArgData['Auth'].update({'AuthKey':myAuthKey})
+            myMainAuthArgData['Auth'].update({'AuthKey':myAuthKey})
 
             self.activityInstance._Activity__logActivity(self.utilityInstance.buildActivityArg(
                 myMemberId,self.globalInstance._Global__member, 'Internal','LoginId [{login}] and AuthKey [{authKey}] created for Member [{member}]'.
-                format(login=myMainArgData['Auth']['LoginId'], member=myMemberId, authKey= myAuthKey),myMainArgData['Auth']))
+                format(login=myMainAuthArgData['Auth']['LoginId'], member=myMemberId, authKey= myAuthKey),myMainAuthArgData))
 
             ''' getting member information from database '''
             myMemberData = memberBPSInstance.getAMemberDetail(
-                {'MemberId':myMemberId,'Auth':myMainArgData['Auth'],'ResponseMode':self.globalInstance._Global__InternalRequest})
+                {'Auth':myMainAuthArgData['Auth'],'ResponseMode':self.globalInstance._Global__InternalRequest})
             
             #print(self.utilityInstance.extr1stDocFromResultSets(myMemberData))
             

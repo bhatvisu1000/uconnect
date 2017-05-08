@@ -24,10 +24,13 @@ class Activity(object):
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
-            myArgKey = ['EntityId','EntityType','ActivityType','Activity']
+            myArgKey = ['EntityId','EntityType','ActivityType','Activity','Auth']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+
+            # deleting the password from Auth
+            self.utilityInstance.removeKeyFromDict(myMainArgData, 'Password')
 
             # retrieve the template 
             myInitActivityLogData = self.envInstance.getTemplateCopy(self.globalInstance._Global__activityLogColl)

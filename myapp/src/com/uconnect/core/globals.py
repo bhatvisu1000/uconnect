@@ -34,7 +34,7 @@ class Global(object):
         self.__OkStatus = 'OK'
         self.__hashPassPrefix='2b'
         self.__HistoryColumn='_History'
-
+        self.__Internal = "Internal"
         ### Invitee --> to whom invitation has been sent to
         ### Requestor --> Member who has sent the invitation
         ### Initial connection status of invitee in requestor doc.
