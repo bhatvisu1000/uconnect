@@ -773,7 +773,7 @@ class Security(object):
             #fi
 
             # Member Address arg validation
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData['Address'], myAddressArgKey, ['Street','City','State'])
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData['Address'], myAddressArgKey, ['Street','City','State','Country'])
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
                     format(arg=myMainArgData['Address'], key=myAddressArgKey))
