@@ -49,7 +49,7 @@
                             "SessionId":"aaabbbccc"
                         },
                     "Main":{"LastName":"Bhat","FirstName":"Vishal","NickName":"VB"},
-                    "Address":{"ZipCode":"08820","Country":"USA"},
+                    "Address":{"ZipCode":"08820"},
                     "Contact":{"Email":"vishal@uconnect.com"}
                 }
         }
