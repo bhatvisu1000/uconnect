@@ -11,37 +11,45 @@ import {MainArg} from "../models/MainArg"
 import {Address} from "../models/connection/Address"
 import {Main} from "../models/connection/Main"
 import {Contact} from "../models/connection/Contact"
-
+import {Auth} from "../models/connection/Auth"
+import {RegistrationRequestData} from "../models/registration/RegistrationRequestData"
 
 @Injectable()
 export class RegisterationService {
   private request: Request = null;
+  private mainArg: MainArg = null;
+  private registrationRequestData: RegistrationRequestData = null;
+  private auth: Auth = null;
   private main: Main = null;
   private address: Address = null;
   private contact: Contact = null;
-  private mainArg: MainArg = null;
+  
   private header:  Header = null;
   private sendRequest: SendRequest = null;
   
-  private registrationUrl = 'http://localhost:5000/processRequest/insert';
+  private registrationUrl = 'http://localhost:5000/requestPost';
   constructor(private http: Http) {
   }
 
- createMember(firstName: string,
+ createMember(loginId: string, firstName: string,
             lastName: string,
+            nickName: string,
             mobileNo: string,
             zipCode: string,
             emailAddress: string) {
-    this.main = new Main(firstName, lastName, "M");
+    this.main = new Main(firstName, lastName, nickName, "M");
     this.address = new Address("", "", "", zipCode, "", "");
     this.contact = new Contact(emailAddress, mobileNo, "N/A");
     
-  
-    this.mainArg = new MainArg(this.main, this.address, this.contact);
-    this.header= new Header("RegisterMember_01", "CreateMember_01", "None");
+    this.auth = new Auth(loginId, "Web/Mobile", "bhat", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
+    
+    this.registrationRequestData = new RegistrationRequestData(this.auth, this.main, this.address, this.contact);
+    
+    
+    this.header= new Header("Registration", "RegisterEntity", "None");
 
     
-    this.request= new Request(this.header, this.mainArg);
+    this.request= new Request(this.header, this.registrationRequestData);
 
     this.sendRequest= new SendRequest(this.request);
     

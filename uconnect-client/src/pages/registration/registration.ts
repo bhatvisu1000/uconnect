@@ -21,7 +21,7 @@ export class RegistrationPage {
 
   onAddMember(form: NgForm) {
     console.log('before create Member RegistrationPage');
-    this.registerationService.createMember(form.value.firstName, form.value.lastName, form.value.mobileNo, form.value.zipCode, form.value.emailAddress);
+    this.registerationService.createMember("bhatvisu1000", form.value.firstName, form.value.lastName, "visu", form.value.mobileNo, form.value.zipCode, form.value.emailAddress);
     console.log('before submit RegistrationPage');
     this.registerationService.submitMember();
     console.log('before after RegistrationPage');
