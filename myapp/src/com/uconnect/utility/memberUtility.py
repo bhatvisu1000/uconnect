@@ -34,126 +34,192 @@ class MemberUtility(object):
         
         return {'MemberId':argMemberId, 'EntityId':argEntityId, 'EntityType': argEntityType, 'AuthKey':argAuthKey}
 
-    def __buildInitMembderData(self,argMainDict,argAddressDict,argContactDict):
+    def __buildInitMembderData(self, argRequestDict):
 
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-        myModuleLogger.debug('Argument [{Main}], [{Address}], [{Contact}] received'.
-            format(Main=argMainDict,Address=argAddressDict,Contact=argContactDict))
+        #argMainDict,argAddressDict,argContactDict
+        try:
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
-        myZipCode = argAddressDict['ZipCode']
-        myCityNState = self.envInstance.getAddressCityState(myZipCode)
-        myCity = myCityNState[0]
-        myState = myCityNState[1]
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)            
+            myArgKey = ['Main','Address','Contact']
 
-        myInitMemberData = self.envInstance.getTemplateCopy(self.globalInstance._Global__member)
-        myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData))        
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
-        ''' Main '''
-        if ( 'LastName' in argMainDict ):
-            myInitMemberData['Main']['LastName'] = argMainDict['LastName']
-        if ( 'FirstName' in argMainDict ):
-            myInitMemberData['Main']['FirstName'] = argMainDict['FirstName']
-        if ( 'NickName' in argMainDict ):
-            myInitMemberData['Main']['NickName'] = argMainDict['NickName']
-        if ( 'Street' in argAddressDict ):
-            myInitMemberData['Address']['Street'] = argAddressDict['Street']
+            myMainDict = myMainArgData['Main']
+            myAddressDict = myMainArgData['Address']
+            myContactDict = myMainArgData['Contact']
 
-        ''' Address '''
-        if (not (myCity == None)) and (not(myState == None)): 
-            myInitMemberData['Address']['City'] = myCity
-            myInitMemberData['Address']['State'] = myState
-            myInitMemberData['Address']['ZipCode'] = myZipCode
-        else:
-            myInitMemberData['Address']['ZipCode'] = myZipCode
+            myZipCode = myAddressDict['ZipCode']
+            myCityNState = self.envInstance.getAddressCityState(myZipCode)
+            myCity = myCityNState[0]
+            myState = myCityNState[1]
 
-        ''' Contact '''
-        if ( 'Mobile' in argContactDict ):
-            myInitMemberData['Contact']['Mobile'] = argContactDict['Mobile']
-        if ( 'Email' in argContactDict ):
-            myInitMemberData['Contact']['Email'] = argContactDict['Email']
+            myInitMemberData = self.envInstance.getTemplateCopy(self.globalInstance._Global__member)
+            #myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData))        
 
-        ''' lets get the memberid for this member '''
-        myMemberId = self.mongoDbInstance.genKeyForCollection(self.globalInstance._Global__memberColl)
-        myInitMemberData['_id'] = myMemberId
+            ''' Main '''
+            if ( 'LastName' in myMainDict ):
+                myInitMemberData['Main']['LastName'] = myMainDict['LastName']
+            #fi
+            if ( 'FirstName' in myMainDict ):
+                myInitMemberData['Main']['FirstName'] = myMainDict['FirstName']
+            #fi
+            if ( 'NickName' in myMainDict ):
+                myInitMemberData['Main']['NickName'] = myMainDict['NickName']
+            #fi
 
-        ''' build initial history data '''
-        myInitMemberData[self.globalInstance._Global__HistoryColumn] = self.utilityInstance.buildInitHistData() 
-        myModuleLogger.info('Data [{arg}] returned'.format(arg=myInitMemberData))
+            ''' Address '''            
+            if ( 'Street' in myAddressDict ):
+                myInitMemberData['Address']['Street'] = myAddressDict['Street']
+            #fi
+            if (not (myCity == None)) and (not(myState == None)): 
+                myInitMemberData['Address']['City'] = myCity
+                myInitMemberData['Address']['State'] = myState
+                myInitMemberData['Address']['ZipCode'] = myZipCode
+            else:
+                myInitMemberData['Address']['ZipCode'] = myZipCode
+            #fi
 
-        return myInitMemberData
+            ''' Contact '''
+            if ( 'Mobile' in myContactDict ):
+                myInitMemberData['Contact']['Mobile'] = myContactDict['Mobile']
+            #fi
+            if ( 'Email' in myContactDict ):
+                myInitMemberData['Contact']['Email'] = myContactDict['Email']
+            #fi
+
+            ''' lets get the memberid for this member '''
+            myMemberId = self.mongoDbInstance.genKeyForCollection(self.globalInstance._Global__memberColl)
+            myInitMemberData['_id'] = myMemberId
+
+            ''' build initial history data '''
+            myInitMemberData[self.globalInstance._Global__HistoryColumn] = self.utilityInstance.buildInitHistData() 
+            myModuleLogger.info('Data [{arg}] returned'.format(arg=myInitMemberData))
+
+            return myInitMemberData
+
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     #__buildInitMembderData Ends here
 
-    def __buildGetAllConnPipeline(self, argMemberId, argConnectionType):
+    def __buildGetAllConnPipeline(self, argRequestDict):
+        #argMemberId, argConnectionType
+        try:
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-        myModuleLogger.debug('Argument [{member}], [{conntype}]  received'.format(member=argMemberId,conntype=argConnectionType))
-        myModuleLogger.debug('Building pipeline for aggregate function')
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)            
+            myArgKey = ['MemberId','ConnectionType']
 
-        #if argConnectionType == 'member':
-        #    myFromCollection = self.memberColl
-        if argConnectionType == self.globalInstance._Global__memberColl:
-            myFromCollection = self.globalInstance._Global__memberColl
-            myPipeLine =  [ 
-                    {"$match"  : {"_id":argMemberId}},
-                    {"$unwind" : {"path":"$Connections","preserveNullAndEmptyArrays":True}},  
-                    {"$match"  : { "$and": [{"Connections.Type":argConnectionType} ] } },
-                    {"$lookup" :
-                        {
-                            "from":myFromCollection,
-                            "localField":"Connections.MemberId",                  
-                            "foreignField":"_id",                  
-                            "as":"MyMemberConnections"
-                        }      
-                    },
-                    {"$project": 
-                        {
-                            "_id":1,"Connections":1,
-                            "MyMemberConnections.MemberId":1,
-                            "MyMemberConnections.Main":1,"MyMemberConnections.Address":1,"MyMemberConnections.Contact":1
-                        }
-                    },
-                    {
-                        "$sort" :
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+
+            myConnectionType = myMainArgData['ConnectionType']
+            myMemberId = myMainArgData['MemberId']
+
+            myModuleLogger.debug('Building pipeline for aggregate function')
+
+            if myConnectionType == self.globalInstance._Global__memberColl:
+                myFromCollection = self.globalInstance._Global__memberColl
+                myPipeLine =  [ 
+                        {"$match"  : {"_id":myMemberId}},
+                        {"$unwind" : {"path":"$Connections","preserveNullAndEmptyArrays":True}},  
+                        {"$match"  : { "$and": [{"Connections.Type":myConnectionType} ] } },
+                        {"$lookup" :
                             {
-                                "MyMemberConnections.Main.LastName":1
+                                "from":myFromCollection,
+                                "localField":"Connections.MemberId",                  
+                                "foreignField":"_id",                  
+                                "as":"MyMemberConnections"
+                            }      
+                        },
+                        {"$project": 
+                            {
+                                "_id":1,"Connections":1,
+                                "MyMemberConnections.MemberId":1,
+                                "MyMemberConnections.Main":1,"MyMemberConnections.Address":1,"MyMemberConnections.Contact":1
                             }
-                    }
-                ]
+                        },
+                        {
+                            "$sort" :
+                                {
+                                    "MyMemberConnections.Main.LastName":1
+                                }
+                        }
+                    ]
+            #fi
+            return myPipeLine
 
-        return myPipeLine
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     #__buildGetAllConnPipeline Ends here
 
-    def __buildMyConnection(self, argConnectionType, argConnectionRawData):
+    def __buildMyConnection(self, argRequestDict):
+        #argConnectionType, argConnectionRawData):
 
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-        myModuleLogger.debug('Argument [{conn}], [{data}] received'.format(conn=argConnectionType, data=argConnectionRawData))
-        myModuleLogger.debug('Building [{conn}] Connection '.format(conn=argConnectionType))
+        #argMemberId, argConnectionType
+        try:
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
-        myConnectionRawData = argConnectionRawData
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)            
+            myArgKey = ['ConnectionType','ConnectionRawData']
 
-        if argConnectionType == self.globalInstance._Global__memberColl:
-            myResultStatus = {"Success":myConnectionRawData['ok']}
-            myMemberConnRawData =  myConnectionRawData['result']
-            if (myMemberConnRawData): 
-                myMemberConnections = {"_id":myMemberConnRawData[0]['_id']}
-
-                myMemberConnections['Connections'] = []
-                for x in myMemberConnRawData:
-                    x['MyMemberConnections'][0].update({'Favorite':x['Connections']['Favorite']})
-                    x['MyMemberConnections'][0].update({'Blocked':x['Connections']['Blocked']})
-                    x['MyMemberConnections'][0].update({'MemberId':x['Connections']['MemberId']})
-                    myMemberConnections['Connections'].append(x['MyMemberConnections'][0])
-
-                # sorting now
-                #myConnection = json.dumps(myMemberConnections, sort_keys=True)    
-                myConnection = myMemberConnections    
-            else:
-                myConnection = {}
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
-            #print json.dumps(myMemberConnections, sort_keys=True)
-            #print myMemberConnections
 
-        return myConnection
+            myConnectionType = myMainArgData['ConnectionType']
+            myConnectionRawData = myMainArgData['ConnectionRawData']
+
+            myModuleLogger.debug('Building [{conn}] Connection '.format(conn=myConnectionType))
+
+            if myConnectionType == self.globalInstance._Global__memberColl:
+                myResultStatus = {"Success":myConnectionRawData['ok']}
+                myMemberConnRawData =  myConnectionRawData['result']
+                if (myMemberConnRawData): 
+                    myMemberConnections = {"_id":myMemberConnRawData[0]['_id']}
+
+                    myMemberConnections['Connections'] = []
+                    for x in myMemberConnRawData:
+                        x['MyMemberConnections'][0].update({'Favorite':x['Connections']['Favorite']})
+                        x['MyMemberConnections'][0].update({'Blocked':x['Connections']['Blocked']})
+                        x['MyMemberConnections'][0].update({'MemberId':x['Connections']['MemberId']})
+                        myMemberConnections['Connections'].append(x['MyMemberConnections'][0])
+
+                    # sorting now
+                    #myConnection = json.dumps(myMemberConnections, sort_keys=True)    
+                    myConnection = myMemberConnections    
+                else:
+                    myConnection = {}
+                #fi
+
+                #print json.dumps(myMemberConnections, sort_keys=True)
+                #print myMemberConnections
+
+            return myConnection
+
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise
+
     #__buildMyConnection Ends here
 
     def __getMemberConnectionInfo(self, argRequestDict):
@@ -167,17 +233,19 @@ class MemberUtility(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
             myArgKey = ['MemberId', 'ConnectMemberId', 'Auth']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
             ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
-
+            #fi
             ''' Preparing '''
             myCriteria = {'_id':myMainArgData['MemberId'], 'Connections.MemberId':myMainArgData['ConnectMemberId'], 'Connections.Type':'Member'}                
             myProjection = {'_id':1,'Connections':1}
@@ -221,38 +289,40 @@ class MemberUtility(object):
             isReqConnectionAdded = self.globalInstance._Global__False
             isInvConnectionAdded = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            arg4IsAValidMember = {}
+            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth','ResponseMode']
 
-            ''' validating all argument passed '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
-            #fi
-
-            ''' validating Member and Connect Memebr '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
-            #fi
-
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+            #fi
+
+            ''' validating Member and Connect Memebr '''
+
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
+
+            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'],'Auth':myMainArgData['Auth']})):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
+            #fi
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'],'Auth':myMainArgData['Auth']})):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
             ''' Preparing Requestor/Invitee member connection document '''
@@ -362,38 +432,42 @@ class MemberUtility(object):
             isReqConnectionAdded = self.globalInstance._Global__False
             isInvConnectionAdded = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            arg4IsAValidMember = {}
+            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth']
 
-            ''' validating all argument passed '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
-            #fi
-
-            ''' validating Member and Connect Memebr '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
-            #fi
-
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+            #fi
+
+            ''' validating Member and Connect Memebr '''
+            
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+
+            '''
+            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
+
+            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'], 'Auth': myMainArgData['Auth'] } )):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
+            #fi
+
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'], 'Auth': myMainArgData['Auth'] } )):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
             ''' Building Invitee (reverse connection) connection data'''
@@ -496,38 +570,40 @@ class MemberUtility(object):
             isReqConnectionAdded = self.globalInstance._Global__False
             isInvConnectionAdded = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            arg4IsAValidMember = {}
+            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth']
 
-            ''' validating all argument passed '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
-            #fi
-
-            ''' validating Member and Connect Memebr '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
-            #fi
-
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+            #fi
+
+            ''' validating Member and Connect Memebr '''
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
+
+            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'], 'Auth': myMainArgData['Auth']})):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
+            #fi
+
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'], 'Auth': myMainArgData['Auth']})):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
             ''' Building Invitee (reverse connection) connection data'''
@@ -622,32 +698,14 @@ class MemberUtility(object):
             isMemberConnRemoved = self.globalInstance._Global__False
             isConnectMemberConnRemoved = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            arg4IsAValidMember = {}
+            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth']
 
-            ''' validating all argument passed '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
-            #fi
-
-            ''' validating Member and Connect Memebr '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
-            #fi
-
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            if (not self.isAValidMember(arg4IsAValidMember)):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             ''' Validate auth key for this request'''
@@ -655,6 +713,30 @@ class MemberUtility(object):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
             #fi
+
+            ''' validating Member and Connect Memebr '''
+            
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+
+            if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
+
+            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'],'Auth':myMainArgData['Auth']})):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
+            #fi
+
+            '''
+            arg4IsAValidMember = self.__buildArg4IsAValidMember(
+                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
+            '''
+
+            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'],'Auth':myMainArgData['Auth']})):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
+            #fi
+
             ''' preparing document for removing connections '''
             myReqCriteria = {'_id':myMainArgData['MemberId']}
             myReqConnections = {'MemberId': myMainArgData['ConnectMemberId'],'Type':self.globalInstance._Global__member}
@@ -748,17 +830,19 @@ class MemberUtility(object):
             else:
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
-
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
-            myArgKey = ['MemberId','AuthKey','EntityId','EntityType']
             isValidMember = self.globalInstance._Global__False 
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            #myArgKey = ['MemberId','AuthKey','EntityId','EntityType']
+            myArgKey = ['MemberId','Auth']
 
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], expected key[{key}]'.
-                    format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
+
             ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member 
             commenting below statement, this will be done by BPS processes
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(myMainArgData.get('Auth'),'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})

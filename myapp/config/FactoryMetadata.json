@@ -52,6 +52,14 @@
         "Method": "getAMemberDetail"
         }
       },
+    "isAValidMember": {
+      "Description": "Is Member a valid member",
+      "BPS": {
+        "Module": "com.uconnect.utility.memberUtility",
+        "Class": "MemberUtility",
+        "Method": "isAValidMember"
+        }
+      },      
     "AddANewConnection": {
       "Description": "Add a new Member connection",
       "BPS": {

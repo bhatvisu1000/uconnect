@@ -19,33 +19,46 @@ class Factory(object):
         self.envInstance = Environment.Instance()
         self.globalInstance = Global.Instance()
 
-    def processRequest(self, argReqJsonDict):
+    def processRequest(self, argRequestDict):
         ''' 
             Description:    Update key in dictDocument for a given collection, this is a private method
             argCollection:  Collection name
             argDictDocument:Dict documents
-            usage:          <processRequest(argScreenId, argActionId, argReqJsonDict)
+            usage:          <processRequest(argRequestDict)
         '''
         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) )
-        myModuleLogger.debug("arg received [{args}]".format(args=argReqJsonDict))
+        myModuleLogger.debug("arg received [{args}]".format(args=argRequestDict))
+        myMainArgData = self.utilityInstance.getCopy(argRequestDict)
 
         ''' Validating argumemt received '''
-        self.utilityInstance.valBPSArguments(argReqJsonDict)
-        myArgValidation = self.utilityInstance.valBPSArguments(argReqJsonDict)
+        self.utilityInstance.valBPSArguments(myMainArgData)
+        myArgValidation = self.utilityInstance.valBPSArguments(myMainArgData)
 
         if not (myArgValidation):
-            raise com.uconnect.core.error.MissingArgumentValues("Arg validation error {arg}".format(arg=argReqJsonDict))
+            raise com.uconnect.core.error.MissingArgumentValues("Arg validation error {arg}".format(arg=myMainArgData))
+        #fi
 
-        bpsProcessVal = self.__findBPSProcess (argReqJsonDict['Request']['Header']['ScreenId'],argReqJsonDict['Request']['Header']['ActionId'])
+        myScreenId = myMainArgData['Request']['Header']['ScreenId']
+        myActionId = myMainArgData['Request']['Header']['ActionId']
+
+        bpsProcessVal = self.__findBPSProcess (myScreenId, myActionId)
+
         # extracting tuple value returned from above method
-        myLibrary, myClass, myMethod = bpsProcessVal
-        #myArg.append(argReqJsonDict)
-        myModuleLogger.debug("found, bps process [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
-        #argReqJsonDict.update({'Projection':myProjection})
-        respJsonDictVal = self.__executeBPSPRocess(myLibrary, myClass, myMethod, argReqJsonDict) 
 
-        myModuleLogger.debug("return value from bps process [{responseVal}]".format(responseVal=respJsonDictVal))
-        return respJsonDictVal
+        myLibrary, myClass, myMethod = bpsProcessVal
+        if myLibrary and myClass and myMethod:
+            myModuleLogger.debug("found, bps process [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
+            myResponse = self.__executeBPSPRocess(myLibrary, myClass, myMethod, myMainArgData) 
+            myRquestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)            
+        else:
+            myModuleLogger.debug("did not find mapped bps process, value from navigating factoty data [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
+            myRquestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Screen [{screen}] Action [{action}]'.
+                                format(screen=myScreenId, action=myActionId))            
+            myResponse = self.utilityInstance.buildResponseData('E',myResponseData,'Error')
+        #fi
+
+        myModuleLogger.debug("return value from bps process [{responseVal}]".format(responseVal=myResponse))
+        return myResponse
 
     def __findBPSProcess(self, argScreenId, argActionId):
         ''' 
@@ -55,27 +68,26 @@ class Factory(object):
             usage:          <__updateKeyValue(<coll>,<DictDocument>)
             Return:         library, class, method
         '''
-        myModuleLogger = logging.getLogger('uConnect.' +str(__name__) )
-        myModuleLogger.debug("arg received [{screen},{action}]".format(screen=argScreenId, action=argActionId))
-
         try:
+
+            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) )
+            myModuleLogger.debug("arg received [{screen},{action}]".format(screen=argScreenId, action=argActionId))
+
+            myLibrary = myClass = myMethod  = ''
+
             myLibClassMethod = self.envInstance.getModuleClassMethod(argScreenId, argActionId)
-            print(myLibClassMethod)
             if not( myLibClassMethod[0] == None):
                 myLibrary = myLibClassMethod[0]
                 myClass   = myLibClassMethod[1]
                 myMethod  = myLibClassMethod[2]
             else:
-                raise KeyError
-        except KeyError as error:
-            myModuleLogger.error("KeyError while navigating in Factory data, error[{err}]".format(err=error.message))
-            raise
-        except Exception as error:
-            print("error",error)
-            myModuleLogger.error("Error occurred while extracting module/class/method [{err}]".format(err=error.message))
-            raise
+                return None
+            #fi
+            return myLibrary, myClass, myMethod
 
-        return myLibrary, myClass, myMethod
+        except Exception as error:
+            myModuleLogger.error("Error occurred while extracting module/class/method [{err}]".format(err=error.message))
+            return myLibrary, myClass, myMethod
 
     def __executeBPSPRocess(self, argLibrary, argClass, argMethod, argReqJsonDict):
         ''' 

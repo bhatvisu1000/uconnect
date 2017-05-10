@@ -112,14 +112,16 @@ class Utility(object):
         #myModuleLogger.debug("validating dict [{key}] in [{dict}] ".format(dict=argRequestDict, key=argKeyList))
         ''' another way to check if all key is found in dict '''
         isValidArgument = False
+        myMissingOrEmptyKeyList = []
 
         ''' lets remove the ignore key from argKeyList, if ignore list is passed '''
         myArgKeyList = copy.deepcopy(argKeyList)
         myIgnoredArgKeyList = copy.deepcopy(argIgnoreList)
         myMainArgData = copy.deepcopy(argRequestDict)
+
         if not(myIgnoredArgKeyList == None):
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
-
+        #fi
         '''
         print('val',myArgKeyList)
         print('val',myIgnoredArgKeyList)
@@ -130,7 +132,24 @@ class Utility(object):
             # check if any key in dict has None or empty value
             if myMainArgData == dict ((key, values) for key, values in myMainArgData.iteritems() if values):
                 isValidArgument = True
+            else:
+                for key,val in myMainArgData.iteritems():
+                    if not val:
+                        myMissingOrEmptyKeyList.append(key)
+                    #fi
+                #end for loop
+            #fi
+        else:
+            #need to find out which key is missing
+            for key in myArgKeyList:
+                if not key in myMainArgData:
+                    myMissingOrEmptyKeyList.append(key)
+                #fi
+            #end for loop
+        #fi
 
+
+        #fi
         '''
         isValidArgument = True
         for key in argKeyList:
@@ -138,7 +157,7 @@ class Utility(object):
                 isValidArgument = False
                 break
         '''
-        return isValidArgument
+        return isValidArgument, myMissingOrEmptyKeyList 
 
     def getCopy(self, argDictList):
         return copy.deepcopy(argDictList)
@@ -224,6 +243,13 @@ class Utility(object):
             myUpdateStatus = self.globalInstance._Global__Success
         
         return myUpdateStatus
+
+    def extractValFromTuple(self, argTuple, argPosition):
+        if len(argTuple) >= int(argPosition):
+            return argTuple[argPosition]
+        else:
+            return None
+        #fi
 
     def extractAllFromReq(self, argRequestDict):
         ''' 

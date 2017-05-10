@@ -10,6 +10,8 @@ from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.core.globals import Global
 from com.uconnect.core.activity import Activity
 
+myLogger = logging.getLogger('uConnect')
+
 @Singleton
 class Security(object):
     def __init__(self):
@@ -29,9 +31,10 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey =  ['Password']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             myPasswordText = str(myMainArgData['Password']) 
             hashPassword = hashpw(myPasswordText, gensalt(rounds=8, prefix='2b'))
@@ -54,9 +57,11 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey =  ['LoginId']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             myLoginCriteria = {'_id':myMainArgData['LoginId']}
             myProjection = {}
@@ -89,9 +94,11 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['LoginId','LoginType','EntityType','EntityId','Password']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             # retrieve the template 
             myInitLoginInfoData = self.envInstance.getTemplateCopy(self.globalInstance._Global__loginColl)
@@ -126,9 +133,11 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','SessionId','EntityId','AppVer']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             # retrieve the template 
             myInitAuthData = self.envInstance.getTemplateCopy(self.globalInstance._Global__authColl)
@@ -168,9 +177,11 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['_id','LoginId','LoginType','DeviceOs','DeviceType','MacAddress','SessionId','ExpiryDate','EntityId','AppVer']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             # retrieve the template 
             myInitAuthHistData = self.envInstance.getTemplateCopy(self.globalInstance._Global__authHistColl)
@@ -219,14 +230,16 @@ class Security(object):
             myAuthArgKey =  ['LoginId','Password','LoginType','DeviceOs','DeviceType','MacAddress','SessionId','EntityType','EntityId','AppVer']
 
             ''' validating arguments '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' validating Auth arguments '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Auth arg validation error arg[{arg}], key[{key}]'.format(arg=myMainAuthArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Auth arg validation error; auth arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainAuthArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' This is to ensure if password is encrypted. Do we need this ?'''
             #if not(len(myMainArgData['Password']) == 60 and myMainArgData['Password'].startswith('$2b$')):
@@ -265,9 +278,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey =  ['LoginId','LoginType','EntityType','EntityId','DeviceOs','DeviceType','MacAddress','SessionId','AppVer']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             '''Retrieving all Authentication and mark it as expired  '''
             myAllAuthKey = self.__getAuthKey(myMainArgData)
@@ -318,9 +334,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','EntityId','EntityType']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' Finding all Auth document '''
             myAllAuthKey = self.__getAuthKey(myMainArgData)
@@ -355,9 +374,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['AuthKey']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' Finding Auth document '''
             myCriteria = {'_id':ObjectId(str(myMainArgData['AuthKey']))}
@@ -407,9 +429,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['LoginId','LoginType','DeviceType','DeviceOs','MacAddress','SessionId','EntityId','EntityType','AppVer']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             '''Preparing value '''
             myCriteria = {'LoginId':myMainArgData['LoginId'],
@@ -444,9 +469,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['Auth','EntityType','EntityId']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' lets inject EntityType and EnttyId in Auth Dict'''
 
@@ -485,11 +513,10 @@ class Security(object):
             myAuthArgKeys.append('AuthKey')
 
             ''' validating arguments '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKeys,['ExpiryDate','_id'])
-            #print('In Auth: argkeys',myMainArgData.keys())
-            #print('In Auth: expected',myAuthArgKeys)            
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKeys,['ExpiryDate','_id'])
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myAuthArgKeys))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             '''Preparing value '''
             myCriteria = {'_id':ObjectId(str(myMainArgData['AuthKey'])),
@@ -530,13 +557,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myAuthArgKey = ['AuthKey','LoginId','LoginType','EntityId','EntityType','DeviceOs','DeviceType','MacAddress','SessionId','AppVer']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKey)
 
-            #print('In AuthInternal: argkeys',myMainArgData.keys())
-            #print('In AuthInternal: expected',myAuthArgKey)            
-
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myAuthArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' we also need to check if caller is internal, if not return auth key is invalid
             if caller class name and module file is not in list, return Invalid Auth Key
@@ -578,9 +604,12 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['LoginId','Password']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' Retrieving/preparing  value for login id/password'''
             
@@ -686,9 +715,14 @@ class Security(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['MainArg']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            print(myArgValidationResults)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            print(myArgValidation)            
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             ''' extract entity type form mainArgument '''
             if ('EntityType' in myMainArgData['MainArg']['Auth']):
@@ -759,38 +793,40 @@ class Security(object):
 
             ''' validating arguments '''
             # Main Arg validation
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
-                    format(arg=myMainArgData, key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             # Member Main arg validation
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myMainArgKey, 'NickName')
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myMainArgKey, 'NickName')
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
-                    format(arg=myMainArgData['Main'], key=myMainArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg [Member.Main] validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             # Member Address arg validation
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData['Address'], myAddressArgKey, ['Street','City','State','Country'])
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Address'], myAddressArgKey, ['Street','City','State','Country'])
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
-                    format(arg=myMainArgData['Address'], key=myAddressArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg [Member.Address] validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             # Member Contact arg validation
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData['Contact'], myContactArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Contact'], myContactArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
-                    format(arg=myMainArgData['Contact'], key=myContactArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg [Member.Contact] validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             # Auth arg validation
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData['Auth'], myAuthArgKey, ['ExpiryDate','AuthKey','EntityId','_id'])
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Auth'], myAuthArgKey, ['ExpiryDate','AuthKey','EntityId','_id'])
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
-                    format(arg=myMainArgData['Auth'], key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Autharg validation error; auth arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
             ''' Check if this login is already in use '''
             myLoginArgData = {'LoginId':myMainArgData['Auth']['LoginId'],'ResponseMode':self.globalInstance._Global__InternalRequest}
@@ -809,6 +845,7 @@ class Security(object):
             ''' building auth dictionary '''
             myMainAuthArgData = {'Auth':self.utilityInstance.getCopy(myMainArgData['Auth'])}
 
+            ''' recording activity '''
             self.activityInstance._Activity__logActivity(self.utilityInstance.buildActivityArg(
                 myMemberId,self.globalInstance._Global__member,self.globalInstance._Global__Internal,'Member [{member}] created'.
                 format(member=myMemberId), myMainAuthArgData))
@@ -888,19 +925,25 @@ class Security(object):
             myArgKey = ['ResponseMode','Auth']
             myResponseData = {}
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
             myMainAuthArgData = self.utilityInstance.getCopy(myMainArgData)['Auth'] 
             myAuthArgKey = self.utilityInstance.buildKeysFromTemplate('Auth')
 
             '''we need either LoginId/Auth's required argument '''
             if 'LoginId' in myMainAuthArgData and 'Password' in myMainAuthArgData:
-                myArgValidation = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','AuthKey'])
+
+                ''' validating auth arguments '''
+                myArgValidationResults = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','AuthKey'])
+                myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
                 if not (myArgValidation):
-                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, arg[{arg}], key[{key}]'.format(arg=myMainAuthArgData.keys(), key=myAuthArgKey))
+                    raise com.uconnect.core.error.MissingArgumentValues('Autharg validation error; auth arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
                 #fi
 
                 myValidateLoginStatus = self.__isValidLogin(myMainAuthArgData)
@@ -921,10 +964,14 @@ class Security(object):
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myValidateLoginStatus + ' ' + self.utilityInstance.getErrorCodeDescription(myValidateLoginStatus))
                 #fi
             elif 'AuthKey' in myMainAuthArgData: 
-                myArgValidation = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','EntityType','LoginId','Password'])
+
+                ''' validating auth arguments '''
+                myArgValidationResults = self.utilityInstance.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','EntityType','LoginId','Password'])
+                myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
                 if not (myArgValidation):
-                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, arg[{arg}], key[{key}]'.format(arg=myMainAuthArgData, key=myAuthArgKey))
+                    raise com.uconnect.core.error.MissingArgumentValues('Autharg validation error; auth arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
                 #fi
+
                 ''' perform authkey validation '''
                 if self.__isValidAuthentication(myMainAuthArgData):
                     ''' we need to retrieve entityid and entitytype from Auth collection '''
@@ -966,17 +1013,18 @@ class Security(object):
             else:
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
-
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
             ''' declaring/initializing variables '''
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myArgKey = ['LoginId','ResponseMode']
 
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
             ''' Preparing value for login id'''
             myCriteria = {'_id': myMainArgData['LoginId']}

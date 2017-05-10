@@ -5,10 +5,11 @@ from com.uconnect.core.singleton import Singleton
 from com.uconnect.core.globals import Global
 from com.uconnect.bps.factory import Factory
 from com.uconnect.db.mongodb import MongoDB
-from com.uconnect.db.dbutility import DBUtility
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.core.security import Security
 from com.uconnect.utility.memberUtility import MemberUtility
+from com.uconnect.core.activity import Activity
+
 myLogger = logging.getLogger('uConnect')
 
 @Singleton
@@ -26,10 +27,10 @@ class MemberBPS(object):
         self.factoryInstance = Factory.Instance()
         self.utilityInstance = Utility.Instance()
         self.mongoDbInstance = MongoDB.Instance()
-        self.dbutilityInstance = DBUtility.Instance()
         self.globalInstance = Global.Instance()
         self.securityInstance = Security.Instance()
         self.memberUtilInstance = MemberUtility.Instance()
+        self.activityInstance = Activity.Instance()
 
         self.myClass = self.__class__.__name__
 
@@ -73,7 +74,7 @@ class MemberBPS(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             ''' Preparing value to create a new member build initial data '''
-            myMemberData = self.memberUtilInstance._MemberUtility__buildInitMembderData(myMainArgData['Main'],myMainArgData['Address'],myMainArgData['Contact'])
+            myMemberData = self.memberUtilInstance._MemberUtility__buildInitMembderData({'Main':myMainArgData['Main'],'Address':myMainArgData['Address'],'Contact':myMainArgData['Contact']})
             myMemberId = myMemberData['_id'] 
 
             ''' Creating a member '''
@@ -324,6 +325,11 @@ class MemberBPS(object):
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Can not add requested connection')
             #fi
 
+            ''' recording activity '''
+            self.activityInstance._Activity__logActivity(self.utilityInstance.buildActivityArg(
+                myMainArgData['MemberId'],self.globalInstance._Global__member,self.globalInstance._Global__External,'Member [{member}] added a connection with [{cmember}], awaiting acceptance '.
+                    format(member=myMainArgData['MemberId'], cmember=myMainArgData['ConnectMemberId']), myMainArgData['Auth']))
+
             # will return all the existing connection any way
             myResponseArgData = {'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
             myMemberConnections = self.getAMemberConnections(myResponseArgData)
@@ -364,6 +370,7 @@ class MemberBPS(object):
             myConnectionResult = self.globalInstance._Global__False
             myArgKey = ['MemberId','ConnectMemberId','Action','Auth','ResponseMode']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myActivityDetails = ''
 
             ''' validating arguments '''
             if not (myArgValidation):
@@ -384,10 +391,13 @@ class MemberBPS(object):
 
             if myMainArgData['Action'] == self.globalInstance._Global__Connection_Action_Accepted:
                 myConnectionResults = self.memberUtilInstance._MemberUtility__acceptInvitation(myMainArgData)
+                myActivityDetails = 'Member [{member}] accepted [{cmember}] connection request '.format(member=myMainArgData.MemberId, cmember=myMainArgData['ConnectMemberId'])
             elif myMainArgData['Action'] == self.globalInstance._Global__Connection_Action_Rejected:
                 myConnectionResults = self.memberUtilInstance._MemberUtility__rejectInvitation(myMainArgData)
+                myActivityDetails = 'Member [{member}] rejected [{cmember}] connection request '.format(member=myMainArgData.MemberId, cmember=myMainArgData['ConnectMemberId'])
             elif  myMainArgData['Action'] == self.globalInstance._Global__Connection_Action_Removed:
                 myConnectionResults = self.memberUtilInstance._MemberUtility__removeConnection(myMainArgData)
+                myActivityDetails = 'Member [{member}] removed [{cmember}] connection '.format(member=myMainArgData.MemberId, cmember=myMainArgData['ConnectMemberId'])
             #fi                
 
             ''' check if connection action was successful; get all the connection for this memner, 
@@ -397,6 +407,10 @@ class MemberBPS(object):
                 myResponseArgData = {'MemberId':myMainArgData['MemberId'],'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
                 myResponseData = self.getAMemberConnections(myResponseArgData)
                 myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myResponseData,'Find')
+
+                ''' recording activity '''
+                self.activityInstance._Activity__logActivity(self.utilityInstance.buildActivityArg(
+                    myMainArgData['MemberId'],self.globalInstance._Global__member,self.globalInstance._Global__External,myActivityDetails, myMainArgData['Auth']))
             else:
                 myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myConnectionResults,'Error')
             #fi
@@ -774,7 +788,7 @@ class MemberBPS(object):
             myConnectionType = myMainArgData['ConnectionType']
             
             ''' build aggregate pipeline '''
-            myAggregatePipeLine = self.memberUtilInstance._MemberUtility__buildGetAllConnPipeline(myMemberId,myConnectionType)
+            myAggregatePipeLine = self.memberUtilInstance._MemberUtility__buildGetAllConnPipeline({'MemberId':myMemberId,'ConnectionType':myConnectionType})
             myModuleLogger.debug("Pipeline [{pipeline}] will be used to execute the aggregate function")
 
             #myAggregateDict = {"aggregate":self.memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
@@ -784,7 +798,7 @@ class MemberBPS(object):
             myConnectionRawData = self.mongoDbInstance.ExecCommand("member", myAggregateDict)
 
             if self.utilityInstance.isAllArgumentsValid(myConnectionRawData):
-                myMemberConnection = {"Data":self.memberUtilInstance._MemberUtility__buildMyConnection('Member',myConnectionRawData)}
+                myMemberConnection = {"Data":self.memberUtilInstance._MemberUtility__buildMyConnection({'ConnectionType':self.globalInstance._Global__member,'ConnectionRawData':myConnectionRawData})}
             else:
                 myMemberConnection = {}
             #fi
