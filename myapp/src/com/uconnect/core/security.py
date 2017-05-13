@@ -4,7 +4,6 @@ from bcrypt import hashpw, checkpw, gensalt
 from bson.objectid import ObjectId
 
 from com.uconnect.core.singleton import Singleton
-from com.uconnect.core.infra import Environment
 from com.uconnect.db.mongodb import MongoDB
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.core.globals import Global
@@ -16,7 +15,6 @@ myLogger = logging.getLogger('uConnect')
 class Security(object):
     def __init__(self):
         self.mongoDbInstance = MongoDB.Instance()
-        self.envInstance = Environment.Instance()
         self.utilityInstance = Utility.Instance()
         self.globalInstance = Global.Instance()
         self.activityInstance = Activity.Instance()
@@ -101,7 +99,7 @@ class Security(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             # retrieve the template 
-            myInitLoginInfoData = self.envInstance.getTemplateCopy(self.globalInstance._Global__loginColl)
+            myInitLoginInfoData = self.utilityInstance.getTemplateCopy(self.globalInstance._Global__loginColl)
             myModuleLogger.debug('LoginInfo template [{template}]'.format(template=myInitLoginInfoData))        
 
             myInitLoginInfoData['_id'] = myMainArgData['LoginId']
@@ -140,7 +138,7 @@ class Security(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             # retrieve the template 
-            myInitAuthData = self.envInstance.getTemplateCopy(self.globalInstance._Global__authColl)
+            myInitAuthData = self.utilityInstance.getTemplateCopy(self.globalInstance._Global__authColl)
             #print(myInitAuthData, myMainArgData)
             myModuleLogger.debug('LoginInfo template [{template}]'.format(template=myInitAuthData))        
 
@@ -150,7 +148,7 @@ class Security(object):
             myInitAuthData['DeviceOs'] = myMainArgData['DeviceOs']
             myInitAuthData['MacAddress'] = myMainArgData['MacAddress']
             myInitAuthData['SessionId'] = myMainArgData['SessionId']
-            myInitAuthData['ExpiryDate'] = datetime.datetime.utcnow() + datetime.timedelta(days=self.envInstance.AuthValidDuration)
+            myInitAuthData['ExpiryDate'] = datetime.datetime.utcnow() + datetime.timedelta(days=self.utilityInstance.getAuthValidDuration())
             myInitAuthData['EntityId'] = myMainArgData['EntityId']
             myInitAuthData['EntityType'] = myMainArgData['EntityType']
             myInitAuthData['AppVer'] = myMainArgData['AppVer']
@@ -184,7 +182,7 @@ class Security(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
             # retrieve the template 
-            myInitAuthHistData = self.envInstance.getTemplateCopy(self.globalInstance._Global__authHistColl)
+            myInitAuthHistData = self.utilityInstance.getTemplateCopy(self.globalInstance._Global__authHistColl)
             myModuleLogger.debug('LoginInfo template [{template}]'.format(template=myInitAuthHistData))        
 
             myInitAuthHistData['AuthId'] = myMainArgData['_id']

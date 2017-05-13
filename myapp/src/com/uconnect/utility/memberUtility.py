@@ -56,11 +56,11 @@ class MemberUtility(object):
             myContactDict = myMainArgData['Contact']
 
             myZipCode = myAddressDict['ZipCode']
-            myCityNState = self.envInstance.getAddressCityState(myZipCode)
+            myCityNState = self.utilityInstance.getAddressCityState(myZipCode)
             myCity = myCityNState[0]
             myState = myCityNState[1]
 
-            myInitMemberData = self.envInstance.getTemplateCopy(self.globalInstance._Global__member)
+            myInitMemberData = self.utilityInstance.getTemplateCopy(self.globalInstance._Global__member)
             #myModuleLogger.debug('Member template [{template}]'.format(template=myInitMemberData))        
 
             ''' Main '''
@@ -289,7 +289,6 @@ class MemberUtility(object):
             isReqConnectionAdded = self.globalInstance._Global__False
             isInvConnectionAdded = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth','ResponseMode']
 
             ''' validating arguments '''
@@ -306,28 +305,20 @@ class MemberUtility(object):
             #fi
 
             ''' validating Member and Connect Memebr '''
-
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
             if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
 
-            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'],'Auth':myMainArgData['Auth']})):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['MemberId']},'Auth':myMainArgData['Auth']})):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
             #fi
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
-            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'],'Auth':myMainArgData['Auth']})):
+
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['ConnectMemberId']},'Auth':myMainArgData['Auth']})):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
             ''' Preparing Requestor/Invitee member connection document '''
-            myRequestorConn = self.envInstance.getConnTemplateCopy(self.globalInstance._Global__member)
-            myInviteeConn = self.envInstance.getConnTemplateCopy(self.globalInstance._Global__member)
+            myRequestorConn = self.utilityInstance.getConnTemplateCopy(self.globalInstance._Global__member)
+            myInviteeConn = self.utilityInstance.getConnTemplateCopy(self.globalInstance._Global__member)
 
             ''' Requestor connection '''
             myRequestorCriteria = {'_id':myMainArgData['MemberId']}
@@ -432,7 +423,6 @@ class MemberUtility(object):
             isReqConnectionAdded = self.globalInstance._Global__False
             isInvConnectionAdded = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth']
 
             ''' validating arguments '''
@@ -448,25 +438,15 @@ class MemberUtility(object):
                     format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
             #fi
 
-            ''' validating Member and Connect Memebr '''
-            
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-
-            '''
+            ''' validating Member and Connect Memebr '''            
             if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
 
-            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'], 'Auth': myMainArgData['Auth'] } )):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['MemberId']}, 'Auth': myMainArgData['Auth'] } )):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
             #fi
 
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
-            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'], 'Auth': myMainArgData['Auth'] } )):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['ConnectMemberId']}, 'Auth': myMainArgData['Auth'] } )):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
@@ -570,7 +550,6 @@ class MemberUtility(object):
             isReqConnectionAdded = self.globalInstance._Global__False
             isInvConnectionAdded = self.globalInstance._Global__False
             isCleanUpDone = self.globalInstance._Global__False
-            #arg4IsAValidMember = {}
             myArgKey = ['MemberId','ConnectMemberId','Auth']
 
             ''' validating arguments '''
@@ -587,22 +566,14 @@ class MemberUtility(object):
             #fi
 
             ''' validating Member and Connect Memebr '''
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
             if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
 
-            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'], 'Auth': myMainArgData['Auth']})):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['MemberId']}, 'Auth': myMainArgData['Auth']})):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
             #fi
 
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
-            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'], 'Auth': myMainArgData['Auth']})):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['ConnectMemberId']}, 'Auth': myMainArgData['Auth']})):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
@@ -715,25 +686,14 @@ class MemberUtility(object):
             #fi
 
             ''' validating Member and Connect Memebr '''
-            
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['MemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
-
             if myMainArgData['MemberId'] == myMainArgData['ConnectMemberId']:
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
 
-            if (not self.isAValidMember({'MemberId':myMainArgData['MemberId'],'Auth':myMainArgData['Auth']})):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['MemberId']},'Auth':myMainArgData['Auth']})):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
             #fi
 
-            '''
-            arg4IsAValidMember = self.__buildArg4IsAValidMember(
-                myMainArgData['ConnectMemberId'], myMainArgData['Auth']['AuthKey'], myMainArgData['Auth']['EntityId'], myMainArgData['Auth']['EntityType'])
-            '''
-
-            if (not self.isAValidMember({'MemberId':myMainArgData['ConnectMemberId'],'Auth':myMainArgData['Auth']})):
+            if (not self.isAValidMember({'Main':{'MemberId':myMainArgData['ConnectMemberId']},'Auth':myMainArgData['Auth']})):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectMemberId'] ))
             #fi
 
@@ -830,17 +790,26 @@ class MemberUtility(object):
             else:
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
             isValidMember = self.globalInstance._Global__False 
-            #myArgKey = ['MemberId','AuthKey','EntityId','EntityType']
-            myArgKey = ['MemberId','Auth']
+            myArgKey = ['Main','Auth']
 
             ''' validating arguments '''
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+
+            myArgKey = ['MemberId']
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData['Main'].keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member 
@@ -852,7 +821,8 @@ class MemberUtility(object):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['AuthKey'], me=self.utilityInstance.whoAmI()))
             #fi
-            myCriteria = {'_id':myMainArgData['MemberId']}
+
+            myCriteria = {'_id':myMainArgData['Main']['MemberId']}
             myProjection={'_id':1}
             myFindOne = True
 
@@ -864,21 +834,34 @@ class MemberUtility(object):
             else:
                 myMemberId = None
             #fi
-            if myMemberId and (myMemberId == myMainArgData['MemberId']):
-                  isValidMember = self.globalInstance._Global__True 
+            if myMemberId and (myMemberId == myMainArgData['Main']['MemberId']):
+                isValidMember = self.globalInstance._Global__True 
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
+            else:
+                isValidMember = self.globalInstance._Global__False 
+                myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'MemberID [{member}] does not exist'.format(member=str(myMainArgData['Main']['MemberId'])))                
             #fi
-            ''' build response data '''            
-            return isValidMember
+
+            ''' build response data '''
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',isValidMember)
+            return myResponse
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            print('Error',error.errorMsg)
+            myModuleLogger.exception('InvalidAuthKey: error [{errmsg}]'.format(errmsg=error.errorMsg))
             isValidMember = self.globalInstance._Global__Error
-            return isValidMember
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Auth Key; error [{errmsg}] occurred'.format(errmsg=error.errorMsg))
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
+            return myResponse
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise
+            myModuleLogger.exception('MissingArgumentValues: error [{errmsg}]'.format(error=error.errorMsg))
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Arg validation error; error [{errmsg}] occurred'.format(errmsg=error.errorMsg))
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
+            return myResponse
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{errmsg}]'.format(errmsg=error.message))
             isValidMember = self.globalInstance._Global__Error
-            return isValidMember
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'An error [{errmsg}] occurred'.format(errmsg=error.message))
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
+            return myResponse
     # isAValidMember Ends here

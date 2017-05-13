@@ -4,12 +4,10 @@ from com.uconnect.core.singleton import Singleton
 from com.uconnect.db.mongodb import MongoDB
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.core.globals import Global
-from com.uconnect.core.infra import Environment
 
 @Singleton
 class Activity(object):
     def __init__(self):
-        self.envInstance = Environment.Instance()
         self.utilityInstance = Utility.Instance()
         self.mongoDbInstance = MongoDB.Instance()
         self.globalInstance = Global.Instance()
@@ -33,7 +31,7 @@ class Activity(object):
             self.utilityInstance.removeKeyFromDict(myMainArgData, 'Password')
 
             # retrieve the template 
-            myInitActivityLogData = self.envInstance.getTemplateCopy(self.globalInstance._Global__activityLogColl)
+            myInitActivityLogData = self.utilityInstance.getTemplateCopy(self.globalInstance._Global__activityLogColl)
             myModuleLogger.debug('ActivityLog template [{template}]'.format(template=myInitActivityLogData))        
 
             myInitActivityLogData['EntityId'] = myMainArgData['EntityId']

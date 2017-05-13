@@ -1,12 +1,25 @@
 {
+    "DirtyRead":
+        {
+            "EntityId":"<EntityId>",            
+            "EntityType":"<EntityId>",
+            "ChangeDate":"<activity date>",
+            "What":"<Activity Desc>"
+        },
+    "UserFeed":
+        {
+            "EntityId":"<EntityId>",            
+            "EntityType":"<EntityId>",
+            "When":"<activity date>",
+            "What":"<Activity Desc>",
+            "Acknowledged":""
+        },
     "ActivityLog":
         {
             "EntityId":"<EntityId>",            
             "EntityType":"<EntityId>",
             "ActivityDate":"<activity date>",
             "Activity":"<Activity Desc>",
-            "Acknowledged":"",
-            "ActivityType":"",
             "Auth":""
         },
     "LoginInfo":

@@ -1,6 +1,5 @@
 import importlib,logging, com.uconnect.utility.ucLogging, com.uconnect.core.error
 from com.uconnect.utility.ucUtility import Utility
-from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.core.globals import Global
 
@@ -16,7 +15,6 @@ class Factory(object):
     '''
     def __init__(self):
         self.utilityInstance = Utility.Instance()
-        self.envInstance = Environment.Instance()
         self.globalInstance = Global.Instance()
 
     def processRequest(self, argRequestDict):
@@ -75,7 +73,7 @@ class Factory(object):
 
             myLibrary = myClass = myMethod  = ''
 
-            myLibClassMethod = self.envInstance.getModuleClassMethod(argScreenId, argActionId)
+            myLibClassMethod = self.utilityInstance.getModuleClassMethod(argScreenId, argActionId)
             if not( myLibClassMethod[0] == None):
                 myLibrary = myLibClassMethod[0]
                 myClass   = myLibClassMethod[1]

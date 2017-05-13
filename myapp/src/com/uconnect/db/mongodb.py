@@ -1,5 +1,4 @@
 from com.uconnect.core.dbconnection import ConnectionBuilder
-from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.utility.ucLogging import logging
@@ -25,9 +24,9 @@ class MongoDB(object):
 
         self.connectBuildInstance = ConnectionBuilder.Instance()
         self.connectionInstance = self.connectBuildInstance.buildConnection("MongoDB")
-        self.envInstance = Environment.Instance()
         self.utilityInstance = Utility.Instance()
-        self.myPageSize = self.envInstance.maxPageSize
+        self.myPageSize = self.utilityInstance.getMaxPageSize
+        self.myExclColl4Id = self.utilityInstance.getExclColl4Id()
 
         myModuleLogger.debug("Initialization details: connectionInstance[{myConn}], myPageSize[{myPageSize}]".format(myConn=self.connectionInstance, myPageSize=self.myPageSize))
         myModuleLogger.debug("initialization completed")
@@ -146,7 +145,7 @@ class MongoDB(object):
             if not (myKeyValue == None): 
                 # we need to use repr() for a value to be appeared as string character
                 argDictDocument.update({"_id":repr(myKeyValue)})
-            elif myKeyValue == None and (argCollection not in self.envInstance.exclColl4Id):             
+            elif myKeyValue == None and (argCollection not in self.utilityInstance.getExclColl4Id()):             
                 raise NullKeyValue("Null Key Value found for collection [{coll}]".format(coll=argCollection))
 
             myModuleLogger.debug("Results: dictionary document, after updating key value [{dict}]".format(dict=argDictDocument))

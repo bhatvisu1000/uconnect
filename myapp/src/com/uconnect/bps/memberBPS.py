@@ -1,6 +1,5 @@
 import datetime, json,logging, com.uconnect.utility.ucLogging, com.uconnect.core.error
 
-from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.core.globals import Global
 from com.uconnect.bps.factory import Factory
@@ -23,7 +22,6 @@ class MemberBPS(object):
             usage:          Called internally
             Return:         N/A
         '''        
-        self.envInstance = Environment.Instance()
         self.factoryInstance = Factory.Instance()
         self.utilityInstance = Utility.Instance()
         self.mongoDbInstance = MongoDB.Instance()
@@ -871,8 +869,8 @@ class MemberBPS(object):
 
             ''' Preparing document:
             '''
-            #myArgRequestData['Request']['MainArg']['Settings']=self.envInstance.defaultsData['Group']['Settings']
-            myGroupData = self.envInstance.getTemplateCopy('Group')
+            #myArgRequestData['Request']['MainArg']['Settings']=self.utilityInstance.defaultsData['Group']['Settings']
+            myGroupData = self.utilityInstance.getTemplateCopy('Group')
             myGroupData['Main']['GroupName'] = myMainArgData['GroupName']
             myGroupData['Main']['MemberId'] = myMainArgData['MemberId']
             myGroupData['_History'] = self.utilityInstance.buildInitHistData() 

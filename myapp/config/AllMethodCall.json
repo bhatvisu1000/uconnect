@@ -118,7 +118,7 @@
                 },
             "MainArg":
                 {
-                    "MemberId":314263,
+                    "Main":{"MemberId":314263},
                     "Auth":
                         {
                             "AuthKey":"591279dcdf9bba3be4147cb4",
@@ -166,12 +166,11 @@ member = MemberBPS.Instance()
                 },
             "MainArg":
                 {
-                    "MemberId":314200,
-                    "ConnectMemberId":314187,
-                    "ResponseMode":"I",
+                    "MemberId":314263,
+                    "ConnectMemberId":314262,
                     "Auth":
                         {  
-                            "AuthKey":"590cf9cddf9bba541cb3018b",
+                            "AuthKey":"591279dcdf9bba3be4147cb4",
                             "LoginId":"vishal",
                             "LoginType":"Web",
                             "Password":"bhatt",
@@ -191,6 +190,34 @@ exit()
 
 // Accept/Reject/Remove Invitation
 
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"ActionOnAMemberConnection","Page":"None"
+                },
+            "MainArg":
+                {
+                    "MemberId":314187,
+                    "ConnectMemberId":314188,
+                    "Action":"Remove",
+                    "Auth":
+                        {  
+                            "AuthKey":"591279dcdf9bba3be4147cb4",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()
@@ -202,7 +229,7 @@ arg = {"MainArg":
                     "ResponseMode":"E",
                     "Auth":
                         {  
-                            "AuthKey":"58fd0da2df9bba388c0ff35d",
+                            "AuthKey":"591279dcdf9bba3be4147cb4",
                             "EntityType" : "Member",
                             "SessionId" : "aaabbbccc",
                             "LoginType" : "Mobile",
@@ -220,3 +247,7 @@ myConnection = member.AcceptConnection(arg)
 print(myConnection)
 exit()
 
+
+
+// create a collection for feed (external to users) and activity log for internal purpose only
+// we also need to create a collection to hold entitytype/id and any changes (which type of changes)

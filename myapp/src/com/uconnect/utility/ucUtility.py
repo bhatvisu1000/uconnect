@@ -283,7 +283,7 @@ class Utility(object):
             Arguments:      Request json dict data, will use screenId:99999, ActionId: 99999
             usage:          ( builRequestData(<argRequestDict>)
         '''
-        myRequestData = self.envInstance.getTemplateCopy(self.globalInstance._Global__RequestTemplate)
+        myRequestData = self.getTemplateCopy(self.globalInstance._Global__RequestTemplate)
         #print ('Request:', myRequestData)
         #print ('Internal Scr:', self.globalInstance._Global__InternalScreenId)
         myRequestData["Request"]["Header"]["ScreenId"] = self.globalInstance._Global__InternalScreenId
@@ -296,7 +296,7 @@ class Utility(object):
     def buildInitHistData(self):
         ''' building initial history data for a given collection '''
         #myHistoryData = self.envInstance.defaultsData["History"]
-        myHistoryData = self.envInstance.getTemplateCopy(self.globalInstance._Global__HistoryTemplate)
+        myHistoryData = self.getTemplateCopy(self.globalInstance._Global__HistoryTemplate)
 
         myHistoryData["InitChange"]["When"]=datetime.datetime.utcnow()
         myHistoryData["InitChange"]["Message"]="Initial creation"            
@@ -307,7 +307,7 @@ class Utility(object):
 
     def buildActivityArg(self,argEntityId, argEntityType, argActivityType, argActivity, argAuth):
 
-        myActivityLogData = self.envInstance.getTemplateCopy(self.globalInstance._Global__activityLogColl)
+        myActivityLogData = self.getTemplateCopy(self.globalInstance._Global__activityLogColl)
 
         myActivityLogData["EntityType"]=argEntityType
         myActivityLogData["EntityId"]=argEntityId            
@@ -347,7 +347,7 @@ class Utility(object):
         #fi
 
         #myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._ResponseTemplate)
-        myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._Global__ResponseTemplate)
+        myResponseData = self.getTemplateCopy(self.globalInstance._Global__ResponseTemplate)
         #print("Response",myResponseData)
         myData = argResultData
 
@@ -423,7 +423,7 @@ class Utility(object):
         # get a templaye copy for a given collection
         try:
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Utility')
-            myEmptyTemplate = self.envInstance.getTemplateCopy(argTemplateName)
+            myEmptyTemplate = self.getTemplateCopy(argTemplateName)
             #print(myEmptyTemplate)
             if not (argBlockName == None) and argBlockName in myEmptyTemplate:
                 myEmptyTemplate = myEmptyTemplate[argBlockName]
@@ -524,6 +524,73 @@ class Utility(object):
         print(argErrorCode,self.envInstance._Environment__errorCodesData,myErrorDescription)
         return myErrorDescription
     ''' Security Utility '''
+
+    def getTemplateCopy(self, argTemplate):
+        ''' Returns a copy of a template for an entity defined in template.json; For e.g. Member/Group/Vendor/History '''
+
+        myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
+        myModuleLogger.debug("Argument [{arg}] received ".format(arg=argTemplate))
+
+        try:
+
+          if argTemplate in self.envInstance._Environment__templateData:
+            return copy.deepcopy(self.envInstance._Environment__templateData[argTemplate])
+          else:
+            raise com.uconnect.core.error.InvalidTemplate('Template [{template}] is missing in template repository !!! '.format(template=argTemplate))
+
+        except com.uconnect.core.error.InvalidTemplate as error:
+            myModuleLogger.error("InvalidTemplateError, [{error}]".format(error=error.errorMsg))
+            raise error     
+        except Exception as error:
+           myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+           raise
+    def getAuthValidDuration(self):
+        return self.envInstance.AuthValidDuration
+
+    def getExclColl4Id(self):
+        return self.envInstance.exclColl4Id
+    def getMaxPageSize(self):
+        return self.envInstance.getExclColl4Id
+
+    def getAddressCityState(self,argZipCode):
+
+        try:
+            if argZipCode in self.envInstance_Environment__zipCodeData:
+                return self.envInstance_Environment__zipCodeData[argZipCode]['City'], self.envInstance_Environment__zipCodeData[argZipCode]['State'] 
+            else:
+                raise com.uconnect.core.error.InvalidZipCode('Invalid Zipcode {zipcode} !!!'.format(zipcode = argZipCode))
+        except Exception as error:
+            #myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+            raise
+
+    def getModuleClassMethod(argScreenId, argActionId):
+        try:
+            #myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
+            #myModuleLogger.debug("Argument(s) [{arg}] received ".format(arg=(argScreenId + ',' + argActionId)))
+            if (argScreenId in self.envInstance._Environment__factoryMetaData) and (argActionId in self.envInstance._Environment__factoryMetaData[argScreenId]):
+                myLibrary = self.envInstance._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
+                myClass   = self.envInstance._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Class']
+                myMethod  = self.envInstance._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Method']
+                return myLibrary, myClass, myMethod 
+            else:
+                raise com.uconnect.core.error.InvalidScreenAction('Invalid Screen/Action Id [{screen}],[{action}] !!!'.format(screen = argScreenId, action = argActionId))
+        except Exception as error:
+            #myModuleLogger.error('Error, an error occurred [{error}]'.format(error=error.message))
+            raise
+
+    def getConnTemplateCopy(self, argConnectionType):
+        ''' Returns a copy of Member template from template.json '''
+        try:
+            #myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
+            #myModuleLogger.debug("Argument [{arg}] received ".format(arg=argConnectionType))
+
+            if argConnectionType in self.envInstance._Environment__templateData['Connections']:
+                return copy.deepcopy(self.envInstance._Environment__templateData['Connections'][argConnectionType])
+            else:
+                raise com.uconnect.core.error.InvalidConnectionType('Connection type [{connType}] is missing in template repository !!! '.format(connType=argConnectionType))
+        except Exception as error:
+            #myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+            raise error
 
 ''' Pop dict items
 >>> for x in a.keys():

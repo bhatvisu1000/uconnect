@@ -275,27 +275,8 @@ class Environment(object):
     
     return myenvDetailResult
 
-  def getTemplateCopy(self, argTemplate):
-    ''' Returns a copy of a template for an entity defined in template.json; For e.g. Member/Group/Vendor/History '''
 
-    myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
-    myModuleLogger.debug("Argument [{arg}] received ".format(arg=argTemplate))
-
-    try:
-
-      if argTemplate in self.__templateData:
-        return copy.deepcopy(self.__templateData[argTemplate])
-      else:
-        raise com.uconnect.core.error.InvalidTemplate('Template [{template}] is missing in template repository !!! '.format(template=argTemplate))
-
-    except com.uconnect.core.error.InvalidTemplate as error:
-        myModuleLogger.error("InvalidTemplateError, [{error}]".format(error=error.errorMsg))
-        raise error     
-    except Exception as error:
-       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
-       raise
-
-  def getConnTemplateCopy(self, argConnectionType):
+  def getConnTemplateCopy1(self, argConnectionType):
     ''' Returns a copy of Member template from template.json '''
 
     myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
@@ -314,47 +295,6 @@ class Environment(object):
        myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
        raise
 
-  def getAddressCityState(self,argZipCode):
-
-    myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
-    myModuleLogger.debug("Argument [{arg}] received ".format(arg=argZipCode))
-
-    try:
-      if argZipCode in self.__zipCodeData:
-        return self.__zipCodeData[argZipCode]['City'], self.__zipCodeData[argZipCode]['State'] 
-      else:
-        raise com.uconnect.core.error.InvalidZipCode('Invalid Zipcode {zipcode} !!!'.format(zipcode = argZipCode))
-    
-    except com.uconnect.core.error.InvalidZipCode as error:
-        myModuleLogger.error("InvalidZipCodeError, [{error}]".format(error=error.errorMsg))
-        raise error     
-    except Exception as error:
-       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
-       raise
-
-  def getModuleClassMethod(self, argScreenId, argActionId):
-
-    myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
-    myModuleLogger.debug("Argument(s) [{arg}] received ".format(arg=(argScreenId + ',' + argActionId)))
-
-    try:
-      #print(argScreenId,argActionId)
-      #print(self.__factoryMetaData[argScreenId][argActionId])
-      if (argScreenId in self.__factoryMetaData) and (argActionId in self.__factoryMetaData[argScreenId]):
-        myLibrary = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
-        myClass   = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Class']
-        myMethod  = self.__factoryMetaData[argScreenId][argActionId]['BPS']['Method']
-        return myLibrary, myClass, myMethod 
-      else:
-        #print("Screen/Action not found")
-        raise com.uconnect.core.error.InvalidScreenAction('Invalid Screen/Action Id [{screen}],[{action}] !!!'.format(screen = argScreenId, action = argActionId))
-    
-    except com.uconnect.core.error.InvalidScreenAction as error:
-        myModuleLogger.error('InvalidScreenActionError, [{error}]'.format(error=error.errorMsg))
-        raise     
-    except Exception as error:
-       myModuleLogger.error('Error, an error occurred [{error}]'.format(error=error.message))
-       raise
 
 '''
 if __name__ == "__main__":
