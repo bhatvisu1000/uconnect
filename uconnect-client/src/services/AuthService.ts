@@ -54,7 +54,7 @@ export class AuthService {
   login(username: string, password: string): void {
     
 
-    this.validateLogin(username, password);
+    let myResponse = this.validateLogin(username, password);
 
     this.storage.set(this.HAS_LOGGED_IN, true);
     this.setUsername(username);
