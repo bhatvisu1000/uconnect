@@ -1,6 +1,6 @@
 import { Header } from "./Header";
 import { MainArg } from "./MainArg";
 
-export class Response {
+export class MyResponse {
   constructor(public Header: Header, public MainArg: MainArg) {}
 }

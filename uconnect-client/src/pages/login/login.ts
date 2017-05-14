@@ -19,10 +19,11 @@ export class LoginPage {
   constructor(public navCtrl: NavController, public authService: AuthService) { }
 
   onLogin(form: NgForm) {
+    
     this.submitted = true;
 
     if (form.valid) {
-      this.authService.login(this.login.username);
+      this.authService.login(this.login.username, this.login.password);
       this.navCtrl.push(MyTabsPage);
     }
   }

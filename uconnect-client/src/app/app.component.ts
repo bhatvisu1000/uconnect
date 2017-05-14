@@ -51,12 +51,13 @@ export class MyApp {
     { title: 'Notification', name: 'TabsPage', component: MyTabsPage, tabComponent: MyNotificationPage, index: 3, icon: 'flag' }
   ];
   loggedInPages: PageInterface[] = [
-    { title: 'Registration', name: 'RegistrationPage', component: RegistrationPage, icon: 'person' },
+    { title: 'Settings', name: 'AccountPage', component: RegistrationPage, icon: 'person' },
     { title: 'Logout', name: 'MyTabsPage', component: MyTabsPage, icon: 'log-out', logsOut: true }
   ];
   loggedOutPages: PageInterface[] = [
-    { title: 'Login', name: 'LoginPage', component: LoginPage, icon: 'log-in' },
-    { title: 'Signup', name: 'Registration', component: RegistrationPage, icon: 'person-add' }
+        { title: 'Login People', name: 'Login', component: LoginPage, icon: 'log-in' },
+        { title: 'Signup', name: 'Registration', component: RegistrationPage, icon: 'person-add' }
+
   ];
   rootPage: any;
 
@@ -72,7 +73,7 @@ export class MyApp {
 
     // Check if the user has already seen the tutorial
     
-    this.rootPage = MyTabsPage;
+    this.rootPage = LoginPage;
     this.platformReady()
 
     // load the conference data
@@ -112,6 +113,7 @@ export class MyApp {
     if (page.logsOut === true) {
       // Give the menu time to close before changing to logged out
       this.authService.logout();
+      this.rootPage = LoginPage;
     }
   }
 

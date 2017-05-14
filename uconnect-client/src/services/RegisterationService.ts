@@ -31,17 +31,15 @@ export class RegisterationService {
   constructor(private http: Http) {
   }
 
- createMember(loginId: string, firstName: string,
+ createMember(userName: string, password: string, firstName: string,
             lastName: string,
-            nickName: string,
-            mobileNo: string,
-            zipCode: string,
-            emailAddress: string) {
-    this.main = new Main(firstName, lastName, nickName, "M");
-    this.address = new Address("", "", "", zipCode, "", "");
-    this.contact = new Contact(emailAddress, mobileNo, "N/A");
+            zipCode: string) {
+    this.main = new Main(firstName, lastName, "", "M");
     
-    this.auth = new Auth(loginId, "Web/Mobile", "bhat", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
+    this.address = new Address("", "", "", zipCode, "", "");
+    this.contact = new Contact(userName, "", "N/A");
+    
+    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
     
     this.registrationRequestData = new RegistrationRequestData(this.auth, this.main, this.address, this.contact);
     
@@ -53,7 +51,7 @@ export class RegisterationService {
 
     this.sendRequest= new SendRequest(this.request);
     
-    console.log("mainArg" + this.mainArg);
+    
     console.log("main" + this.main);
     console.log("address" + this.address);
     console.log("contact" + this.contact);

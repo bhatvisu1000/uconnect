@@ -1,16 +1,47 @@
 
 <ion-header>
 
+  
   <ion-navbar>
-    <ion-title>registration</ion-title>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title>Registration</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content padding>
 	<form #f="ngForm" (ngSubmit)="onAddMember(f)">
 	    <ion-list>
+	      
+	      <ion-item>
+	        <ion-label floating>Email Id (UserId)</ion-label>
+	        <ion-input
+	          type="text"
+	          name="userId"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+
+		  <ion-item>
+	        <ion-label floating>Password</ion-label>
+	        <ion-input
+	          type="password"
+	          name="password"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+
+		  <ion-item>
+	        <ion-label floating>Confirm Password</ion-label>
+	        <ion-input
+	          type="password"
+	          name="confirmpassword"
+	          ngModel
+          	  required></ion-input>
+	      </ion-item>
+
 	      <ion-item>
 	        <ion-label floating>First Name</ion-label>
 	        <ion-input
@@ -29,14 +60,6 @@
           	  required></ion-input>
 	      </ion-item>
 	      
-	      <ion-item>
-	        <ion-label floating>Mobile No</ion-label>
-	        <ion-input
-	          type="text"
-	          name="mobileNo"
-	          ngModel
-          	  required></ion-input>
-	      </ion-item>
 
 		<ion-item>
 	        <ion-label floating>Zip Code</ion-label>
@@ -46,19 +69,9 @@
 	          ngModel
           	  required></ion-input>
 	      </ion-item>
-	      
-	       <ion-item>
-	        <ion-label floating>Email ID</ion-label>
-	        <ion-input
-	          type="text"
-	          name="emailAddress"
-	          ngModel
-          	  required></ion-input>
-	      </ion-item>
-
-		  
 
 	    </ion-list>
+
 	    <button
 	      ion-button
 	      type="submit"
