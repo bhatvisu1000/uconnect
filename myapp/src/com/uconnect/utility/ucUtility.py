@@ -563,7 +563,7 @@ class Utility(object):
             #myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
             raise
 
-    def getModuleClassMethod(argScreenId, argActionId):
+    def getModuleClassMethod(self,argScreenId, argActionId):
         try:
             #myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
             #myModuleLogger.debug("Argument(s) [{arg}] received ".format(arg=(argScreenId + ',' + argActionId)))

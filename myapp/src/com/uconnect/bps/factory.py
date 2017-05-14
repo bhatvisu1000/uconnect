@@ -52,7 +52,7 @@ class Factory(object):
             myModuleLogger.debug("did not find mapped bps process, value from navigating factoty data [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
             myRquestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Screen [{screen}] Action [{action}]'.
                                 format(screen=myScreenId, action=myActionId))            
-            myResponse = self.utilityInstance.buildResponseData('E',myResponseData,'Error')
+            myResponse = self.utilityInstance.buildResponseData('E',myRquestStatus,'Error')
         #fi
 
         myModuleLogger.debug("return value from bps process [{responseVal}]".format(responseVal=myResponse))
