@@ -14,7 +14,8 @@ class Global(object):
         self.__loginColl = self.__login = 'LoginInfo'
         self.__authColl = self.__auth = 'Auth'
         self.__authHistColl = self.__authHist = 'AuthHistory'
-        self.__activityLogColl = self.__activityLog = 'ActivityLog'        
+        self.__activityLogColl = self.__activityLog = 'ActivityLog'
+        self.__securityCodeColl = self.__securityCode = 'SecurityCode'
 
         self.__True = True
         self.__TrueStatus = True

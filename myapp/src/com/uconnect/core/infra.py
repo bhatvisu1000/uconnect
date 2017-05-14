@@ -80,7 +80,8 @@ class Environment(object):
     self.errorCodesFile = self.__globalSettings['ErrorCodes']
     self.exclColl4Id = self.__globalSettings['ExclColl4Id']
     self.AuthValidDuration = self.__globalSettings['AuthValidDuration']
-
+    self.SecurityCodeLength = self.__globalSettings['SecurityCodeLength']
+    print('Infra SecCode Length',self.SecurityCodeLength)
     self.infraFilewPath = os.path.join(self.configLoc,self.infraFile)
     self.factoryMetaFilewPath = os.path.join(self.configLoc,self.factoryMetaFile)
     self.zipCodeFileWPath = os.path.join(self.configLoc,self.zipCodeFile)

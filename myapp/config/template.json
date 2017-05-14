@@ -22,6 +22,21 @@
             "Activity":"<Activity Desc>",
             "Auth":""
         },
+    "SecurityCode":
+        {
+            "LoginId":"<LoginId>",            
+            "DeliveryMethod":"<EmailId>",
+            "DeliverTo":"<activity date>",
+            "DeliverDate":""
+        },
+    "SecurityCodeHistory":
+        {
+            "LoginId":"<LoginId>",            
+            "DeliveryMethod":"<EmailId>",
+            "DeliverTo":"<activity date>",
+            "DeliveryTime":"",
+            "ValidateTime":""
+        },
     "LoginInfo":
         {
             "_id":"<def: emailid/phonenumber>",
@@ -29,7 +44,7 @@
             "Password":"<def: encrypted>",
             "EntityType":"<def: Member/Agent>",
             "EntityId":"<def: MemberId/AgentId>",
-            "AccountStatus":"Open",
+            "AccountStatus":"Pending",
             "PasswordRetryCount":0,
             "Acccess":
                 [
@@ -172,7 +187,7 @@
         },
     "Response":
         {
-            "Response":
+            "MyResponse":
                 {
                     "Header":
                         {

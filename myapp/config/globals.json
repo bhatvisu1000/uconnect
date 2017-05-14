@@ -8,5 +8,7 @@
  "Template":"template.json",
  "ErrorCodes":"errorCodes.json",
  "ExclColl4Id":["Authentication"],
- "AuthValidDuration":30
+ "AuthValidDuration":30,
+ "SecurityCodeLength":5,
+ "SecrityCodeExpireTime":5
 }

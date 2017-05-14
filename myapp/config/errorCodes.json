@@ -1,5 +1,6 @@
 {
     "LoginError-001":"Invalid LoginId/Password",
     "LoginError-002":"Invalid LoginId/Password",
-    "LoginError-003":"Account is locked"
+    "LoginError-003":"Account is locked",
+    "LoginError-004":"Account is Pending validation"
 }    

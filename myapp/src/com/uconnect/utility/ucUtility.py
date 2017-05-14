@@ -1,4 +1,4 @@
-import os, sys, json,datetime, copy, com.uconnect.core.error
+import os, sys, json,datetime, copy, random, com.uconnect.core.error
 
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucLogging import logging
@@ -353,35 +353,35 @@ class Utility(object):
 
         if (argResultType == 'Update'):
             myResponseStatus = self.getUpdateStatus(argResult)
-            myResponseData['Response']['Header']['Status'] = myResponseStatus
-            myResponseData['Response']['Header']['Message'] = myResponseStatus
+            myResponseData['MyResponse']['Header']['Status'] = myResponseStatus
+            myResponseData['MyResponse']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Insert'):
             myResponseStatus = self.getCreateStatus(argResult)
-            myResponseData['Response']['Header']['Status'] = myResponseStatus
-            myResponseData['Response']['Header']['Message'] = myResponseStatus
+            myResponseData['MyResponse']['Header']['Status'] = myResponseStatus
+            myResponseData['MyResponse']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
-            myResponseData['Response']['Header']['Status'] = argResultStatus['Status']
-            myResponseData['Response']['Header']['Message'] = argResultStatus['Message']
+            myResponseData['MyResponse']['Header']['Status'] = argResultStatus['Status']
+            myResponseData['MyResponse']['Header']['Message'] = argResultStatus['Message']
             #myData = argResult
         elif (argResultType == 'Error'):
             #print("Success",self.globalInstance._Global__Success)
-            myResponseData['Response']['Header']['Status'] = argResultStatus['Status']
-            myResponseData['Response']['Header']['Message'] = argResultStatus['Message']
+            myResponseData['MyResponse']['Header']['Status'] = argResultStatus['Status']
+            myResponseData['MyResponse']['Header']['Message'] = argResultStatus['Message']
             myData = []
 
         ''' if data element passed, we will copy the "Data" to "Data" section, "Data.Summary" to "Header.Summary" secton'''
         try:
             # if myData is not iterable, exception will be raised, will ignore the exception 
             if (myData) and (self.globalInstance._Global__DataKey in myData) and (myData[self.globalInstance._Global__DataKey]):
-                myResponseData['Response'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
+                myResponseData['MyResponse'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
                 if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
-                    myResponseData['Response']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
+                    myResponseData['MyResponse']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
             elif (myData) and (self.globalInstance._Global__DataKey not in myData):
                 ''' we got data but "data" key is missing '''
                 if self.isDict:
-                    myResponseData['Response'][self.globalInstance._Global__DataKey] = [myData]
+                    myResponseData['MyResponse'][self.globalInstance._Global__DataKey] = [myData]
                 else:
-                    myResponseData['Response'][self.globalInstance._Global__DataKey] = myData
+                    myResponseData['MyResponse'][self.globalInstance._Global__DataKey] = myData
                 #fi
             #fi                    
         except TypeError:
@@ -591,6 +591,17 @@ class Utility(object):
         except Exception as error:
             #myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
             raise error
+
+    def getDefaultSecCodeLength(self):
+        print (self.envInstance.SecurityCodeLength)
+        return self.envInstance.SecurityCodeLength
+
+    def getRanddomNum(self, argNumLength):
+        print(argNumLength)
+        if argNumLength == None: return None
+        myLowerBound = 10**(argNumLength-1)
+        myUpperBound = 10**argNumLength-1
+        return random.randint(myLowerBound, myUpperBound)
 
 ''' Pop dict items
 >>> for x in a.keys():

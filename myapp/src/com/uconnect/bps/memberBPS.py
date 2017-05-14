@@ -63,13 +63,13 @@ class MemberBPS(object):
             ## we need to check who called this function, must be from register
             #print(self.utilityInstance.whoAmi())
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
+
             myArgKey = ['Main','Address','Contact']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
-
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             ''' Preparing value to create a new member build initial data '''
             myMemberData = self.memberUtilInstance._MemberUtility__buildInitMembderData({'Main':myMainArgData['Main'],'Address':myMainArgData['Address'],'Contact':myMainArgData['Contact']})
@@ -97,6 +97,64 @@ class MemberBPS(object):
         except Exception as error:
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise
+
+    def getAllInformation4Member(self,argRequestDict):
+        ''' 
+            We need to combine all update of a Member
+            Description:    Update Member's Main information (LastName,FirstName,NickName,Sex)
+            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
+                            {'Request': 
+                                {'Header':{ScreenId':'','ActionId':'',Page:},
+                                {'MainArg': {'MemberId':'','Main':[{'Key':'Value'},...]
+                            }
+            usage:          <getAllInformation4Member(<argReqJsonDict>)
+                            MainArg{'MemberId':'','Main':[{Key':'', 'Value':''}]}
+            Return:         Json object
+        '''
+
+        try:
+            
+            ''' Initialization & Validation '''
+
+            if 'MainArg' in argRequestDict:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            else:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            #fi
+            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
+
+            myArgKey = ['Main','Auth']
+            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
+            #fi
+
+            ''' Preparing document:    '''
+            myMemberId = myMainArgData['MemberId']
+            myCriteria = {'_id':myMemberId}
+            # remove emty key from key argument
+            myMainData = self.utilityInstance.convList2Dict(myMainArgData['Main'])
+
+            myModuleLogger.info('Updating Member [{member}] Main[{address}]' .format(
+                member=myMemberId, Main=myMainData))
+
+            ''' Executing document update '''
+
+            myResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myMainData, 'set',False)
+
+            ''' build response data '''
+            myResponse = self.utilityInstance.buildResponseData(
+                argRequestDict['Request']['Header']['ScreenId'],myLinkedResult,'Update')
+           
+            return myResponse
+
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            raise error
+        except Exception as error:
+            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            raise error
 
     def updateMemberMain(self,argRequestDict):
         ''' 

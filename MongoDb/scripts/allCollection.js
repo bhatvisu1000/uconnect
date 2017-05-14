@@ -66,6 +66,9 @@ db.createCollection('Offers')
 db.createCollection('Notification')
 db.createCollection('AuthHistory')
 db.createCollection('ActivityLog')
+db.createCollection('SecurityCode')
+// SecurityCode is TTL collection, we need to expire this after 60*5 seconds = 300 seconds
+db.SecurityCode.createIndex( { "DeliverDate": 1 }, { expireAfterSeconds: 300 } )
 
 // Show all collections
 // show all colectins and its indexes
@@ -85,20 +88,6 @@ AllRequests
     "For":{"Join Network"},
     "To"
 }
-
-Member requests another member for a connection
-Member invites another Family member to join a family group
-Member invites another Member to join a group
-Member requests for an apppointment to Vendor
-Venodr requests an appointment to member (recurring) 
-    (Member must have an exisiting relationship. i.e. Member must have an appointment scheduled already with vendor)
-    Vendor 
-        Doctor
-        Mechanic Shop
-        Small Business Shop
-        Event Organizer
-        Schools
-
 
 Vendor
 {
@@ -156,3 +145,20 @@ AgentSettings:
             {"Week":"*","Days":"6","StartHours":"","EndHours":""}
         ]
 }
+
+
+
+
+
+Member requests another member for a connection
+Member invites another Family member to join a family group
+Member invites another Member to join a group
+Member requests for an apppointment to Vendor
+Venodr requests an appointment to member (recurring) 
+    (Member must have an exisiting relationship. i.e. Member must have an appointment scheduled already with vendor)
+    Vendor 
+        Doctor
+        Mechanic Shop
+        Small Business Shop
+        Event Organizer
+        Schools
