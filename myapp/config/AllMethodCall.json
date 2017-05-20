@@ -55,7 +55,7 @@
         }
 }
 // ValidateCredential
-//5912794adf9bba3be4147cae
+//591f18dbdf9bba33789aacdf
 //314263
 {
     "Request":
@@ -69,7 +69,7 @@
                     {
                         "LoginId":"vishal",
                         "LoginType":"Web",
-                        "Password":"bhatt1",
+                        "Password":"bhatt",
                         "DeviceOs":"Mobile",
                         "DeviceType":"OS2",
                         "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
@@ -78,6 +78,31 @@
                         "SessionId":"aaabbbccc"
                     }
                 }
+        }
+}
+// generate secutity code
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Login","ActionId":"GenerateSecCode","Page":"None"
+                },
+            "MainArg":
+                {"Main":{"LoginId":"vishal", "DeliveryMethod":"Email", "DeliverTo":"vishal@uconnect.com"}}
+        }
+}
+
+// validate security code
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Login","ActionId":"ValidateSecCode","Page":"None"
+                },
+            "MainArg":
+                {"Main":{"LoginId":"vishal", "SecurityCode":}}
         }
 }
 

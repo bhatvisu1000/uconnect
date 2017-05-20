@@ -11,7 +11,7 @@ from com.uconnect.core.security import Security
 myLogger = logging.getLogger('uConnect')
 
 @Singleton
-class MemberUtility(object):
+class Member(object):
     ''' 
     Member BPS class, called from factory method
     '''
@@ -88,10 +88,10 @@ class MemberUtility(object):
 
             ''' Contact '''
             if ( 'Mobile' in myContactDict ):
-                myInitMemberData['Contact']['Mobile'] = myContactDict['Mobile']
+                myInitMemberData['Contact'].append({'Method':'Mobile','Value': myContactDict['Mobile']})
             #fi
             if ( 'Email' in myContactDict ):
-                myInitMemberData['Contact']['Email'] = myContactDict['Email']
+                myInitMemberData['Contact'].append({'Method':'Email','Value': myContactDict['Email']})
             #fi
 
             ''' lets get the memberid for this member '''
@@ -105,7 +105,7 @@ class MemberUtility(object):
             return myInitMemberData
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise
 
     #__buildInitMembderData Ends here
@@ -163,7 +163,7 @@ class MemberUtility(object):
             return myPipeLine
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise
 
     #__buildGetAllConnPipeline Ends here
@@ -217,7 +217,7 @@ class MemberUtility(object):
             return myConnection
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise
 
     #__buildMyConnection Ends here
@@ -258,13 +258,13 @@ class MemberUtility(object):
             return myMemberConnection
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             raise
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise
     #__getMemberConnectionInfo Ends here
 
@@ -381,17 +381,17 @@ class MemberUtility(object):
             return myRequestStatus
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             if isReqConnectionAdded and (not isInvConnectionAdded) and (not isCleanUpDone):
                 #print(isReqConnectionAdded,isInvConnectionAdded,isCleanUpDone)
@@ -504,17 +504,17 @@ class MemberUtility(object):
             return myRequestStatus
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
 
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             
@@ -627,17 +627,17 @@ class MemberUtility(object):
             return myRequestStatus
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             if isInvConnRemoved (not isReqConnRemoved) and (not isCleanUpDone):
                 myInviteeCriteria = {'_id':myMainArgData['MemberId']}
@@ -749,22 +749,22 @@ class MemberUtility(object):
             return myRequestStatus
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except com.uconnect.core.error.DBError as error:
-            myModuleLogger.exception('DBError: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('DBError: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             return myRequestStatus
 
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             if isMemberConnRemoved and (not isConnectMemberConnRemoved) and (not isCleanUpDone):
                 ''' rollback previous deletion of member connection '''
                 self.mongoDbInstance.UpdateDoc(
@@ -790,7 +790,7 @@ class MemberUtility(object):
             else:
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
-            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
             isValidMember = self.globalInstance._Global__False 
@@ -834,7 +834,7 @@ class MemberUtility(object):
             else:
                 myMemberId = None
             #fi
-            if myMemberId and (myMemberId == myMainArgData['Main']['MemberId']):
+            if myMemberId:
                 isValidMember = self.globalInstance._Global__True 
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             else:
@@ -848,20 +848,21 @@ class MemberUtility(object):
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             print('Error',error.errorMsg)
-            myModuleLogger.exception('InvalidAuthKey: error [{errmsg}]'.format(errmsg=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             isValidMember = self.globalInstance._Global__Error
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Auth Key; error [{errmsg}] occurred'.format(errmsg=error.errorMsg))
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Auth Key; error [{myerror}] occurred'.format(myerror=error.errorMsg))
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
             return myResponse
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{errmsg}]'.format(error=error.errorMsg))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Arg validation error; error [{errmsg}] occurred'.format(errmsg=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
+            isValidMember = self.globalInstance._Global__Error
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Arg validation error; error [{myerror}] occurred'.format(myerror=error.errorMsg))
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
             return myResponse
         except Exception as error:
-            myModuleLogger.exception('Error [{errmsg}]'.format(errmsg=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             isValidMember = self.globalInstance._Global__Error
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'An error [{errmsg}] occurred'.format(errmsg=error.message))
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'An error [{myerror}] occurred'.format(myerror=error.message))
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
             return myResponse
     # isAValidMember Ends here

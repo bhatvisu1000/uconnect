@@ -24,18 +24,25 @@
         },
     "SecurityCode":
         {
-            "LoginId":"<LoginId>",            
+            "LoginId":"<LoginId>",        
+            "SecurityCode":"",    
             "DeliveryMethod":"<EmailId>",
             "DeliverTo":"<activity date>",
-            "DeliverDate":""
+            "Status":"Pending Validation",
+            "CreateDate":"",
+            "DeliverDate":"",
+            "ValidateDate":""
         },
-    "SecurityCodeHistory":
+    "SecurityCodeHist":
         {
             "LoginId":"<LoginId>",            
+            "SecurityCode":"",    
             "DeliveryMethod":"<EmailId>",
             "DeliverTo":"<activity date>",
-            "DeliveryTime":"",
-            "ValidateTime":""
+            "Status":"Pending Validation",
+            "CreateDate":"",
+            "DeliverDate":"",
+            "ValidateDate":""
         },
     "LoginInfo":
         {
@@ -92,7 +99,7 @@
         {
             "Main":{"LastName":"<def: lastname>","FirstName":"<def: firstname>", "NickName":"<def: firstname>"},
             "Address":{"Street":"<def: streetname && ##>","City":"<def: city>","State":"<def: state>","ZipCode":"<def: zipcode>","Country":"<def: country>"},
-            "Contact":{"Email":"<def emailid>","Mobile":"<def: mobile>","Other":"<def: other contact>"},
+            "Contact":[],
             "Connections":[],
             "Settings":
             {
@@ -120,7 +127,7 @@
         {
             "Main":
                 {
-                    "GroupName":"","MemberId":""
+                    "GroupName":"","GroupOwnerMemberId":""
                 },
             "Participants":[], 
             "Metrics":{"TotalPArticipants":1},    

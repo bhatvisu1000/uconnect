@@ -16,6 +16,7 @@ class Global(object):
         self.__authHistColl = self.__authHist = 'AuthHistory'
         self.__activityLogColl = self.__activityLog = 'ActivityLog'
         self.__securityCodeColl = self.__securityCode = 'SecurityCode'
+        self.__securityCodeColl_Hist = 'SecurityCodeHist'
 
         self.__True = True
         self.__TrueStatus = True
@@ -37,6 +38,11 @@ class Global(object):
         self.__HistoryColumn='_History'
         self.__Internal = "Internal"
         self.__External = "External"
+        ## Login
+        self.__LoginStatusOpen = 'Open'
+        self.__LoginStatusLocked = 'Locked'
+        self.__LoginStatusPending = 'Pending'
+
         ### Invitee --> to whom invitation has been sent to
         ### Requestor --> Member who has sent the invitation
         ### Initial connection status of invitee in requestor doc.

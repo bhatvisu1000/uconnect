@@ -233,7 +233,7 @@ class Utility(object):
     def getCreateStatus(self,argCreateResult):
         myCreateStatus = self.globalInstance._Global__UnSuccess
         if argCreateResult and ('_id' in argCreateResult):
-            myCreateStatus = self.globalInstance._Global__UnSuccess
+            myCreateStatus = self.globalInstance._Global__Success
 
         return myCreateStatus
 
@@ -352,11 +352,11 @@ class Utility(object):
         myData = argResultData
 
         if (argResultType == 'Update'):
-            myResponseStatus = self.getUpdateStatus(argResult)
+            myResponseStatus = self.getUpdateStatus(argResultStatus)
             myResponseData['MyResponse']['Header']['Status'] = myResponseStatus
             myResponseData['MyResponse']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Insert'):
-            myResponseStatus = self.getCreateStatus(argResult)
+            myResponseStatus = self.getCreateStatus(argResultStatus)
             myResponseData['MyResponse']['Header']['Status'] = myResponseStatus
             myResponseData['MyResponse']['Header']['Message'] = myResponseStatus
         elif (argResultType == 'Find'):
@@ -550,13 +550,13 @@ class Utility(object):
     def getExclColl4Id(self):
         return self.envInstance.exclColl4Id
     def getMaxPageSize(self):
-        return self.envInstance.getExclColl4Id
+        return self.envInstance.maxPageSize
 
     def getAddressCityState(self,argZipCode):
 
         try:
-            if argZipCode in self.envInstance_Environment__zipCodeData:
-                return self.envInstance_Environment__zipCodeData[argZipCode]['City'], self.envInstance_Environment__zipCodeData[argZipCode]['State'] 
+            if argZipCode in self.envInstance._Environment__zipCodeData:
+                return self.envInstance._Environment__zipCodeData[argZipCode]['City'], self.envInstance._Environment__zipCodeData[argZipCode]['State'] 
             else:
                 raise com.uconnect.core.error.InvalidZipCode('Invalid Zipcode {zipcode} !!!'.format(zipcode = argZipCode))
         except Exception as error:

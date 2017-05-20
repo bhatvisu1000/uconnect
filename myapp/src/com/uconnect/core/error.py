@@ -57,3 +57,7 @@ class InvalidEntity(ucException):
     pass
 class InvalidLogin(ucException):
     pass
+class InvalidSecCodeDeliveryOptions(ucException):
+    pass
+class InvalidSecurityCode(ucException):
+    pass    

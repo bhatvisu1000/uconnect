@@ -6,7 +6,7 @@ from com.uconnect.bps.factory import Factory
 from com.uconnect.db.mongodb import MongoDB
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.core.security import Security
-from com.uconnect.utility.memberUtility import MemberUtility
+from com.uconnect.core.member import Member
 from com.uconnect.core.activity import Activity
 
 myLogger = logging.getLogger('uConnect')
@@ -27,7 +27,7 @@ class MemberBPS(object):
         self.mongoDbInstance = MongoDB.Instance()
         self.globalInstance = Global.Instance()
         self.securityInstance = Security.Instance()
-        self.memberUtilInstance = MemberUtility.Instance()
+        self.memberInstance = Member.Instance()
         self.activityInstance = Activity.Instance()
 
         self.myClass = self.__class__.__name__
@@ -72,7 +72,7 @@ class MemberBPS(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
 
             ''' Preparing value to create a new member build initial data '''
-            myMemberData = self.memberUtilInstance._MemberUtility__buildInitMembderData({'Main':myMainArgData['Main'],'Address':myMainArgData['Address'],'Contact':myMainArgData['Contact']})
+            myMemberData = self.memberInstance._Member__buildInitMembderData({'Main':myMainArgData['Main'],'Address':myMainArgData['Address'],'Contact':myMainArgData['Contact']})
             myMemberId = myMemberData['_id'] 
 
             ''' Creating a member '''
@@ -92,10 +92,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise
 
     def getAllInformation4Member(self,argRequestDict):
@@ -150,10 +150,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def updateMemberMain(self,argRequestDict):
@@ -206,10 +206,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def updateMemberAddress(self,argRequestDict):
@@ -264,10 +264,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def updateMemberContacts(self,argRequestDict):
@@ -325,10 +325,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(error=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def updateMemberSettings(self,argRequestDict):
@@ -372,7 +372,7 @@ class MemberBPS(object):
                     format(auth=myMainArgData['Auth'], me=self.myClass+'.'+self.utilityInstance.whoAmI()))
 
             ''' building connection '''
-            myConnectionResults = self.memberUtilInstance._MemberUtility__AddMember2MemberConnection(myMainArgData)
+            myConnectionResults = self.memberInstance._Member__AddMember2MemberConnection(myMainArgData)
 
             ''' check if building connection was successful; get all the connection for this memner, in future Connection type ned to be changed to ALL ???'''
             if myConnectionResults.get('Status') == self.globalInstance._Global__Success:
@@ -394,13 +394,13 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, error.errorMsg)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
             #raise error
             return myResponse
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, error.message)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
             #raise error
@@ -446,13 +446,13 @@ class MemberBPS(object):
                     format(auth=myMainArgData['Auth'], me=self.myClass+'.'+self.utilityInstance.whoAmI()))
 
             if myMainArgData['Action'] == self.globalInstance._Global__Connection_Action_Accepted:
-                myConnectionResults = self.memberUtilInstance._MemberUtility__acceptInvitation(myMainArgData)
+                myConnectionResults = self.memberInstance._Member__acceptInvitation(myMainArgData)
                 myActivityDetails = 'Member [{member}] accepted [{cmember}] connection request '.format(member=myMainArgData.MemberId, cmember=myMainArgData['ConnectMemberId'])
             elif myMainArgData['Action'] == self.globalInstance._Global__Connection_Action_Rejected:
-                myConnectionResults = self.memberUtilInstance._MemberUtility__rejectInvitation(myMainArgData)
+                myConnectionResults = self.memberInstance._Member__rejectInvitation(myMainArgData)
                 myActivityDetails = 'Member [{member}] rejected [{cmember}] connection request '.format(member=myMainArgData.MemberId, cmember=myMainArgData['ConnectMemberId'])
             elif  myMainArgData['Action'] == self.globalInstance._Global__Connection_Action_Removed:
-                myConnectionResults = self.memberUtilInstance._MemberUtility__removeConnection(myMainArgData)
+                myConnectionResults = self.memberInstance._Member__removeConnection(myMainArgData)
                 myActivityDetails = 'Member [{member}] removed [{cmember}] connection '.format(member=myMainArgData.MemberId, cmember=myMainArgData['ConnectMemberId'])
             #fi                
 
@@ -475,10 +475,10 @@ class MemberBPS(object):
             #myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myConnectionResults,'Update')
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
     # ends ExecConnectionAction
 
@@ -532,10 +532,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def removeMemberFromFavorite(self,argRequestDict):
@@ -590,10 +590,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def blockMember(self,argRequestDict):
@@ -647,10 +647,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
 
@@ -704,10 +704,10 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise error
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise error
 
     def getAMemberDetail(self,argRequestDict):
@@ -772,17 +772,17 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
             return myResponse
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
             return myResponse
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
             return myResponse
@@ -844,7 +844,7 @@ class MemberBPS(object):
             myConnectionType = myMainArgData['ConnectionType']
             
             ''' build aggregate pipeline '''
-            myAggregatePipeLine = self.memberUtilInstance._MemberUtility__buildGetAllConnPipeline({'MemberId':myMemberId,'ConnectionType':myConnectionType})
+            myAggregatePipeLine = self.memberInstance._Member__buildGetAllConnPipeline({'MemberId':myMemberId,'ConnectionType':myConnectionType})
             myModuleLogger.debug("Pipeline [{pipeline}] will be used to execute the aggregate function")
 
             #myAggregateDict = {"aggregate":self.memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
@@ -854,7 +854,7 @@ class MemberBPS(object):
             myConnectionRawData = self.mongoDbInstance.ExecCommand("member", myAggregateDict)
 
             if self.utilityInstance.isAllArgumentsValid(myConnectionRawData):
-                myMemberConnection = {"Data":self.memberUtilInstance._MemberUtility__buildMyConnection({'ConnectionType':self.globalInstance._Global__member,'ConnectionRawData':myConnectionRawData})}
+                myMemberConnection = {"Data":self.memberInstance._Member__buildMyConnection({'ConnectionType':self.globalInstance._Global__member,'ConnectionRawData':myConnectionRawData})}
             else:
                 myMemberConnection = {}
             #fi
@@ -865,12 +865,12 @@ class MemberBPS(object):
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
             return myResponse
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
             return myResponse
@@ -878,243 +878,4 @@ class MemberBPS(object):
     def searchMembers(self,argRequestDict):
         pass
 
-
-    '''
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GGGGGGGGGGGGG       RRRRRRRRRRR          OOOOOOOOOOOO       UU          UU      PPPPPPPPPPPP
-    GG                  RR       RR         OO          OO      UU          UU      PP         PP
-    GG                  RR       RR         OO          OO      UU          UU      PP         PP
-    GG    GGGGGGG       RRRRRRRRRRR         OO          OO      UU          UU      PPPPPPPPPPPP
-    GG         GG       RR        RR        OO          OO      UU          UU      PP
-    GG         GG       RR         RR       OO          OO      UU          UU      PP
-    GGGGGGGGGGGGG       RR          RR       OOOOOOOOOOOO       UUUUUUUUUUUUUU      PP
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    '''
-
-    def createAMemGroup(self,argRequestDict):
-        ''' 
-            Description:    Create a Member's group
-            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
-                            {'Request': 
-                                {'Header':{ScreenId':'','ActionId':'',Page:},
-                                {'MainArg': {'GroupName':'<GroupName>','MeberId':'<owner of group>'}}
-                            }
-            usage:          <createAMemGroup(<argRequestDict>)
-                            MainArg{'GroupName':'','MeberId':''}
-            Return:         Json object
-            Collection:     Group: Insert a record in Group collection
-        '''
-        try:
-
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
-            
-            myArgKey = ['MemberId','GroupName','Auth','ResponseMode']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData, key=myAuthArgKey))
-
-            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
-            myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
-                {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['MemberId']})
-
-            ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
-                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
-                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
-
-            ''' Preparing document:
-            '''
-            #myArgRequestData['Request']['MainArg']['Settings']=self.utilityInstance.defaultsData['Group']['Settings']
-            myGroupData = self.utilityInstance.getTemplateCopy('Group')
-            myGroupData['Main']['GroupName'] = myMainArgData['GroupName']
-            myGroupData['Main']['MemberId'] = myMainArgData['MemberId']
-            myGroupData['_History'] = self.utilityInstance.buildInitHistData() 
-
-            #myGroupId = self.mongoDbInstance.genKeyForCollection(self.globalInstance._Global_groupColl)
-            #myGroupData['_id'] = myGroupId
-
-            myModuleLogger.info('Creating new Group, data [{doc}]'.format(doc=myGroupData))
-            myGroupResult =  self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global_groupColl, myGroupData)
-            
-            myGroupResultStatus = self.utilityInstance.getCreateStatus(myGroupResult)
-
-            ''' building link between owner of memeber and newly created group '''
-            if myGroupResultStatus == self.globalInstance._Global__Success:
-
-                myGroupId = myGroupResult['_id'] 
-                myMainArgData.update({'GroupId':myGroupId})
-                myLogger.info('Group [{group}] creation is successful, now linking to member[{member}]'.
-                    format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-                
-                myLinkedResult = self.linkAMember2Group(myLinkedData)
-                myLinkedResultStatus = self.utilityInstance.getUpdateStatus(myLinkedResult)
-                
-                if myLinkedResultStatus == self.globalInstance._Global__UnSuccess:
-                    ''' Link was unsuccessful, need to clean up the data (delete group collection just got inserted) '''
-                    myLogger.info('Linking group [{group}] to member[{member}] is unsuccessful, removing group'.
-                        format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-                    myDeleteResult = self.mongoDbInstance.DeleteDoc(self.globalInstance._Global_groupColl,{'_id':myGroupId})
-                else:
-                    myLogger.info('Linking group [{group}] to member[{member}] is successful'.
-                        format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-
-                    ''' Building response data '''
-                    '''Do We need to find from factory data on method need to be called to return the data ?'''
-
-                    myResponseDataDict = self.utilityInstance.builInternalRequestDict({'Data':{'_id':myGroupId}})
-                    myResponseData = self.getAGroupDetail(myResponseDataDict)
-                    #print('response data',myResponseData)
-                    myResponse = self.utilityInstance.buildResponseData(argRequestDict['Request']['Header']['ScreenId'],myGroupResult,'Insert', myResponseData)
-
-                    return myResponse
-                #end if
-
-            else:
-                ''' Creation of group was unsuccessful, no need to send the data back '''
-                ''' Build response data '''
-                myResponse = self.utilityInstance.buildResponseData(
-                    argRequestDict['Request']['Header']['ScreenId'],myGroupResult,'Insert')
-                return myResponse
-            #end if
-
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise error
-        except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise error
-
-    def getAllGroup4AMember(self,argRequestDict):
-        ''' 
-            Description:    Find a member details
-            argRequestDict:     Json/Dict; Following key name is expected in this dict/json object
-                            {'Request':
-                                {'Header': {'ScreenId':{},'ActionId':{},'Page':''},
-                                 'MainArg': {},
-                                 'Auth':{}
-                                }
-                            }            
-            usage:          <getAGroupDetail(<argReqJsonDict>)
-            Return:         Json object
-        '''
-        # we need to check which arguments are passed; valid argument is Phone/Email/LastName + FirstName
-
-        #print (argRequestDict)
-
-        # raise an user defined exception here
-        try:
-
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
-            
-            myArgKey = ['MemberId','Auth','ResponseMode']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.
-                    format(arg=myMainArgData, key=myArgKey))
-
-            ''' Validate auth key for this request'''
-            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
-                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
-                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
-
-            myModuleLogger.info('Finding a group details [{arg}]'.format(arg=myMainArgData))
-
-            myCriteria = {'_id':myMainArgData['GroupId']}
-            myProjection={'Main':1,'Address':1,'Contact':1}
-            myFindOne = True
-
-            myGroupData = self.mongoDbInstance.findDocument(self.globalInstance._Global__groupColl, myCriteria,myProjection,myFindOne)
-            
-            ''' build response data '''            
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myGroupData,'Find')
-
-            return myResponse
-
-        except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
-            raise
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise
-        except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise
-
-    def linkAMember2Group(self,argRequestDict):
-        ''' 
-            Description:    Linke a member 2 a Group
-            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
-                            {'Request': 
-                                {'Header':{ScreenId':'','ActionId':'',Page:},
-                                {'MainArg': {'GroupId':'','MemberId'}}
-                            }
-            usage:          <linkAMember2Member(<argReqJsonDict>)
-                            MainArg{'GroupId':'','MemberId':''}
-            Return:         Json object
-        '''
-        try:
-            
-            ''' Initialization & Validation '''
-
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
-            myLinkedData = {}
-
-            myArgValidation = self.utilityInstance.valBPSArguments(argRequestDict)
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=argRequestDict))
-
-            ''' Extracting MainArg from data from Request '''            
-            myMainArgData = self.utilityInstance.extMainArgFromReq(argRequestDict)
-
-            ''' Preparing document:    '''
-
-            myLinkedData = {'LinkedBy':{'GroupId':myMainArgData['GroupId']}}
-            myMemberId = myMainArgData['MemberId']
-            myGroupId = myMainArgData['GroupId']
-            myCriteria = {'_id':myMemberId}
-            myModuleLogger.info('Adding member to a group [{memberId} --> {groupId}]'.format(
-                memberId=myMemberId, groupId=myGroupId))
-
-            ''' Updating document (Group Collection, add participant) '''
-            myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myCriteria, myLinkedData, 'addToSet',False)
-            myUpdateStatus = self.utilityInstance.getUpdateStatus(myLinkedResult)
-            
-            ''' will link member to group in member collection, if member was associated '''
-
-            if myUpdateStatus == self.globalInstance._Global__Success:
-                myModuleLogger.info('Member -> Group connection successful, adding participant in group')
-
-                ''' Adding participant in Group collection  '''
-                myModuleLogger.info('Adding participant [{memberId}] to group [{groupId}]'.format(
-                    memberId=myMemberId, groupId=myGroupId))
-
-                ''' preparing document '''
-                myParticipantdData = {'Participants':{'MemberId':myMemberId,'When':datetime.datetime.utcnow()}}
-                myCriteria = {'_id':myGroupId}
-
-                '''executing update document '''
-                myLinkedResult =  self.mongoDbInstance.UpdateDoc(self.globalInstance._Global_groupColl, myCriteria, myParticipantdData, 'addToSet',False)
-
-                myModuleLogger.info('Member [{memberId} linked to group {groupId}]'.format(
-                    memberId=myMemberId, groupId=myGroupId))
-
-            ''' Build response data '''
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myLinkedResult,'Update')
-
-            return myResponse
-
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
-            raise error
-        except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise error
 

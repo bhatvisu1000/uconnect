@@ -25,7 +25,7 @@ class MongoDB(object):
         self.connectBuildInstance = ConnectionBuilder.Instance()
         self.connectionInstance = self.connectBuildInstance.buildConnection("MongoDB")
         self.utilityInstance = Utility.Instance()
-        self.myPageSize = self.utilityInstance.getMaxPageSize
+        self.myPageSize = self.utilityInstance.getMaxPageSize()
         self.myExclColl4Id = self.utilityInstance.getExclColl4Id()
 
         myModuleLogger.debug("Initialization details: connectionInstance[{myConn}], myPageSize[{myPageSize}]".format(myConn=self.connectionInstance, myPageSize=self.myPageSize))

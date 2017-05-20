@@ -81,7 +81,8 @@ class Environment(object):
     self.exclColl4Id = self.__globalSettings['ExclColl4Id']
     self.AuthValidDuration = self.__globalSettings['AuthValidDuration']
     self.SecurityCodeLength = self.__globalSettings['SecurityCodeLength']
-    print('Infra SecCode Length',self.SecurityCodeLength)
+    #print('Infra SecCode Length',self.SecurityCodeLength)
+    
     self.infraFilewPath = os.path.join(self.configLoc,self.infraFile)
     self.factoryMetaFilewPath = os.path.join(self.configLoc,self.factoryMetaFile)
     self.zipCodeFileWPath = os.path.join(self.configLoc,self.zipCodeFile)
@@ -112,16 +113,16 @@ class Environment(object):
         raise com.uconnect.core.error.BootStrapError("InfraSetting dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
-        myModuleLogger.error("MissingConfigFile Error, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("MissingConfigFile Error, [{myerror}]".format(myerror=error.errorMsg))
         raise error 
     except com.uconnect.core.error.BootStrapError as error:
-        myModuleLogger.error("BootStrapError, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("BootStrapError, [{myerror}]".format(myerror=error.errorMsg))
         raise error     
     except ValueError as error:
        myModuleLogger.error("Error, loading Infra file [{infraFile}] (value error) ".format(infraFile=self.infraFile))
        raise error
     except Exception as error:
-       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+       myModuleLogger.error("Error, an error occurred [{myerror}]".format(myerror=error.message))
        raise error
 
     ''' factory metadata '''
@@ -144,16 +145,16 @@ class Environment(object):
         raise com.uconnect.core.error.BootStrapError("FactoryMetada dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
-        myModuleLogger.error("MissingConfigFile Error, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("MissingConfigFile Error, [{myerror}]".format(myerror=error.errorMsg))
         raise error 
     except com.uconnect.core.error.BootStrapError as error:
-        myModuleLogger.error("BootStrapError, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("BootStrapError, [{myerror}]".format(myerror=error.errorMsg))
         raise error     
     except ValueError as error:
        myModuleLogger.error("Error, loading Factory Metadata file [{factoryFile}] (value error) ".format(factoryFile=self.factoryMetaFilewPath))
        raise error
     except Exception as error:
-       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+       myModuleLogger.error("Error, an error occurred [{myerror}]".format(myerror=error.message))
        raise error
 
     ''' Loading zipcode '''
@@ -174,16 +175,16 @@ class Environment(object):
         raise com.uconnect.core.error.BootStrapError("ZipCode dictionary is empty")
 
     except com.uconnect.core.error.MissingConfigFile as error:
-        myModuleLogger.error("MissingConfigFile Error, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("MissingConfigFile Error, [{myerror}]".format(myerror=error.errorMsg))
         raise error 
     except com.uconnect.core.error.BootStrapError as error:
-        myModuleLogger.error("BootStrapError, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("BootStrapError, [{myerror}]".format(myerror=error.errorMsg))
         raise error     
     except ValueError as error:
        myModuleLogger.error("Error, loading Zipcode file [{zipcCodeFile}] (value error) ".format(zipcCodeFile=self.zipCodeFileWPath))
        raise error
     except Exception as error:
-       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+       myModuleLogger.error("Error, an error occurred [{myerror}]".format(myerror=error.message))
        raise
 
     ''' Loading Template value from template.json '''
@@ -290,10 +291,10 @@ class Environment(object):
         raise com.uconnect.core.error.InvalidConnectionType('Connection type [{connType}] is missing in template repository !!! '.format(connType=argConnectionType))
 
     except com.uconnect.core.error.InvalidConnectionType as error:
-        myModuleLogger.error("InvalidConnectionTypeError, [{error}]".format(error=error.errorMsg))
+        myModuleLogger.error("InvalidConnectionTypeError, [{myerror}]".format(myerror=error.errorMsg))
         raise error     
     except Exception as error:
-       myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
+       myModuleLogger.error("Error, an error occurred [{myerror}]".format(myerror=error.message))
        raise
 
 

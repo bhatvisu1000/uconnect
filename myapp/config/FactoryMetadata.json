@@ -9,11 +9,19 @@
       }
     },
     "GenerateSecCode": {
-      "Description": "Generate sec code for this session",
+      "Description": "Generate sec code for this login id for authentication",
       "BPS": {
         "Module": "com.uconnect.core.security",
         "Class": "Security",
-        "Method": "generateSecCode"
+        "Method": "genSecurityCode"
+      }
+    },
+    "ValidateSecCode": {
+      "Description": "Validate sec code for this loginid",
+      "BPS": {
+        "Module": "com.uconnect.core.security",
+        "Class": "Security",
+        "Method": "validateSecurityCode"
       }
     },
     "IsLoginInUse": {

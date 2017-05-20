@@ -22,7 +22,7 @@ class Activity(object):
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
-            myArgKey = ['EntityId','EntityType','ActivityType','Activity','Auth']
+            myArgKey = ['EntityId','EntityType','ActivityType','Activity']
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
@@ -36,12 +36,13 @@ class Activity(object):
 
             myInitActivityLogData['EntityId'] = myMainArgData['EntityId']
             myInitActivityLogData['EntityType'] = myMainArgData['EntityType']
-            myInitActivityLogData['ActivityType'] = myMainArgData['ActivityType']
+            #myInitActivityLogData['ActivityType'] = myMainArgData['ActivityType']
             myInitActivityLogData['Activity'] = myMainArgData['Activity']
             myInitActivityLogData['ActivityDate'] = datetime.datetime.utcnow()            
             myInitActivityLogData['Acknowledged'] = self.globalInstance._Global__False
-            myInitActivityLogData['Auth'] = myMainArgData['Auth']
-
+            if 'Auth' in myMainArgData:
+                myInitActivityLogData['Auth'] = myMainArgData['Auth']
+                
 
             #myInitActivityLogData.update({'_History' : self.utilityInstance.buildInitHistData()}) 
 
@@ -50,10 +51,10 @@ class Activity(object):
             return myInitActivityLogData
 
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             raise
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             raise
 
     def __logActivity(self, argRequestDict):
@@ -74,7 +75,7 @@ class Activity(object):
             
             myArgKey = ['EntityId','EntityType','ActivityType','Activity','Auth']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
-            print('activitylog',myMainArgData.keys(), myArgKey)
+            #print('activitylog',myMainArgData.keys(), myArgKey)
             myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], expected key[{key}]'.
@@ -102,17 +103,17 @@ class Activity(object):
             return myRequestStatus
 
         except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             #return myRequestStatus
             raise
         except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
+            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             #return myRequestStatus
             raise
         except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
+            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
             #return myRequestStatus
             raise

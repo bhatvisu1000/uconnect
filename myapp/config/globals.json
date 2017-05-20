@@ -10,5 +10,6 @@
  "ExclColl4Id":["Authentication"],
  "AuthValidDuration":30,
  "SecurityCodeLength":5,
- "SecrityCodeExpireTime":5
+ "SecrityCodeExpireTime":5,
+ "MaxGroupParticipants":512
 }
