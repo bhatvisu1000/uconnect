@@ -15,17 +15,7 @@
 //          Connections
 //          AuthKey
 
-// isLoginIuse
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Registration","ActionId":"IsLoginInUse","Page":"None"
-                },
-            "MainArg":{"LoginId":"vishal"}
-        }
-}
+// Registration
 // Register Member
 {
     "Request":
@@ -54,9 +44,51 @@
                 }
         }
 }
-// ValidateCredential
-//591f18dbdf9bba33789aacdf
-//314263
+// generate secutity code
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Registration","ActionId":"GenerateSecCode","Page":"None"
+                },
+            "MainArg":
+                {"SecurityCode":{"LoginId":"vishal", "DeliveryMethod":"Email", "DeliverTo":"vishal@uconnect.com"}}
+        }
+}
+
+// validate security code
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Registration","ActionId":"ValidateSecCode","Page":"None"
+                },
+            "MainArg":
+                {"SecurityCode":{"LoginId":"vishal", "SecurityCode":50219}}
+        }
+}
+
+// Login Screen
+// isLoginIuse
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Login","ActionId":"IsLoginInUse","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Auth":
+                        {
+                            "LoginId":"vishal"
+                        }
+                }
+        }
+}
+// validate login id
 {
     "Request":
         {
@@ -80,33 +112,9 @@
                 }
         }
 }
-// generate secutity code
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Login","ActionId":"GenerateSecCode","Page":"None"
-                },
-            "MainArg":
-                {"Main":{"LoginId":"vishal", "DeliveryMethod":"Email", "DeliverTo":"vishal@uconnect.com"}}
-        }
-}
-
-// validate security code
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Login","ActionId":"ValidateSecCode","Page":"None"
-                },
-            "MainArg":
-                {"Main":{"LoginId":"vishal", "SecurityCode":}}
-        }
-}
 
 // Get A Member Detail
+
 {
     "Request":
         {
@@ -118,14 +126,14 @@
                 {
                     "Auth":
                         {
-                            "AuthKey":"591279dcdf9bba3be4147cb4",
+                            "AuthKey":"59238274df9bba3544d58560",
                             "LoginType":"Web",
                             "LoginId":"vishal",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314263,
+                            "EntityId":314277,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
@@ -143,41 +151,13 @@
                 },
             "MainArg":
                 {
-                    "Main":{"MemberId":314263},
-                    "Auth":
-                        {
-                            "AuthKey":"591279dcdf9bba3be4147cb4",
-                            "LoginType":"Web",
-                            "LoginId":"vishal",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
-                            "EntityId":314263,
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
-                        }
+                    "Member":{"_id":314277}
                 }
         }
 }
 
-python
-from com.uconnect.bps.memberBPS import MemberBPS
-member = MemberBPS.Instance()
-arg = {"MainArg":
-                {
-                    "MemberId":314188,
-                    "ResponseMode":"I",
-                    "Auth":
-                        {  
-                            "AuthKey":"58fd4f52df9bba3dec2d36a8"
-                        }
-                }
-            }
-member.isAValidMember(arg)
-exit()
-
 // LinkAMember
+
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()
@@ -276,3 +256,19 @@ exit()
 
 // create a collection for feed (external to users) and activity log for internal purpose only
 // we also need to create a collection to hold entitytype/id and any changes (which type of changes)
+
+
+// end email
+senders = 'anil.singh.aditya@gmail.com'
+receivers = 'oracledba.usa88@gmail.com'
+message = """ your security code is 88888 """
+try:  
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.ehlo()
+    server.login('anil.singh.aditya@gmail.com', 'NeanG00gle001')
+    server.sendmail(receivers, receivers, message)
+    server.close()
+    print 'Email sent!'
+except Exception as err:  
+    print 'Something went wrong...'
+    print err.message

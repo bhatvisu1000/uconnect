@@ -551,7 +551,7 @@ class Security(object):
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
 
-            self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            #self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
             myAuthArgKeys = self.utilityInstance.buildKeysFromTemplate('Auth')
@@ -574,6 +574,8 @@ class Security(object):
                           'DeviceOs':myMainArgData['DeviceOs'],
                           'MacAddress':myMainArgData['MacAddress'],
                           'SessionId':myMainArgData['SessionId'],
+                          'EntityId':myMainArgData['EntityId'], 
+                          'EntityType':myMainArgData['EntityType'], 
                           'ExpiryDate':{'$gte': datetime.datetime.utcnow()},
                           'AppVer':myMainArgData['AppVer']}
             myProjection = {}
@@ -778,9 +780,9 @@ class Security(object):
 
             ''' validating arguments '''
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            print(myArgValidationResults)
+            #print(myArgValidationResults)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
-            print(myArgValidation)            
+            #print(myArgValidation)            
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
 
@@ -788,9 +790,11 @@ class Security(object):
             if ('EntityType' in myMainArgData['MainArg']['Auth']):
                 '''Register entity '''
                 if myMainArgData['MainArg']['Auth']['EntityType'] == self.globalInstance._Global__member:
-                    myEntityData = self.registerMember(argRequestDict['MainArg'])
+                    # injecting type, this memebr type will be a member
+                    myMainArgData['MainArg']['Main'].update({'Type':self.globalInstance._Global__member})
+                    myEntityData = self.registerMember(myMainArgData['MainArg'])
                 elif myMainArgData['MainArg']['Auth']['EntityType'] == self.globalInstance._Global__vendor:
-                    myMemberData = self.registerVendor(argRequestDict)
+                    myMemberData = self.registerVendor(myMainArgData)
                 else:
                     raise com.uconnect.core.error.InvalidEntity('Invalid entity passed during registration [{entity}]'.format(entity=myMainArgData['EntityType'])) 
                 #fi    
@@ -817,13 +821,15 @@ class Security(object):
             argRequestDict: Json/Dict; Following key name is expected in this dict/json object
                             ['LoginId':'','Password':'', 'LoginType':'', 'DeviceType':'', 'DeviceOs':'', 'MacAddress':'','SessionId':'','AppVer':'',
                               'Main':{},'Address':{},'Contact':{}]
-            usage:          <createAMember(<argReqRequestDict>)
+            usage:          <registerMember(<argReqRequestDict>)
             Return:         Json object
         '''
         try:
             ''' importing MemberBPS module here to avoid the error (importing module from each other) '''
+            from com.uconnect.core.member import Member
             from com.uconnect.bps.memberBPS import MemberBPS
             memberBPSInstance = MemberBPS.Instance()
+            memberInstance = Member.Instance()
 
             #self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)
@@ -861,7 +867,7 @@ class Security(object):
             #fi
 
             # Member Main arg validation
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myMainArgKey, 'NickName')
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myMainArgKey, ['NickName'])
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg [Member.Main] validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
@@ -889,7 +895,7 @@ class Security(object):
             #fi
 
             ''' Check if this login is already in use '''
-            myLoginArgData = {'LoginId':myMainArgData['Auth']['LoginId'],'ResponseMode':self.globalInstance._Global__InternalRequest}
+            myLoginArgData = {['Auth']['LoginId']:myMainArgData['Auth']['LoginId'],'ResponseMode':self.globalInstance._Global__InternalRequest}
             myLoginInUseResult = self.isLoginInUse(myLoginArgData)
             #print()
             if myLoginInUseResult['Status'] == self.globalInstance._Global__True:
@@ -898,7 +904,8 @@ class Security(object):
 
             ''' create a member '''
             myMemberData = {'Main':myMainArgData['Main'], 'Address':myMainArgData['Address'], 'Contact':myMainArgData['Contact']}
-            myMemberId = memberBPSInstance._MemberBPS__createAMember(myMemberData)
+            myMemberData['Main'].update({'Type':'Member'})
+            myMemberId = memberInstance._Member__createAMember(myMemberData)
             myMainArgData['Auth'].update({'EntityId':myMemberId})
             myMainArgData['Auth'].update({'EntityType':self.globalInstance._Global__member})
 
@@ -937,21 +944,22 @@ class Security(object):
 
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberData )
             myResponse['MyResponse']['Header']['Auth']['AuthKey'] = myAuthKey
-            return myResponse
+            #return myResponse
 
         except com.uconnect.core.error.InvalidLogin as error:
             self.myModuleLogger.exception('InvalidLogin: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find')
-            return myResponse            
+            #return myResponse            
             #raise
         except com.uconnect.core.error.MissingArgumentValues as error:
             self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find')
-            return myResponse            
+            #return myResponse            
         except Exception as error:
             self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
             # undo all the work, deleting the member/auth/login information if created,
             if 'myMemberId' in locals():
                 self.mongoDbInstance.DeleteDoc(self.globalInstance._Global__memberColl,{'_id':myMemberId} )
@@ -959,11 +967,14 @@ class Security(object):
                 print('myAuthKey',myAuthKey)
                 self.mongoDbInstance.DeleteDoc(self.globalInstance._Global__authColl,{'_id':ObjectId(str(myAuthKey))} )
 
-            self.mongoDbInstance.DeleteDoc(self.globalInstance._Global__loginColl, {'_id':myMainArgData['Auth']['LoginId']} )    
-           
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find')
-            return myResponse            
+            if 'myMainArgData' in locals():
+                self.mongoDbInstance.DeleteDoc(self.globalInstance._Global__loginColl, {'_id':myMainArgData['Auth']['LoginId']} )    
+                myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find')
+        finally:
+            if 'myResponse' in locals():
+                return myResponse
+            else:
+                raise
 
     def validateCredential(self, argRequestDict):
         '''
@@ -1087,7 +1098,7 @@ class Security(object):
 
             ''' declaring/initializing variables '''
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
-            myArgKey = ['LoginId','ResponseMode']
+            myArgKey = ['Auth','ResponseMode']
 
             ''' validating arguments '''
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
@@ -1096,8 +1107,16 @@ class Security(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
+            ''' validating arguments '''
+            myArgKey = ['LoginId']
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Auth'], myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+
             ''' Preparing value for login id'''
-            myCriteria = {'_id': myMainArgData['LoginId']}
+            myCriteria = {'_id': myMainArgData['Auth']['LoginId']}
             myProjection = {'_id':1}
 
             myResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__loginColl, myCriteria, myProjection, True)
@@ -1109,31 +1128,35 @@ class Security(object):
                 # loginid found, its in use
                 myRequestStatus = self.utilityInstance.getRequestStatus(
                     self.globalInstance._Global__UnSuccess,'Login [{login}] is already in use'.
-                                        format(login=myMainArgData['LoginId']))
+                                        format(login=myMainArgData['Auth']['LoginId']))
                 myRequestStatus.update({'Status':self.globalInstance._Global__True})
             else:
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
                 myRequestStatus.update({'Status':self.globalInstance._Global__False})
-                myRequestStatus.update({'Message':'Login [{login}] is not in use'.format(login=myMainArgData['LoginId'])})
+                myRequestStatus.update({'Message':'Login [{login}] is not in use'.format(login=myMainArgData['Auth']['LoginId'])})
             #fi
 
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Find')
 
-            return myResponse
+            #return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
             self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
             myRequestStatus.update({'Status':self.globalInstance._Global__True})
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Error')            
-            return myResponse
+            #return myResponse
 
         except Exception as error:
             self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
             myRequestStatus.update({'Status':self.globalInstance._Global__True})
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Error')            
-            return myResponse
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Error')
+        finally:            
+            if 'myResponse' in locals():
+                return myResponse
+            else:
+                raise
 
     def __isValidSecDeliveryOptions(self, argRequestDict):
         try:
@@ -1244,7 +1267,7 @@ class Security(object):
             ''' declaring/initializing variables '''
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
-            myArgKey = ['Main','ResponseMode']
+            myArgKey = ['SecurityCode','ResponseMode']
 
             ''' validating arguments '''
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
@@ -1255,7 +1278,7 @@ class Security(object):
 
             ''' vlaidating main arguments '''
             myArgKey = ['LoginId','DeliveryMethod','DeliverTo']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['SecurityCode'], myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
@@ -1266,19 +1289,19 @@ class Security(object):
             ''' Preparing value for Security code'''
             myDeliveryOptiosnArg = self.utilityInstance.getCopy(myMainArgData)
             myDeliveryOptiosnArg['ResponseMode'] = self.globalInstance._Global__InternalRequest
-            if not (self.__isValidSecDeliveryOptions(myDeliveryOptiosnArg['Main'])):
+            if not (self.__isValidSecDeliveryOptions(myDeliveryOptiosnArg['SecurityCode'])):
                 raise com.uconnect.core.error.InvalidSecCodeDeliveryOptions('Delivery options [{delivery}] is not valid for login [{login}]'.
-                    format(delivery=myMainArgData['Main']['DeliveryMethod'] + ' , ' + myMainArgData['Main']['DeliverTo'],
-                           login=myMainArgData['Main']['LoginId']))
+                    format(delivery=myMainArgData['SecurityCode']['DeliveryMethod'] + ' , ' + myMainArgData['SecurityCode']['DeliverTo'],
+                           login=myMainArgData['SecurityCode']['LoginId']))
             #fi
 
             mySecurityCode = self.__generateNewSecCode()
 
             myInitSecurityArg = {
-                        'LoginId':myMainArgData['Main']['LoginId'],
+                        'LoginId':myMainArgData['SecurityCode']['LoginId'],
                         'SecurityCode':mySecurityCode,
-                        'DeliveryMethod':myMainArgData['Main']['DeliveryMethod'],
-                        'DeliverTo':myMainArgData['Main']['DeliverTo'] }
+                        'DeliveryMethod':myMainArgData['SecurityCode']['DeliveryMethod'],
+                        'DeliverTo':myMainArgData['SecurityCode']['DeliverTo'] }
 
             mySecurityCodeData = self.__buildInitSecurityCodeData(myInitSecurityArg)
             myDbResults = self.__persistNewSecCode(mySecurityCodeData)
@@ -1337,7 +1360,7 @@ class Security(object):
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
             ''' validating arguments '''
-            myArgKey = ['Main','ResponseMode']
+            myArgKey = ['SecurityCode','ResponseMode']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
@@ -1346,7 +1369,7 @@ class Security(object):
 
             ''' validating argument passed in 'Main'dict '''
             myArgKey = ['LoginId','SecurityCode']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['SecurityCode'], myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
@@ -1354,7 +1377,7 @@ class Security(object):
 
             ''' validating if security code belongs to this login is still valid '''
             print('myMainArgData',myMainArgData)
-            myCriteria = {'LoginId':myMainArgData['Main']['LoginId'], 'SecurityCode': int(myMainArgData['Main']['SecurityCode'])}
+            myCriteria = {'LoginId':myMainArgData['SecurityCode']['LoginId'], 'SecurityCode': int(myMainArgData['SecurityCode']['SecurityCode'])}
             myProjection = {'SecurityCode':1} 
             mySecCodeValResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__securityCodeColl,myCriteria, myProjection, True)
             if self.utilityInstance.extrStatusFromResultSets(mySecCodeValResults) == self.globalInstance._Global__OkStatus:
@@ -1366,37 +1389,37 @@ class Security(object):
 
             if not(mySecCodeValData):
                 raise com.uconnect.core.error.InvalidSecurityCode('Security code [{seccode}] is invalid for login [{login}]'.
-                    format(seccode=myMainArgData['Main']['SecurityCode'], login=myMainArgData['Main']['LoginId']))
+                    format(seccode=myMainArgData['SecurityCode']['SecurityCode'], login=myMainArgData['SecurityCode']['LoginId']))
             #fi
 
             ''' we got valid security code, will update the login status as 'Open' and update the status as this security 
             code validated '''
 
             #updating login account status to Open
-            myLoginCriteria = {'_id': myMainArgData['Main']['LoginId']}
+            myLoginCriteria = {'_id': myMainArgData['SecurityCode']['LoginId']}
             myLoginUpdateData = {'AccountStatus':self.globalInstance._Global__LoginStatusOpen}
             self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__loginColl, myLoginCriteria, myLoginUpdateData, 'set' )
 
             # updating SecurityCodeHist, we need to have _id from history to be populate in security code collection
 
             #get the securityhistory code _id 
-            myCriteria = {'LoginId':myMainArgData['Main']['LoginId']}
+            myCriteria = {'LoginId':myMainArgData['SecurityCode']['LoginId']}
             myProjection = {'SecurityCodeHistId':1}            
             mySecurityCodeResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__securityCodeColl,myCriteria,myProjection,True)
             mySecurityCodeHistId = self.utilityInstance.extr1stDocFromResultSets(mySecurityCodeResults)
             
             # update sec code hist collection as validated
             myCriteria={'_id':mySecurityCodeHistId['SecurityCodeHistId']}
-            mySecCodeHistUpdateData = {'Status':'Validated'}
+            mySecCodeHistUpdateData = {'Status':'Validated','ValidateDate':datetime.datetime.utcnow()}
             self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__securityCodeColl_Hist, myCriteria, mySecCodeHistUpdateData, 'set' )
 
             # Delete data from Sec code coll
-            myCriteria = {'LoginId': myMainArgData['Main']['LoginId'], }
+            myCriteria = {'LoginId': myMainArgData['SecurityCode']['LoginId'], }
             self.mongoDbInstance.DeleteDoc(self.globalInstance._Global__securityCodeColl, myCriteria)
 
             self.activityInstance._Activity__logActivity(
-                {'EntityId':myMainArgData['Main']['LoginId'], 'EntityType':'LoginId', 
-                 'Activity':'Ssecurity code [{sec}] validated'.format(sec=myMainArgData['Main']['SecurityCode'])})
+                {'EntityId':myMainArgData['SecurityCode']['LoginId'], 'EntityType':'LoginId', 
+                 'Activity':'Ssecurity code [{sec}] validated'.format(sec=myMainArgData['SecurityCode']['SecurityCode'])})
 
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Find')

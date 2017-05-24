@@ -54,7 +54,13 @@ class Utility(object):
             return False
         finally:
             pass
-            
+
+    def removeEmptyValueKeyFromDict(self, argDict):
+        # removes key if it has empty or 0 value
+        myMainArgData = self.getCopy(argDict)
+        return dict([(key,value) for key,value in myMainArgData.items() if (value)])
+
+    ''' ????, not sure if below code is needed '''
     def convList2Dict(self, argValueList):
         ''' Duplicate value will be removed if found in list '''
         myDict = {}

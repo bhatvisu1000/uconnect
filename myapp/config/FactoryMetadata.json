@@ -23,7 +23,9 @@
         "Class": "Security",
         "Method": "validateSecurityCode"
       }
-    },
+    }    
+  },
+  "Login":  {
     "IsLoginInUse": {
       "Description": "Check if loginid is currenty in use",
       "BPS": {
@@ -31,9 +33,7 @@
         "Class": "Security",
         "Method": "isLoginInUse"
       }
-    }    
-  },
-  "Login":  {
+    },
     "Authenticate": {
       "Description": "Authenticate login id",
       "BPS": {
@@ -63,8 +63,8 @@
     "isAValidMember": {
       "Description": "Is Member a valid member",
       "BPS": {
-        "Module": "com.uconnect.utility.memberUtility",
-        "Class": "MemberUtility",
+        "Module": "com.uconnect.core.member",
+        "Class": "Member",
         "Method": "isAValidMember"
         }
       },      

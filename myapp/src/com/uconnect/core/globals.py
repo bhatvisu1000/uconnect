@@ -43,6 +43,7 @@ class Global(object):
         self.__LoginStatusLocked = 'Locked'
         self.__LoginStatusPending = 'Pending'
 
+        self.__Participant = 'Participant'
         ### Invitee --> to whom invitation has been sent to
         ### Requestor --> Member who has sent the invitation
         ### Initial connection status of invitee in requestor doc.

@@ -97,7 +97,7 @@
         },
     "Member": 
         {
-            "Main":{"LastName":"<def: lastname>","FirstName":"<def: firstname>", "NickName":"<def: firstname>"},
+            "Main":{"LastName":"<def: lastname>","FirstName":"<def: firstname>", "NickName":"<def: NickName>", "Type":"<Member/Participant>"},
             "Address":{"Street":"<def: streetname && ##>","City":"<def: city>","State":"<def: state>","ZipCode":"<def: zipcode>","Country":"<def: country>"},
             "Contact":[],
             "Connections":[],
