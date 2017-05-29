@@ -28,9 +28,9 @@
                 {
                     "Auth":
                         {
-                            "LoginId":"vishal",
+                            "LoginId":"anil",
                             "LoginType":"Web",
-                            "Password":"bhatt",
+                            "Password":"anil",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
@@ -38,9 +38,9 @@
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         },
-                    "Main":{"LastName":"Bhat","FirstName":"Vishal","NickName":"VB"},
-                    "Address":{"ZipCode":"08820"},
-                    "Contact":{"Email":"vishal@uconnect.com"}
+                    "Main":{"LastName":"Singh","FirstName":"Anil","NickName":"AS"},
+                    "Address":{"ZipCode":"08816"},
+                    "Contact":{"Email":"anil@uconnect.com"}
                 }
         }
 }
@@ -53,7 +53,7 @@
                     "ScreenId":"Registration","ActionId":"GenerateSecCode","Page":"None"
                 },
             "MainArg":
-                {"SecurityCode":{"LoginId":"vishal", "DeliveryMethod":"Email", "DeliverTo":"vishal@uconnect.com"}}
+                {"SecurityCode":{"LoginId":"anil", "DeliveryMethod":"Email", "DeliverTo":"anil@uconnect.com"}}
         }
 }
 
@@ -66,7 +66,7 @@
                     "ScreenId":"Registration","ActionId":"ValidateSecCode","Page":"None"
                 },
             "MainArg":
-                {"SecurityCode":{"LoginId":"vishal", "SecurityCode":50219}}
+                {"SecurityCode":{"LoginId":"anil", "SecurityCode":23208}}
         }
 }
 
@@ -126,14 +126,14 @@
                 {
                     "Auth":
                         {
-                            "AuthKey":"59238274df9bba3544d58560",
+                            "AuthKey":"5929f4b1df9bba469867ab62",
                             "LoginType":"Web",
                             "LoginId":"vishal",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314277,
+                            "EntityId":314290,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
@@ -151,13 +151,187 @@
                 },
             "MainArg":
                 {
-                    "Member":{"_id":314277}
+                    "Member":{"_id":314290}
+                }
+        }
+}
+// Update Member detail
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"updateMemberDetail","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314289,
+                    "Main":{"LastName":"Bhat1","FirstName":"Vishal1"},
+                    "Address":{"Street":"1 Main Street", "ZipCode":"08817", "City":"Newark","State":"PA"},
+                    "Contact":{"Email":"a@b.com"},
+                    "Auth":
+                        {
+                            "AuthKey":"592794a6df9bba207089de62",
+                            "LoginType":"Web",
+                            "LoginId":"vishal",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314289,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
                 }
         }
 }
 
-// LinkAMember
+// Update Connection details 
+// new
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314291,
+                    "Connections":[{"Id":314290,"Type":"Member","Action":"Invite"}],
+                    "Auth":
+                        {
+                            "AuthKey":"592b9acadf9bba38bcf8fafb",
+                            "LoginType":"Web",
+                            "LoginId":"anil",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314291,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+// accept
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314290,
+                    "Connections":[{"Id":314291,"Type":"Member","Action":"Accept"}],
+                    "Auth":
+                        {
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginType":"Web",
+                            "LoginId":"vishal",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
 
+// reject
+
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314290,
+                    "Connections":[{"Id":314291,"Type":"Member","Action":"Reject"}],
+                    "Auth":
+                        {
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginType":"Web",
+                            "LoginId":"vishal",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
+// remove
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314290,
+                    "Connections":[{"Id":314291,"Type":"Member","Action":"Remove"}],
+                    "Auth":
+                        {
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginType":"Web",
+                            "LoginId":"vishal",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
+//Favorite
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314290,
+                    "Connections":[{"Id":314291,"Type":"Member","Action":"Favorite","Favorite":1}],
+                    "Auth":
+                        {
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginType":"Web",
+                            "LoginId":"vishal",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+//
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()

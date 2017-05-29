@@ -47,24 +47,27 @@ class Global(object):
         ### Invitee --> to whom invitation has been sent to
         ### Requestor --> Member who has sent the invitation
         ### Initial connection status of invitee in requestor doc.
-        self.__Initial_Req_MemConnectionStatus = 'Awaiting Response'   
+        self.__Initial_Req_ConnectionStatus = 'Awaiting Response'   
         ### Initial connection status of requestor in invitee doc. 
-        self.__Initial_Inv_MemConnectionStatus = 'Pending'
+        self.__Initial_Inv_ConnectionStatus = 'Pending'
         ### connection status of invitee in requestor doc, after invitee accepted invitation. 
-        self.__Accepted_Req_MemConnectionStatus = 'Accepted'
+        self.__Accepted_Req_ConnectionStatus = 'Accepted'
         ### connection status of requestor in invitee doc, after invitee accepted invitation. 
-        self.__Accepted_Inv_MemConnectionStatus = 'Valid'
+        self.__Accepted_Inv_ConnectionStatus = 'Valid'
         ''' MemberConnectin = {'Event':{'Record Exists':{'ActionBy':'Requestor/Invitee'}} 
         this is to find the next status 
         '''
-        self.__MemberConnectionStatus = {
+        self.__ConnectionStatus = {
                 'New Connection':{'Requestor':'Awaiting Response','Invitee':'Pending'},
                 'Accept Connection':{'Requestor':'Accepted','Invitee':'Valid'},
                 'Reject Connection':{'Requestor':'Rejected','Invitee':'Invalid'}
                  }
         self.__RequestStatus = {'Status':'','Message':'','data':''}
         self.__ArgIsAValidMember = {"MemberId":"","AuthKey":"","EntityId":"","EntityType":""}
-        self.__Connection_Action = ['Accept','Reject','Remove']
+        self.__Connection_Action = ['Invite','Accept','Reject','Remove','Favorite','Block']
+        self.__Connection_Action_Invite = 'Invite'
         self.__Connection_Action_Accepted = 'Accept'
         self.__Connection_Action_Rejected = 'Reject'
         self.__Connection_Action_Removed = 'Remove'
+        self.__Connection_Action_Favorite = 'Favorite'
+        self.__Connection_Action_Block = 'Block'

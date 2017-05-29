@@ -65,23 +65,23 @@
       "BPS": {
         "Module": "com.uconnect.core.member",
         "Class": "Member",
-        "Method": "isAValidMember"
-        }
-      },      
-    "AddANewConnection": {
-      "Description": "Add a new Member connection",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "AddANewMemberConnection"
+        "Method": "_Member__isAValidMember"
         }
       },
-    "ActionOnAMemberConnection": {
-      "Description": "Perform an action Accept/Reject/Remove a member connection",
+    "updateMemberDetail": {
+      "Description": "Update Member Main/Address/Contact information",
       "BPS": {
         "Module": "com.uconnect.bps.memberBPS",
         "Class": "MemberBPS",
-        "Method": "ExecConnectionAction"
+        "Method": "updateMemberDetail"
+        }
+      },        
+    "UpdateConnectionDetails": {
+      "Description": "Update connection details [Add/Accept/Reject/Remove]",
+      "BPS": {
+        "Module": "com.uconnect.bps.memberBPS",
+        "Class": "MemberBPS",
+        "Method": "UpdateConnectionDetails"
         }
       },
     "FavoriteMemberConnection": {
@@ -116,22 +116,6 @@
         "Method": "unBlockMember"
         }
       },      
-    "LinkMember2Group": {
-      "Description": "Link a Member to your group or group to which you are a member",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "linkAMember2Group"
-        }
-      },    
-    "BlockGroup": {
-      "Description": "Find a Member Details",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "BlockGroup"
-        }
-      },
     "GetMemberConnection": {
       "Description": "Find member connection for a given member",
       "BPS": {

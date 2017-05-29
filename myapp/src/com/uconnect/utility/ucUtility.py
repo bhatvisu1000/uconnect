@@ -60,6 +60,15 @@ class Utility(object):
         myMainArgData = self.getCopy(argDict)
         return dict([(key,value) for key,value in myMainArgData.items() if (value)])
 
+    def removeEmptyValueFromList(self, argList):
+        # removes key if it has empty or 0 value
+        myMainArgData = self.getCopy(argList)
+        return list([(value) for value in myMainArgData if (value)])
+
+    def buildMemberTag(self, argList):
+        myMainArgData = self.getCopy(argList)
+        return removeEmptyValueFromList(myMainArgData)
+
     ''' ????, not sure if below code is needed '''
     def convList2Dict(self, argValueList):
         ''' Duplicate value will be removed if found in list '''
@@ -71,6 +80,12 @@ class Utility(object):
 
     def findKeyInListDict(self, argList, argKey, argVal):
         return [i for i, x in enumerate(argList) if (argKey in x) and ( x[argKey] == argVal ) ]
+
+    def getAllKeysFromDict(self, argDict):
+        myKeyList = []
+        for key,value in argDict.iteritems():
+            myKeyList.append(key)
+        return myKeyList
 
     def valBPSArguments(self, argRequest):
         ''' 
@@ -311,14 +326,14 @@ class Utility(object):
         
         return myHistoryData
 
-    def buildActivityArg(self,argEntityId, argEntityType, argActivityType, argActivity, argAuth):
+    def buildActivityArg(self,argEntityId, argEntityType, argActivityType, argActivity, argAuth=None):
 
         myActivityLogData = self.getTemplateCopy(self.globalInstance._Global__activityLogColl)
 
         myActivityLogData["EntityType"]=argEntityType
         myActivityLogData["EntityId"]=argEntityId            
         myActivityLogData["ActivityType"]=argActivityType
-        myActivityLogData["Activity"]=argActivity           
+        myActivityLogData["Activity"]=argActivity
         myActivityLogData["Auth"]=argAuth            
         self.removeKeyFromDict(myActivityLogData, ['Acknowledged','ActivityDate'])
         return myActivityLogData
@@ -492,35 +507,30 @@ class Utility(object):
 
     ''' Member Utility '''
 
-    def getMemberConnStatus4Action(self, argAction, argActionBy):
+    def getConnStatus4Action(self, argAction, argActionBy):
         '''
             we dont need auth validation since we dont have a way to find this request for which memberid
         '''
-        try:
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argAction + ',' + argActionBy))
 
-            myAllowedConnection = self.globalInstance._Global__MemberConnectionStatus.keys()
+        myAllowedConnection = self.globalInstance._Global__ConnectionStatus.keys()
 
-            ''' validating arguments '''
-            if (not argAction) or (not argActionBy) :
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, got null expecting values arg[{arg}]'.
-                    format(arg=argAction + ',' + argActionBy))
+        ''' validating arguments '''
+        if (not argAction) or (not argActionBy) :
+            raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, got null expecting values arg[{arg}]'.
+                format(arg=argAction + ',' + argActionBy))
 
-            ''' we need to validate if right action and actionby key is passed'''
-            if not(argAction in myAllowedConnection):
-                raise com.uconnect.core.error.MissingArgumentValues('Action key must have either on of this value {expectVal}, got [{arg}] '.
-                    format(expectVal=myAllowedConnection, arg=argAction))
+        ''' we need to validate if right action and actionby key is passed'''
+        if not(argAction in myAllowedConnection):
+            raise com.uconnect.core.error.MissingArgumentValues('Action key must have either on of this value {expectVal}, got [{arg}] '.
+                format(expectVal=myAllowedConnection, arg=argAction))
 
-            if not(argActionBy in self.globalInstance._Global__MemberConnectionStatus.get(argAction).keys()):
-                raise com.uconnect.core.error.MissingArgumentValues('ActionBy key must have either one of this value [{expectVal}], got [{arg}] '.
-                    format(expectVal=self.globalInstance._Global__MemberConnectionStatus.get(argAction).keys(),
-                           arg=argActionBy))
+        if not(argActionBy in self.globalInstance._Global__ConnectionStatus.get(argAction).keys()):
+            raise com.uconnect.core.error.MissingArgumentValues('ActionBy key must have either one of this value [{expectVal}], got [{arg}] '.
+                format(expectVal=self.globalInstance._Global__ConnectionStatus.get(argAction).keys(),
+                       arg=argActionBy))
 
-            return self.globalInstance._Global__MemberConnectionStatus.get(argAction).get(argActionBy)
+        return self.globalInstance._Global__ConnectionStatus.get(argAction).get(argActionBy)
 
-        except Exception as error:
-            raise
 
     def getErrorCodeDescription(self, argErrorCode):
         myErrorDescription = ''

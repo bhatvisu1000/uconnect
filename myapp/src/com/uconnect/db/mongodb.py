@@ -253,15 +253,15 @@ class MongoDB(object):
 
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception("MissingArgumentValues: error [{error}]".format(error=error.errorMsg))
-            raise error
+            #raise error
         except com.uconnect.core.error.InvalidCollection as error:
             myModuleLogger.exception("InvalidCollection: error [{error}]".format(error=error.errorMsg))
-            raise error
+            #raise error
         except Exception as error:
             myModuleLogger.exception("Error [{error}]".format(error=error.message))
-            raise error
-
-        return myTotDocuments
+            #raise error
+        finally:
+            return myTotDocuments
 
     def findDocument(self, argCollection, argCriteria, argProjection = None, argFindOne = False):
         
@@ -623,21 +623,21 @@ class MongoDB(object):
 
     #db.command('aggregate','member',pipeline=pipeLine, allowDiskUse=True)
 
-    def ExecCommand(self, argCollection, argDict):
+    def ExecCommand(self, argCommandDict):
         ''' 
-            Description:    Executes command passed as argument defined in argDict
-            argCollection:  argDict
-            usage:          ( ExecCommand(<argumentDict>)
+            Description:    Executes command passed as argument defined in argCommandDict
+            argCollection:  argCommandDict
+            usage:          ( ExecCommand(<argCommandDict>)
             Return:         (_id,status)
         '''
         try:
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDB')
-            myModuleLogger.debug("args received: [{arg}]".format(arg=argDict))
+            myModuleLogger.debug("args received: [{arg}]".format(arg=argCommandDict))
 
-            if not(self.utilityInstance.isAllArgumentsValid(argDict)):
+            if not(self.utilityInstance.isAllArgumentsValid(argCommandDict)):
                 raise com.uconnect.core.error.MissingArgumentValues('Argument(s) [{arg}] is missing or contains null value'.
-                    format(arg='(' + argDict + ')' ))            
+                    format(arg='(' + argCommandDict + ')' ))            
 
             myConnectionInst = self.connectionInstance
             myDb = myConnectionInst
@@ -647,10 +647,10 @@ class MongoDB(object):
             except Exception as error:
                 raise com.uconnect.core.error.InvalidCollection("Can not set collection to [{coll}], error[{error}]".format(coll=argCollection,err=error.message))
             '''
-            myModuleLogger.debug("Executing document: arg[{arg}]".format(arg=argDict))
+            myModuleLogger.debug("Executing document: arg[{arg}]".format(arg=argCommandDict))
 
             try:
-                myResult = myDb.command(argDict)
+                myResult = myDb.command(argCommandDict)
             except Exception as error:
                 myModuleLogger.error("could not perform execute db command, error stack[{errStack}]".format(errStack=error))
                 raise error

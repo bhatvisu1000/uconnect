@@ -97,9 +97,9 @@
         },
     "Member": 
         {
-            "Main":{"LastName":"<def: lastname>","FirstName":"<def: firstname>", "NickName":"<def: NickName>", "Type":"<Member/Participant>"},
-            "Address":{"Street":"<def: streetname && ##>","City":"<def: city>","State":"<def: state>","ZipCode":"<def: zipcode>","Country":"<def: country>"},
-            "Contact":[],
+            "Main":{"LastName":"","FirstName":"", "NickName":"", "Type":"<Member/Participant>"},
+            "Address":{"Street":"","City":"","State":"","ZipCode":"","Country":""},
+            "Contact":{"Email":"","Mobile":""},
             "Connections":[],
             "Settings":
             {
@@ -115,13 +115,14 @@
                 "Privacy":{"Picture":"<BSON>"},
                 "Ethnicity":""
             },
-            "_History":{}
+            "_History":{},
+            "Tag":[]
         },
     "Connections":
         {
-            "Member":{"MemberId":"", "Favorite":0, "Blocked":0,"Type":"Member","Status":"Pending"},
-            "Group":{"GroupId":"", "Favorite":0, "Blocked":0,"Type":"Group","Status":"Pending"},
-            "Vendor":{"LocationId":"", "Favorite":0, "Blocked":0,"Type":"Vendor","Status":"Pending"}
+            "Member":{"Id":"", "Favorite":0, "Blocked":0,"Type":"Member","Status":"Pending"},
+            "Group":{"Id":"", "Favorite":0, "Blocked":0,"Type":"Group","Status":"Pending"},
+            "Vendor":{"Id":"", "Favorite":0, "Blocked":0,"Type":"Vendor","Status":"Pending"}
         },
     "Group":
         {

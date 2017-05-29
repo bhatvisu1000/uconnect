@@ -895,7 +895,7 @@ class Security(object):
             #fi
 
             ''' Check if this login is already in use '''
-            myLoginArgData = {['Auth']['LoginId']:myMainArgData['Auth']['LoginId'],'ResponseMode':self.globalInstance._Global__InternalRequest}
+            myLoginArgData = {'Auth':{'LoginId':myMainArgData['Auth']['LoginId']},'ResponseMode':self.globalInstance._Global__InternalRequest}
             myLoginInUseResult = self.isLoginInUse(myLoginArgData)
             #print()
             if myLoginInUseResult['Status'] == self.globalInstance._Global__True:
