@@ -84,38 +84,14 @@
         "Method": "UpdateConnectionDetails"
         }
       },
-    "FavoriteMemberConnection": {
-      "Description": "Find a Member Details",
+    "SearchMember": {
+      "Description": "Text Seaech on member.Tag",
       "BPS": {
         "Module": "com.uconnect.bps.memberBPS",
         "Class": "MemberBPS",
-        "Method": "addMember2Favorite"
+        "Method": "SearchMember"
         }
       },
-    "RemoveMemberFavorite": {
-      "Description": "Remove Favorite",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "removeMemberFromFavorite"
-        }
-      },
-    "BlockMember": {
-      "Description": "Find a Member Details",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "blockMember"
-        }
-      },
-    "UnBlockMember": {
-      "Description": "Find a Member Details",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "unBlockMember"
-        }
-      },      
     "GetMemberConnection": {
       "Description": "Find member connection for a given member",
       "BPS": {

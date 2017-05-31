@@ -53,3 +53,13 @@ db.Member.find( {},{'_id':1}).forEach(function(updateMemberTag) {
 // text search
 db.Member.find({$text:{$search:"\"Edison\""}},{'_id':1,'Tag':1},{score:{$meta:"textScore"}})
 db.Member.find({$text:{$search:"vishal bha"}},{'_id':1,'Tag':1,score:{$meta:"textScore"}}).sort({score:{$meta:"textScore"}})
+
+// pymongo
+from pymongo import MongoClient
+import json
+client = MongoClient('mongodb://localhost:27017/')
+db=client['test']
+for doc in db.Member.find ({"$text": {"$search": "\"Anil\"" }}, {"_id":1,"Main":1,"score": { "$meta": "textScore" }}).sort("score": { "$meta": "textScore" })limit(10):
+  print(doc)
+
+db.Member.find ({"$text": {"$search": "\"Anil\"" }}, {"_id":1,"Main":1,"score": { "$meta": "textScore" }}).limit(10)

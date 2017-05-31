@@ -127,21 +127,37 @@ class MemberBPS(object):
             #fi
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
-            myArgKey = ['Main','Auth']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            myArgKey = ['Auth','ResponseMode']
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+
+            if (myMainArgData['Auth']['EntityType'] != 'Member'):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; entitytype key must be type of Member')
+            #fi
+
+            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
+                #print(self.utilityInstance.whoAmI())
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.myClass+'.'+self.utilityInstance.whoAmI()))
             #fi
 
             ''' Preparing document:    '''
-            myMemberId = myMainArgData['MemberId']
+            myMemberId = myMainArgData['Auth']['EntityId']
             myCriteria = {'_id':myMemberId}
 
-            ''' build response data '''
-            myResponse = self.utilityInstance.buildResponseData(
-                argRequestDict['Request']['Header']['ScreenId'],myLinkedResult,'Update')
+            # get Member Details
+            myMemberDetails = self.getAMemberDetail({'ResponseMode':self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']})
+            # get All Connections (Member)
+            myConnectionArgData = {'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
+            myMemberConnections = self.getAMemberConnections(myResponseArgData)
+            # Get All Group this member participates to (owner of a group is also member)
            
+            # we need to combine all results in one result sets
             return myResponse
 
         except com.uconnect.core.error.MissingArgumentValues as error:
@@ -368,7 +384,7 @@ class MemberBPS(object):
             # end for loop                
 
             ''' preparing response; get all connection member details for this member '''
-            myResponseArgData = {'_id':myMainArgData['_id'],'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
+            myResponseArgData = {'ConnectionType':'Member','ResponseMode': self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']}
             myResponseData = self.getAMemberConnections(myResponseArgData)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',myResponseData)
 
@@ -422,16 +438,12 @@ class MemberBPS(object):
 
             myArgKey = ['Auth','ResponseMode']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
-            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
-            #myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
-            #    {'Auth':myMainArgData['Auth']})
-
-            #print(self.myClass,myMainArgData)
             ''' Validate auth key for this request'''
             if myMainArgData['ResponseMode']  == self.globalInstance._Global__InternalRequest:
                 if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
@@ -448,6 +460,7 @@ class MemberBPS(object):
             myCriteria = {'_id':myMainArgData['Auth']['EntityId']}
             myFindOne = self.globalInstance._Global__True
             myProjection={"Main":1,"Address":1,"Contact":1,"Tag":1}
+
             self.myModuleLogger.info('Finding member [{member}] details'.format (member=myMainArgData['Auth']['EntityId']))
             myMemberData = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria,myProjection,myFindOne)
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
@@ -502,17 +515,28 @@ class MemberBPS(object):
 
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
             
-            myArgKey = ['_id','ConnectionType','Auth','ResponseMode']
+            myArgKey = ['ConnectionType','Auth','ResponseMode']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
             ''' validating arguments '''
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myAuthArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
 
-            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
+            if (myMainArgData['Auth']['EntityType'] != 'Member'):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error; entitytype key must be "Member"')
+            #fi
+
+            ''' commeting out below code
+            will overwrite EntityType and EntityId if passed in Auth dictionary. 
+            This is to ensure that Auth key must belong to this Member 
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['_id']})
+            '''
 
             ''' Validate auth key for this request'''
             if myMainArgData['ResponseMode'] == self.globalInstance._Global__InternalRequest:
@@ -526,10 +550,12 @@ class MemberBPS(object):
                         format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
                 #fi
             #fi             
+
             ''' preparing value needed to find member connections'''
             self.myModuleLogger.info('Finding a members connection [{arg}]'.format(arg=myMainArgData))
             ''' we need threading for following request using threading of python '''
-            myMemberId = myMainArgData['_id']
+
+            myMemberId = myMainArgData['Auth']['EntityId']
             myConnectionType = myMainArgData['ConnectionType']
             
             ''' build aggregate pipeline '''
@@ -567,5 +593,68 @@ class MemberBPS(object):
             else:
                 raise
 
-    def searchMembers(self,argRequestDict):
-        pass
+    def SearchMember(self,argRequestDict):
+        ''' 
+            Description:    Search memebr based of argument passed
+            argRequestDict:     Json/Dict; Following key name is expected in this dict/json object
+                            {'SearchCriteria','Page',Auth','ResponseMode'}
+            usage:          <getAMemberDetail(<argReqJsonDict>)
+            Return:         Json object
+        '''
+        try:
+
+            #myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            if 'MainArg' in argRequestDict:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            else:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            #fi
+
+            self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))            
+            myArgKey = ['SearchCriteria','Page','Auth','ResponseMode']
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+
+            ''' validating arguments '''
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+            if not({'EntityType','EntityId','AuthKey'} <= set(myMainArgData['Auth'])):
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg Auth validation error; Auth dict must have [EntityType,EntityId,AuthKey]')
+
+            if (myMainArgData['Auth']['EntityType'] != 'Member'):
+                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error; entitytype key must be "Member"')
+            #fi
+
+            ''' Validate auth key for this request'''
+            if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
+                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
+                    format(auth=myMainArgData['Auth'], me=self.utilityInstance.whoAmI()))
+            #fi 
+            
+            # preparing documemt for search
+            myTextSearhDocArgDict = \
+                {'Collection':'Member', 'Search':myMainArgData['SearchCriteria'],'Projection':{'_id':1,'Main':1}, 'Limit':10, 'Skip':"0"}
+            mySearchResults = self.mongoDbInstance.SearchText(myTextSearhDocArgDict)
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', mySearchResults)
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            myErrorMessage = error.errorMsg
+            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+        except Exception as error:
+            myErrorMessage = repr(sys.exc_info()[1])
+            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
+            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+        finally:
+            if 'myResponse' in locals():
+                return myResponse
+            else:
+                raise
+            #fi

@@ -2,6 +2,7 @@ from com.uconnect.core.dbconnection import ConnectionBuilder
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucUtility import Utility
 from com.uconnect.utility.ucLogging import logging
+from com.uconnect.core.globals import Global
 import com.uconnect.core.error
 
 #from com.uconnect.utility.mongoDbUtility import MongoDbUtility
@@ -25,8 +26,13 @@ class MongoDB(object):
         self.connectBuildInstance = ConnectionBuilder.Instance()
         self.connectionInstance = self.connectBuildInstance.buildConnection("MongoDB")
         self.utilityInstance = Utility.Instance()
+        self.globalInstance = Global.Instance()
+
         self.myPageSize = self.utilityInstance.getMaxPageSize()
         self.myExclColl4Id = self.utilityInstance.getExclColl4Id()
+
+        self.myClass = self.__class__.__name__
+        self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
 
         myModuleLogger.debug("Initialization details: connectionInstance[{myConn}], myPageSize[{myPageSize}]".format(myConn=self.connectionInstance, myPageSize=self.myPageSize))
         myModuleLogger.debug("initialization completed")
@@ -664,6 +670,64 @@ class MongoDB(object):
             raise error
         except Exception as error:
             myModuleLogger.exception("Error [{error}]".format(error=error.message))
+            raise error        
+
+    def SearchText(self, argRequestDict,):
+        ''' 
+            Description:    Executes command passed as argument defined in argCommandDict
+            argCollection:  argCommandDict
+            usage:          ( SearchText(<argRequestDict>)
+            Return:         json
+        '''
+        try:
+
+            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+            self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
+            
+            ''' validating arguments '''
+            myArgKey = ['Collection','Search','Projection','Limit']
+            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+
+            myConnectionInst = self.connectionInstance
+            myDb = myConnectionInst
+            if "score" not in myMainArgData["Projection"]:
+                myMainArgData["Projection"].update({"score": { "$meta": "textScore" }})
+            #find
+            try:
+                myDb = myConnectionInst[myMainArgData['Collection']]
+            except Exception as error:
+                raise com.uconnect.core.error.InvalidCollection("Can not set collection to [{coll}], error[{error}]".format(coll=argCollection,err=error.message))
+            #end
+
+            self.myModuleLogger.debug('Argument [{arg}] used'.format(arg=myMainArgData))
+            myResult=[]
+            try:
+                for doc in myDb.find(\
+                    {"$text":{"$search":myMainArgData["Search"] }}, myMainArgData["Projection"] ).\
+                        sort([('score', {'$meta': 'textScore'})]).\
+                        limit(myMainArgData["Limit"]).skip(int(myMainArgData['Skip'])):
+                    #myDb.find (\
+                    #    {"$text": {"$search": "Anil" }}, {"_id":1,"Main":1,"score": { "$meta": "textScore" }}).\
+                    #    sort([('score', {'$meta': 'textScore'})]).limit(10).skip(0):
+                    myResult.append(doc)
+            except Exception as error:
+                self.myModuleLogger.error("could not perform execute db command, error stack[{errStack}]".format(errStack=error))
+                raise error
+
+            self.myModuleLogger.debug("db command executed, result[{result}]".format(result=myResult))
+            
+            return myResult
+                            
+        except com.uconnect.core.error.MissingArgumentValues as error:
+            self.myModuleLogger.exception("MissingArgumentValues: error [{error}]".format(error=error.errorMsg))
+            raise error
+        except Exception as error:
+            self.myModuleLogger.exception("Error [{error}]".format(error=error.message))
             raise error        
 
 if ( __name__ == "__main__" ):

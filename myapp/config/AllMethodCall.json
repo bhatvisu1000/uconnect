@@ -331,7 +331,38 @@
                 }
         }
 }
+
+//Block
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":314290,
+                    "Connections":[{"Id":314291,"Type":"Member","Action":"Block","Blocked":1}],
+                    "Auth":
+                        {
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginType":"Web",
+                            "LoginId":"vishal",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
 //
+
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()
@@ -397,6 +428,37 @@ exit()
         }
 }
 
+// Seacrh member
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"SearchMember","Page":"None"
+                },
+            "MainArg":
+                {
+                    "SearchCriteria":"anil",
+                    "Page":"0",
+                    "Auth":
+                        {  
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
+//
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()
