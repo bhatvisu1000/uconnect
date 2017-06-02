@@ -64,10 +64,10 @@ class Global(object):
                  }
         self.__RequestStatus = {'Status':'','Message':'','data':''}
         self.__ArgIsAValidMember = {"MemberId":"","AuthKey":"","EntityId":"","EntityType":""}
-        self.__Connection_Action = ['Invite','Accept','Reject','Remove','Favorite','Block']
+        self.__Connection_Action = ['Invite','Accept','Reject','Remove','Favorite','Blocked']
         self.__Connection_Action_Invite = 'Invite'
         self.__Connection_Action_Accepted = 'Accept'
         self.__Connection_Action_Rejected = 'Reject'
         self.__Connection_Action_Removed = 'Remove'
         self.__Connection_Action_Favorite = 'Favorite'
-        self.__Connection_Action_Block = 'Block'
+        self.__Connection_Action_Block = 'Blocked'

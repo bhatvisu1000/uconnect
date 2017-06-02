@@ -258,7 +258,7 @@ class Connections(object):
                 isInvConnStatusUpdated = self.globalInstance._Global__True
                 myConnectionResult = self.mongoDbInstance.UpdateDoc(myRequestorCollection,myRequestorCriteria,myRequestorConnData,'set',False)
                 self.myModuleLogger.debug('Requestor connection status updated, [{conn}], result [{result}] '.
-                format(conn = myMainargData['ConnectionType'] + ' ' + str(myMainArgData['ConnectionId'])  + ' -> ' + \
+                format(conn = myMainArgData['ConnectionType'] + ' ' + str(myMainArgData['ConnectionId'])  + ' -> ' + \
                               myMainArgData['Type'] + ' ' + str(myMainArgData['_id']),\
                               result=myConnectionResult))
 

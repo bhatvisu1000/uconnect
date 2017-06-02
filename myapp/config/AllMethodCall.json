@@ -156,6 +156,9 @@
         }
 }
 // Update Member detail
+                    "Address":{"Street":"1 Main Street", "ZipCode":"08817", "City":"Newark","State":"PA"},
+                    "Contact":{"Email":"a@b.com"},
+
 {
     "Request":
         {
@@ -165,7 +168,6 @@
                 },
             "MainArg":
                 {
-                    "_id":314289,
                     "Main":{"LastName":"Bhat1","FirstName":"Vishal1"},
                     "Address":{"Street":"1 Main Street", "ZipCode":"08817", "City":"Newark","State":"PA"},
                     "Contact":{"Email":"a@b.com"},
@@ -178,7 +180,7 @@
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314289,
+                            "EntityId":314290,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
@@ -197,36 +199,7 @@
                 },
             "MainArg":
                 {
-                    "_id":314291,
-                    "Connections":[{"Id":314290,"Type":"Member","Action":"Invite"}],
-                    "Auth":
-                        {
-                            "AuthKey":"592b9acadf9bba38bcf8fafb",
-                            "LoginType":"Web",
-                            "LoginId":"anil",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "EntityType":"Member",
-                            "EntityId":314291,
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
-                        }
-                }
-        }
-}
-// accept
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
-                },
-            "MainArg":
-                {
-                    "_id":314290,
-                    "Connections":[{"Id":314291,"Type":"Member","Action":"Accept"}],
+                    "Connections":[{"Id":314291,"Type":"Member","Action":"Invite"}],
                     "Auth":
                         {
                             "AuthKey":"5929f4b1df9bba469867ab62",
@@ -243,6 +216,34 @@
                 }
         }
 }
+// accept
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Connections":[{"Id":314290,"Type":"Member","Action":"Accept"}],
+                    "Auth":
+                        {
+                            "AuthKey":"592b9acadf9bba38bcf8fafb",
+                            "LoginType":"Web",
+                            "LoginId":"anil",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "EntityType":"Member",
+                            "EntityId":314291,
+                            "AppVer":"1.0",
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
 
 // reject
 
@@ -255,7 +256,6 @@
                 },
             "MainArg":
                 {
-                    "_id":314290,
                     "Connections":[{"Id":314291,"Type":"Member","Action":"Reject"}],
                     "Auth":
                         {
@@ -361,6 +361,36 @@
         }
 }
 
+// Seacrh member
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"SearchMember","Page":"None"
+                },
+            "MainArg":
+                {
+                    "SearchCriteria":"anil",
+                    "Page":"0",
+                    "Auth":
+                        {  
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
 //
 
 python
@@ -398,65 +428,7 @@ myConnection = member.AddANewMemberConnection(arg)
 print(myConnection)
 exit()
 
-// Accept/Reject/Remove Invitation
 
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Member","ActionId":"ActionOnAMemberConnection","Page":"None"
-                },
-            "MainArg":
-                {
-                    "MemberId":314187,
-                    "ConnectMemberId":314188,
-                    "Action":"Remove",
-                    "Auth":
-                        {  
-                            "AuthKey":"591279dcdf9bba3be4147cb4",
-                            "LoginId":"vishal",
-                            "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "AppVer":"1.0",
-                            "SessionId":"aaabbbccc"
-                        }
-                }
-        }
-}
-
-// Seacrh member
-{
-    "Request":
-        {
-            "Header":
-                {
-                    "ScreenId":"Member","ActionId":"SearchMember","Page":"None"
-                },
-            "MainArg":
-                {
-                    "SearchCriteria":"anil",
-                    "Page":"0",
-                    "Auth":
-                        {  
-                            "AuthKey":"5929f4b1df9bba469867ab62",
-                            "LoginId":"vishal",
-                            "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
-                            "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
-                            "AppVer":"1.0",
-                            "EntityType":"Member",
-                            "EntityId":314290,
-                            "SessionId":"aaabbbccc"
-                        }
-                }
-        }
-}
 
 //
 python

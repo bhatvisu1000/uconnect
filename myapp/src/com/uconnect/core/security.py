@@ -562,10 +562,18 @@ class Security(object):
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #
+            ''' making sure entitytype and entityid is passed in AUTH '''
 
             # checking if Authkey passed is a valid type of object id
             if not (ObjectId.is_valid(myMainArgData['AuthKey'])):
                 raise com.uconnect.error.InvalidAuthKey('Invalid Auth key [{auth}]'.format (auth=myMainArgData['AuthKey']))
+            #fi
+
+            if not({'EntityType','EntityId','AuthKey','DeviceType','DeviceOs','MacAddress','AppVer'} <= set(myMainArgData)):
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg Auth validation error; Auth dict must have [EntityType,EntityId,AuthKey]')
+            #fi
 
             '''Preparing value '''
             myCriteria = {'_id':ObjectId(str(myMainArgData['AuthKey'])),
@@ -591,7 +599,7 @@ class Security(object):
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             self.myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
-            raise
+            return False
         except com.uconnect.core.error.MissingArgumentValues as error:
             self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
             return False

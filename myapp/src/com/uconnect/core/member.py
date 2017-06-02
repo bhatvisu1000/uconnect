@@ -65,8 +65,8 @@ class Member(object):
             print('tag result:',myTagResult)
 
             if 'result' in myTagResult:
-                myTagData = [myTagResult['result'][0]['Tag']]
-                print('tag:',myTagData,tuple(myTagData))
+                myTagData = [tag.upper() for tag in [myTagResult['result'][0]['Tag']]]
+                #print('tag:',myTagData[0],tuple(myTagData))
                 myTagUpdateData = {'Tag':myTagData}
                 myTagUpdateResult = self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myMainArgData, myTagUpdateData,'set')
                 if self.utilityInstance.getUpdateStatus(myTagUpdateResult) == self.globalInstance._Global__Success:
@@ -439,7 +439,7 @@ class Member(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
             ''' validating arguments '''
-            myArgKey = ['_id','Auth','Main']
+            myArgKey = ['Auth','Main']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
@@ -463,7 +463,7 @@ class Member(object):
                 myMainUpdateData.update({'Main.'+key : myMainArgData['Main'][key]})
             #
 
-            myMemberId = myMainArgData['_id']
+            myMemberId = myMainArgData['Auth']['EntityId']
             myCriteria = {'_id':myMemberId}
             self.myModuleLogger.info('Updating Member [{member}]\'s [{main}]' .format(member=myMemberId, main=myMainUpdateData))
 
@@ -524,7 +524,7 @@ class Member(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
             ''' validating arguments '''
-            myArgKey = ['_id','Auth','Address']
+            myArgKey = ['Auth','Address']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
@@ -532,7 +532,7 @@ class Member(object):
             #fi
 
             ''' preparing document '''
-            myMemberId = myMainArgData['_id']
+            myMemberId = myMainArgData['Auth']['EntityId']
             myCriteria = {'_id':myMemberId}
             myAddressUpdateData= {}
 
@@ -619,7 +619,7 @@ class Member(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
             ''' validating arguments '''
-            myArgKey = ['_id','Auth','Contact']
+            myArgKey = ['Auth','Contact']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
@@ -629,7 +629,7 @@ class Member(object):
             ''' preparing document '''
             # removing key(s) if it has any empty values
             myContactData = self.utilityInstance.removeEmptyValueKeyFromDict({'Contact':myMainArgData['Contact']})
-            myMemberId = myMainArgData['_id']
+            myMemberId = myMainArgData['Auth']['EntityId']
             myCriteria = {'_id':myMemberId}
 
             # building update data, find all key informarion which need to be changed 

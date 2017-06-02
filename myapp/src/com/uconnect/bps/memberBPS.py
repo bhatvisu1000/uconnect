@@ -136,8 +136,9 @@ class MemberBPS(object):
                     format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
-            if (myMainArgData['Auth']['EntityType'] != 'Member'):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; entitytype key must be type of Member')
+            ''' validating Auth arg '''
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
             #fi
 
             if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
@@ -191,21 +192,33 @@ class MemberBPS(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             ''' validating arguments '''
-            myArgKey = ['_id','Auth']
+            myArgKey = ['Auth']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             # will check either Main/Address/Contact/Settings information is passed for update
-            if myMainArgData.keys() not in ['Main','Address','Contact','Settings']:
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], expecting Main/Address/Contact/Settings'.format(arg=myMainArgData.keys()))
-
-            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. 
-            This is to ensure that Auth key must belong to this Member '''
+            #{'a','d'} <= set(a), need to fix this
+            if not(any (block in myMainArgData.keys() for block in ['Main','Address','Contact','Settings'])):
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], expecting Main/Address/Contact/Settings'.\
+                    format(arg=myMainArgData.keys()))
+            
+            ''' commenting below code, we will get the entityid from AUTH 
+            will overwrite EntityType and EntityId if passed in Auth dictionary. 
+            This is to ensure that Auth key must belong to this Member
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['_id']})
+            '''
+
+            ''' validating auth args '''
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
+            #fi
 
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
@@ -234,13 +247,13 @@ class MemberBPS(object):
             #fi
 
             # rebuilding tag and recording this activity 
-            self.myModuleLogger.info('Updating Tag for member [{member}]' .format(member=myMainArgData['_id']))
-            myTagUpdateResult = self.memberInstance._Member__updateMemberTag({'_id':myMainArgData['_id']})
+            self.myModuleLogger.info('Updating Tag for member [{member}]' .format(member=myMainArgData['Auth']['EntityId']))
+            myTagUpdateResult = self.memberInstance._Member__updateMemberTag({'_id':myMainArgData['Auth']['EntityId']})
 
             #record this activity
             self.activityInstance._Activity__logActivity(self.utilityInstance.buildActivityArg(
-                myMainArgData['_id'],self.globalInstance._Global__member,self.globalInstance._Global__External,'Member [{member}] detail [{change}] changed'.
-                    format(member=myMainArgData['_id'], change=myMainArgData), myMainArgData['Auth']))
+                myMainArgData['Auth']['EntityId'],self.globalInstance._Global__member,self.globalInstance._Global__External,'Member [{member}] detail [{change}] changed'.
+                    format(member=myMainArgData['Auth']['EntityId'], change=myMainArgData), myMainArgData['Auth']))
 
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
 
@@ -296,7 +309,7 @@ class MemberBPS(object):
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
             # validating arguments
-            myArgKey = ['_id','Connections','Auth','ResponseMode']
+            myArgKey = ['Connections','Auth','ResponseMode']
             myConnectionArgs = myMainArgData['Connections']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
@@ -312,18 +325,34 @@ class MemberBPS(object):
             for myConnections in myConnectionArgs:
                 myArgKey = ['Id','Type','Action']
                 if myConnections['Action'] not in self.globalInstance._Global__Connection_Action:
-                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Action must be one of the value in[{ation}]'.format(action=self.globalInstance._Global__ConnectionAction))
+                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Action must be one of the value in[{action}]'.format(action=self.globalInstance._Global__Connection_Action))
                 #fi
                 myArgValidationResults = self.utilityInstance.valRequiredArg(myConnections, myArgKey)
                 myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
                 if not (myArgValidation):
-                    raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myConnections.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                    raise com.uconnect.core.error.MissingArgumentValues(\
+                        'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                        format(arg=myConnections.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                #fi
+                if (myConnections['Action'] == 'Favorite') and ('Favorite' not in myConnections):
+                    raise com.uconnect.core.error.MissingArgumentValues(\
+                        'Mainarg validation error; missing "Favorite" key')
+                #fi
+                if (myConnections['Action'] == 'Blocked') and ('Blocked' not in myConnections):
+                    raise com.uconnect.core.error.MissingArgumentValues(\
+                        'Mainarg validation error; missing "Blocked" key')
                 #fi
             #end for loop
 
-            ''' will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member '''
+            ''' commenting out below code as its not needed, we will pick entity id from AUTH
+            will overwrite EntityType and EntityId if passed in Auth dictionary. This is to ensure that Auth key must belong to this Member
             myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
                 {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['_id']})
+            '''
+
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
+            #fi
 
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValidAuthentication(myMainArgData['Auth'])):
@@ -333,44 +362,45 @@ class MemberBPS(object):
 
             # lets perform action
             for myConnections in myConnectionArgs:
-                myConnectionArgData = {'_id':myMainArgData['_id'],'Type':self.globalInstance._Global__member,
+                myConnectionArgData = {'_id':myMainArgData['Auth']['EntityId'],'Type':self.globalInstance._Global__member,
                                     'ConnectionId': myConnections['Id'], 'ConnectionType': myConnections['Type']}
                 # we need to populate favorite and block dict as well
                 print('processing connection request [{request}]'.format(request=myConnectionArgData))
                 if myConnections['Action'] == self.globalInstance._Global__Connection_Action_Invite:
                     myConnectionResults = self.connectionsInstance._Connections__AddAConnection(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] added [{conn}] as a connection '.\
-                        format(member=myMainArgData['_id'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
+                        format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 elif myConnections['Action'] == self.globalInstance._Global__Connection_Action_Accepted:
                     myConnectionResults = self.connectionsInstance._Connections__acceptInvitation(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] accepted connection request from [{conn}]'.\
-                        format(member=myMainArgData['_id'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
+                        format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 elif myConnections['Action'] == self.globalInstance._Global__Connection_Action_Rejected:
                     myConnectionResults = self.connectionsInstance._Connections__rejectInvitation(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] rejected connection request from [{conn}]'.\
-                        format(member=myMainArgData['_id'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
+                        format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 elif  myConnections['Action'] == self.globalInstance._Global__Connection_Action_Removed:
                     myConnectionResults = self.connectionsInstance._Connections__removeConnection(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] removed connection from [{conn}]'.\
-                        format(member=myMainArgData['_id'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
+                        format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 elif  myConnections['Action'] == self.globalInstance._Global__Connection_Action_Favorite:
-                    myConnectionArgData.update({'Favorite':myConnections['Favorite']})
+                    print('Fav',myConnections)
+                    myConnectionArgData.update({'Favorite':myConnections['Favorite']}) 
                     myConnectionResults = self.connectionsInstance._Connections__favoriteConnection(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] updated favorite attribute of connection [{conn}]'.\
-                        format(member=myMainArgData['_id'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
+                        format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 elif  myConnections['Action'] == self.globalInstance._Global__Connection_Action_Block:
                     myConnectionArgData.update({'Blocked':myConnections['Blocked']})
                     myConnectionResults = self.connectionsInstance._Connections__blockConnection(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] updated block attribute of connection [{conn}]'.\
-                        format(member=myMainArgData['_id'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
+                        format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 #fi
-                print('in BPS result',myConnectionResults)
+                #print('in BPS result',myConnectionResults)
                 if myConnectionResults.get('Status') == self.globalInstance._Global__Success:
                     ''' recording activity '''
                     myActivityDetails = 'Success,' + myActivityDetails
@@ -441,7 +471,13 @@ class MemberBPS(object):
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
             #fi
 
             ''' Validate auth key for this request'''
@@ -527,8 +563,8 @@ class MemberBPS(object):
                     format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
-            if (myMainArgData['Auth']['EntityType'] != 'Member'):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error; entitytype key must be "Member"')
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
             #fi
 
             ''' commeting out below code
@@ -622,12 +658,9 @@ class MemberBPS(object):
                     'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
                     format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
-            if not({'EntityType','EntityId','AuthKey'} <= set(myMainArgData['Auth'])):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg Auth validation error; Auth dict must have [EntityType,EntityId,AuthKey]')
 
-            if (myMainArgData['Auth']['EntityType'] != 'Member'):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error; entitytype key must be "Member"')
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
             #fi
 
             ''' Validate auth key for this request'''
@@ -637,8 +670,10 @@ class MemberBPS(object):
             #fi 
             
             # preparing documemt for search
+            mySearchCriteria = myMainArgData['SearchCriteria'].upper()
+            print('Search',mySearchCriteria)
             myTextSearhDocArgDict = \
-                {'Collection':'Member', 'Search':myMainArgData['SearchCriteria'],'Projection':{'_id':1,'Main':1}, 'Limit':10, 'Skip':"0"}
+                {'Collection':'Member', 'Search':"\"mySearchCriteria\"",'Projection':{'_id':1,'Main':1}, 'Limit':10, 'Skip':"0"}
             mySearchResults = self.mongoDbInstance.SearchText(myTextSearhDocArgDict)
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', mySearchResults)

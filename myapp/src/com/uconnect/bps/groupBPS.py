@@ -1,3 +1,37 @@
+import datetime, json,logging, com.uconnect.utility.ucLogging, com.uconnect.core.error
+
+from com.uconnect.core.singleton import Singleton
+from com.uconnect.core.globals import Global
+from com.uconnect.bps.factory import Factory
+from com.uconnect.db.mongodb import MongoDB
+from com.uconnect.utility.ucUtility import Utility
+from com.uconnect.core.security import Security
+from com.uconnect.core.member import Member
+from com.uconnect.core.activity import Activity
+from com.uconnect.core.entityconnection import Connections
+from com.uconnect.core.group import Group
+
+myLogger = logging.getLogger('uConnect')
+
+@Singleton
+class GroupBPS(object):
+    def __init__(self):
+        ''' 
+            Description:    Initialization internal method, called internally
+            usage:          Called internally
+            Return:         N/A
+        '''        
+        self.factoryInstance = Factory.Instance()
+        self.utilityInstance = Utility.Instance()
+        self.mongoDbInstance = MongoDB.Instance()
+        self.globalInstance = Global.Instance()
+        self.securityInstance = Security.Instance()
+        self.memberInstance = Member.Instance()
+        self.activityInstance = Activity.Instance()
+        self.connectionsInstance = Connections.Instance()
+        self.groupInstance = Group.Instance()        
+        self.myClass = self.__class__.__name__
+        self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
     '''
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GGGGGGGGGGGGG       RRRRRRRRRRR          OOOOOOOOOOOO       UU          UU      PPPPPPPPPPPP
@@ -10,42 +44,6 @@
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     '''
 
-    def __buildInitGroupData(self, argRequestDict):
-
-        #argMainDict,argAddressDict,argContactDict
-        try:
-            # Preparing document:
-
-            myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
-
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)            
-            myArgKey = ['GroupName','MemberId']
-
-            ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
-            #fi
-
-            myInitGroupData = self.utilityInstance.getTemplateCopy(self.globalInstance._Global__member)
-            myInitGroupData['GroupName'] = myMainArgData['GroupName']
-            myInitGroupData['MemberId'] = myMainArgData['MemberId']
-            myGroupId = self.mongoDbInstance.genKeyForCollection(self.globalInstance._Global__groupColl)
-            myInitMemberData['_id'] = myMemberId
-
-            ''' build initial history data '''
-            myInitGroupData[self.globalInstance._Global__HistoryColumn] = self.utilityInstance.buildInitHistData() 
-            myModuleLogger.info('Data [{arg}] returned'.format(arg=myInitGroupData))
-
-            return myInitGroupData
-
-        except Exception as error:
-            myModuleLogger.exception('Error [{error}]'.format(error=error.message))
-            raise
-
-    #__buildInitGroupData Ends here
 
     def isAMemberGroupNameInUse(self, argRequestDict):
         ''' check if the group name is already in use for this member'''
@@ -69,7 +67,7 @@
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
-            myArgKey = ['GroupName','MemberId']
+            myArgKey = ['GroupName']
 
             ''' validating arguments '''
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Main'], myArgKey)
@@ -78,54 +76,52 @@
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData['Main'].keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
+            #fi
+
             ''' Validate auth key for this request'''
             if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
                 raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
                     format(auth=myMainArgData['AuthKey'], me=self.utilityInstance.whoAmI()))
             #fi
 
-            myCriteria = {'Main.MemberId':myMainArgData['Main']['MemberId'],'Main.GroupName':myMainArgData['Main']['GroupName']}
-            myProjection={'_id':1}
-            myFindOne = True
+            myCriteria = {'Main.OwnerMemberId':myMainArgData['Auth']['EntityId'],'Main.GroupName':myMainArgData['Main']['GroupName']}
 
-            myGroupData = self.mongoDbInstance.findDocument(self.globalInstance._Global__groupColl, myCriteria, myProjection, myFindOne)
-
-            ''' we need to make sure if "Data" key is in Result set from above find, it must not be empty and must have "_id" key in it'''
-            if 'Data' in myGroupData and myGroupData.get('Data') and '_id' in myGroupData.get('Data')[0]:
-                myGroupId = self.utilityInstance.extr1stDocFromResultSets(myGroupData)['_id'] 
-            else:
-                myGroupId = None
-            #fi
-            if myGroupId:
+            if self.mongoDbInstance.findTotDocuments(self.globalInstance._Global__groupColl, myCriteria) > 0:
                 isGroupNameInUse = self.globalInstance._Global__True 
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             else:
                 isGroupNameInUse = self.globalInstance._Global__False 
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'GroupName [{group}] is not in use'.format(group=str(myMainArgData['Main']['GroupName'])))                
-            #fi
+            #fi                
 
             ''' build response data '''
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',isGroupNameInUse)
-            return myResponse
+            #return myResponse
 
         except com.uconnect.core.error.InvalidAuthKey as error:
             myModuleLogger.exception('InvalidAuthKey: error [{errmsg}]'.format(errmsg=error.errorMsg))
             isGroupNameInUse = self.globalInstance._Global__Error
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Auth Key; error [{errmsg}] occurred'.format(errmsg=error.errorMsg))
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
-            return myResponse
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{errmsg}]'.format(error=error.errorMsg))
             isGroupNameInUse = self.globalInstance._Global__Error
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Arg validation error; error [{errmsg}] occurred'.format(errmsg=error.errorMsg))
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isGroupNameInUse)            
-            return myResponse
         except Exception as error:
             myModuleLogger.exception('Error [{errmsg}]'.format(errmsg=error.message))
             isGroupNameInUse = self.globalInstance._Global__Error
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'An error [{errmsg}] occurred'.format(errmsg=error.message))
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error',isValidMember)            
-            return myResponse
+        finally:
+            if 'myResponse' in locals():
+                return myResponse
+            else;
+                raise
+            #fi
+    # end 
 
     def createAMemGroup(self,argRequestDict):
         ''' 
@@ -147,13 +143,31 @@
 
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
-            myArgKey = ['GroupName','Auth','ResponseMode']
+            myArgKey = ['GroupName','Auth','ResponseMode','Participants']
 
             ''' validating arguments '''
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+            #fi
+            
+            myAllParticipantLists = myMainArgData['Participants']
+            if not(self.utilityInstance.isList(myAllParticipantLists)):
+                myAllParticipantLists = [myAllParticipantLists]
+            #fi
+            
+            # validating participants, need to ensure all member id is valid
+            for myParticipant in myAllParticipantLists:
+                if not(self.memberInstance._Member__isAValidMember()):
+                    raise com.uconnect.core.error.MissingArgumentValues(\
+                        'Invalid member [{member}]'.format(member=myParticipant['MemberId']))
+
+            # validating auth argument
+            if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
+                raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
             #fi
 
             ''' Validate auth key for this request'''
@@ -165,7 +179,8 @@
             # validating group name
             myGroupNameValArg = {'Main':{'GroupName':myMainArgData['GroupName'], 'MemberId': myMainArgData['MemberId']}}
             if self.isAMemberGroupNameInUse(myGroupNameValArg):
-                raise com.uConnect.core.error.DuplicateGroup('Duplicate group Name [{group}]'.format(group=myMainArgData['GroupName']))
+                raise com.uConnect.core.error.DuplicateGroup('Duplicate group Name [{group}]'.\
+                    format(group=myMainArgData['GroupName']))
             #fi
 
             # Preparing document:
@@ -177,54 +192,23 @@
             myGroupId = myGroupResult['_id']
             myGroupResultStatus = self.utilityInstance.getCreateStatus(myGroupResult)
 
+            # we need to add participants
             if myGroupResultStatus == self.globalInstance._Global__Success:
+                for myParticipant in myAllParticipantLists:
+                    myParticipantData = {'Participants':{'MemberId':myParticipant['MemberId']}}
+                    self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myParticipantData, 'addToSet',False)
+                # end for
+
                 # Building response data
+                
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
-                myGroupArg = {'Main':{'ResponseMode':self.globalInstance._Global__Internal, '_id':myGroupId}}
+                myGroupArg = {'_id':myGroupId,'ResponseMode':self.globalInstance._Global__InternalRequest}
                 myGroupDetail = self.getAGroupDetail(myGroupArg)
                 myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find', myGroupDetail)
             else:
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess)                
                 myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find')
             #fi
-            
-            ''' dont need information to be saved in Member collection, 
-            if
-                myGroupId = myGroupResult['_id'] 
-                myMainArgData.update({'GroupId':myGroupId})
-                myLogger.info('Group [{group}] creation is successful, now linking to member[{member}]'.
-                    format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-                
-                myLinkedResult = self.linkAMember2Group(myLinkedData)
-                myLinkedResultStatus = self.utilityInstance.getUpdateStatus(myLinkedResult)
-                
-                if myLinkedResultStatus == self.globalInstance._Global__UnSuccess:
-                    #Link was unsuccessful, need to clean up the data (delete group collection just got inserted)
-                    myLogger.info('Linking group [{group}] to member[{member}] is unsuccessful, removing group'.
-                        format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-                    myDeleteResult = self.mongoDbInstance.DeleteDoc(self.globalInstance._Global_groupColl,{'_id':myGroupId})
-                else:
-                    myLogger.info('Linking group [{group}] to member[{member}] is successful'.
-                        format(group=myGroupId, member=myGroupData['Main']['MemberId']))
-
-                    # Building response data
-
-                    myResponseDataDict = self.utilityInstance.builInternalRequestDict({'Data':{'_id':myGroupId}})
-                    myResponseData = self.getAGroupDetail(myResponseDataDict)
-                    #print('response data',myResponseData)
-                    myResponse = self.utilityInstance.buildResponseData(argRequestDict['Request']['Header']['ScreenId'],myGroupResult,'Insert', myResponseData)
-
-                    return myResponse
-                #end if
-            
-            else:
-                # Creation of group was unsuccessful, no need to send the data back
-                # Build response data
-                myResponse = self.utilityInstance.buildResponseData(
-                    argRequestDict['Request']['Header']['ScreenId'],myGroupResult,'Insert')
-                return myResponse
-            #end if
-            '''
 
         except com.uconnect.core.error.MissingArgumentValues as error:
             myModuleLogger.exception('MissingArgumentValues: error [{error}]'.format(error=error.errorMsg))
@@ -243,20 +227,19 @@
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Error [{err}] occurred'.format(err=error.message)) 
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
         finally:
-            return myResponse
-
-    def getGroupDetails4AMember(self,argRequestDict):
+            if 'myResponse' in locals():
+                return myResponse
+            else:
+                raise
+            #fi
+    #end 
+    def getAGroupDetail(self,argRequestDict):
         ''' 
             Description:    Find all group member participates and all participating member
             argRequestDict:     Json/Dict; Following key name is expected in this dict/json object
             usage:          <getGroupDetails4AMember(<argReqJsonDict>)
             Return:         Json object
         '''
-        # we need to check which arguments are passed; valid argument is Phone/Email/LastName + FirstName
-
-        #print (argRequestDict)
-
-        # raise an user defined exception here
         try:
 
             myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
@@ -268,13 +251,15 @@
 
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
-            myArgKey = ['Auth','ResponseMode']
 
             ''' validating arguments '''
+            myArgKey = ['Auth','ResponseMode','_id']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(\
+                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
+                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
             ''' Validate auth key for this request'''
@@ -306,7 +291,7 @@
             myModuleLogger.exception('Error [{error}]'.format(error=error.message))
             raise
 
-    def linkAMember2Group(self,argRequestDict):
+    def UpdateGroupParticipants(self,argRequestDict):
         ''' 
             Description:    Linke a member 2 a Group
             argRequestDict: Json/Dict; Following key name is expected in this dict/json object

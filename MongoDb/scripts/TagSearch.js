@@ -35,18 +35,18 @@ result = mydb.ExecCommand(myAggregateCommand)
 db.Member.find( {},{'_id':1}).forEach(function(updateMemberTag) {
     mydb = db.getCollection('Member')
     var memberid = updateMemberTag._id;
+    print('MemberId' + memberid)
     var myTagCur = mydb.aggregate( [
         {$match:{_id:memberid}},
-        //{$unwind:"$Contact"},
-        {$addFields: { "Tag": { $concat:[ "$Main.LastName", " , ", "$Main.FirstName",", ","$Address.City"," ", "$Address.State"," " , "$Contact.Value"] }}},
+        {$addFields: { "Tag": { $concat:[ "$Main.LastName", "  ", "$Main.FirstName", "  " , "$Address.City", " ", "$Address.State" , "  " , "$Contact.Email"] }}},
         {$project: { "Tag":1}}
         ] );
     while (myTagCur.hasNext()){
         myTag = myTagCur.next();
     };
-    print('MemberId:'+memberid,"Tag:"+myTag);
-
-    mydb.update( {'_id':memberid}, {$set : {'Tag':myTag.Tag}} );
+    print('Tag: ' + myTag.Tag)
+    print('MemberId: '+memberid,"Tag: "+myTag.Tag.toUpperCase());
+    mydb.update( {'_id':memberid}, {$set : {'Tag':myTag.Tag.toUpperCase()}} );
 });
 
 
@@ -59,7 +59,8 @@ from pymongo import MongoClient
 import json
 client = MongoClient('mongodb://localhost:27017/')
 db=client['test']
-for doc in db.Member.find ({"$text": {"$search": "\"Anil\"" }}, {"_id":1,"Main":1,"score": { "$meta": "textScore" }}).sort("score": { "$meta": "textScore" })limit(10):
+for doc in db.Member.find ({"$text": {"$search": "\"Anil\"" }}, {"_id":1,"Main":1,"score": { "$meta": "textScore" }}).\
+    sort([('score', {'$meta': 'textScore'})]).limit(1).skip(1):
   print(doc)
 
 db.Member.find ({"$text": {"$search": "\"Anil\"" }}, {"_id":1,"Main":1,"score": { "$meta": "textScore" }}).limit(10)
