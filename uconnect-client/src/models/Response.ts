@@ -1,4 +1,4 @@
-import { Header } from "./Header";
+import { Header } from "./response/Header";
 import { MainArg } from "./MainArg";
 
 export class MyResponse {

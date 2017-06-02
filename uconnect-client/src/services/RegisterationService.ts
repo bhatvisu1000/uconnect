@@ -8,6 +8,7 @@ import {SendRequest} from "../models/SendRequest"
 import {Request} from "../models/Request"
 import {Header} from "../models/Header"
 import {MainArg} from "../models/MainArg"
+import {MyResponse} from "../models/Response"
 import {Address} from "../models/connection/Address"
 import {Main} from "../models/connection/Main"
 import {Contact} from "../models/connection/Contact"
@@ -62,7 +63,7 @@ export class RegisterationService {
   }
 
   
- submitMember() {
+ /*submitMember() {
   let headers = new Headers({ 'Content-Type': 'application/json' });
   return this.http
     .post(this.registrationUrl, JSON.stringify(this.sendRequest), {headers: headers})
@@ -70,6 +71,18 @@ export class RegisterationService {
     .then(res => res.json().data)
     .catch(this.handleError);
  }
+ */
+
+ submitMember(): Observable<MyResponse> {
+  
+  let headers = new Headers({ 'Content-Type': 'application/json' });
+  let options = new RequestOptions({ headers: headers });
+  return this.http
+    .post(this.registrationUrl, JSON.stringify(this.sendRequest), options)
+    .map(this.extractData)
+    .catch(this.handleError);
+ }
+
 private extractData(res: Response) {
         let body = res.json();
         console.log('while extractData RegisterationService' + body);

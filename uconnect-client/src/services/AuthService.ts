@@ -29,7 +29,7 @@ export class AuthService {
   
   private header:  Header = null;
   private sendRequest: SendRequest = null;
-  private Response: Response = null;
+  private myResponse: MyResponse = null;
 
   constructor(
     public events: Events,
@@ -117,15 +117,48 @@ export class AuthService {
     return this.submitMember();
   }
 
+  /*getRecipes() {
+    this.http.get('https://ng-recipe-book.firebaseio.com/recipes.json')
+      .map(
+        (response: Response) => {
+          const recipes: Recipe[] = response.json();
+          for (let recipe of recipes) {
+            if (!recipe['ingredients']) {
+              recipe['ingredients'] = [];
+            }
+          }
+          return recipes;
+        }
+      )
+      .subscribe(
+        (recipes: Recipe[]) => {
+          this.recipeService.setRecipes(recipes);
+        }
+      );
+  }*/ 
+
+  submitMember(): Observable<MyResponse> {
   
- submitMember(): Promise<MyResponse> {
+  let headers = new Headers({ 'Content-Type': 'application/json' });
+  let options = new RequestOptions({ headers: headers });
+  return this.http
+    .post(this.registrationUrl, JSON.stringify(this.sendRequest), options)
+    .map(this.extractData)
+    .catch(this.handleError);
+ }
+
+ /**submitMember(): Promise<MyResponse> {
+  var deferred = this.$q.defer();
   let headers = new Headers({ 'Content-Type': 'application/json' });
   return this.http
     .post(this.registrationUrl, JSON.stringify(this.sendRequest), {headers: headers})
     .toPromise()
-    .then((res: Response) => res.json() as MyResponse)
+    .then(this.extractData)
     .catch(this.handleError);
- }
+  
+
+ }*/
+
 private extractData(res: Response) {
         let body = res.json();
         console.log('while extractData RegisterationService' + body);
