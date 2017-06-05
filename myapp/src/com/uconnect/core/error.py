@@ -61,3 +61,5 @@ class InvalidSecCodeDeliveryOptions(ucException):
     pass
 class InvalidSecurityCode(ucException):
     pass    
+class DuplicateGroup(ucException):
+    pass        

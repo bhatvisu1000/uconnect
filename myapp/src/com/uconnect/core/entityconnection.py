@@ -69,7 +69,7 @@ class Connections(object):
                 if myMainArgData['_id'] == myMainArgData['ConnectionId']:
                     raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
                 #fi
-                myMemberValidationData = {'Member':{'_id':myMainArgData['_id']},'ResponseMode':self.globalInstance._Global__InternalRequest}
+                myMemberValidationData = {'_id':myMainArgData['_id'],'ResponseMode':self.globalInstance._Global__InternalRequest}
                 if (not self.memberInstance._Member__isAValidMember(myMemberValidationData)):
                     raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
                 #fi
@@ -92,7 +92,7 @@ class Connections(object):
             #validating connection id
             if myMainArgData['ConnectionType'] == self.globalInstance._Global__member:
                 # this is a member 2 member connection
-                myMemberValidationData = {'Member':{'_id':myMainArgData['ConnectionId']},'ResponseMode':self.globalInstance._Global__InternalRequest}
+                myMemberValidationData = {'_id':myMainArgData['ConnectionId'],'ResponseMode':self.globalInstance._Global__InternalRequest}
                 if (not self.memberInstance._Member__isAValidMember(myMemberValidationData)):
                     raise com.uconnect.core.error.MissingArgumentValues(\
                         'Arg validation error, Invalid Connect MemberId [{member}]'.format(member=myMainArgData['ConnectionId'] ))

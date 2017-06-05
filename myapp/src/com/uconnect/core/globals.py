@@ -27,6 +27,7 @@ class Global(object):
         self.__InternalPage=99999
         self.__InternalRequest='I'
         self.__ExternalRequest='E'
+        self.__ValidResponseModeLsit = [self.__InternalRequest, self.__ExternalRequest]
         self.__ResponseTemplate="Response"
         self.__RequestTemplate="Request"
         self.__HistoryTemplate="History"

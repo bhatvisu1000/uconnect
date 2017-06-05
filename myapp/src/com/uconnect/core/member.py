@@ -676,7 +676,7 @@ class Member(object):
         ''' 
             Description:    Find a member details
             argRequestDict: Json/Dict; Following key name is expected in this dict/json object
-                            {'MemnberId':'','Auth':''}
+                            {'_id':'','ResponseMode':''}
             usage:          <__isAValidMember(<argReqJsonDict>)
             Return:         Json object
         '''
@@ -695,30 +695,14 @@ class Member(object):
             #myArgKey = ['Member','Auth']
 
             ''' validating arguments '''
-            myArgKey = ['Member','ResponseMode']
+            myArgKey = ['_id','ResponseMode']
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
             #fi
 
-            myArgKey = ['_id']
-
-            ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData['Member'], myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
-            if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData['Member'].keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
-            #fi
-
-            ''' commenting out this block, this will be internal call 
-            #Validate auth key for this request
-            if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
-                raise com.uconnect.core.error.InvalidAuthKey('Invalid Auth Key [{auth}] for this request [{me}]'.
-                    format(auth=myMainArgData['AuthKey'], me=self.utilityInstance.whoAmI()))
-            #fi
-            '''
-            myCriteria = {'_id':myMainArgData['Member']['_id'], 'Main.Type':self.globalInstance._Global__member}
+            myCriteria = {'_id':myMainArgData['_id'], 'Main.Type':self.globalInstance._Global__member}
             myMemberDataCount = self.mongoDbInstance.findTotDocuments(self.globalInstance._Global__memberColl, myCriteria)
 
             #print(myCriteria,myProjection,myMemberData)

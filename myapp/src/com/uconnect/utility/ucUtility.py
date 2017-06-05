@@ -1,4 +1,4 @@
-import os, sys, json,datetime, copy, random, com.uconnect.core.error
+import os,sys,traceback,json,datetime,copy,random, com.uconnect.core.error
 
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucLogging import logging
@@ -15,13 +15,10 @@ class Utility(object):
         self.globalInstance = Global.Instance()
         self.myClass = self.__class__.__name__
         self.myPythonFile = os.path.basename(__file__)
-        '''
-        print ("Global Success:",self.globalInstance._Global__Success)
-        print ("Global UnSuccess:",self.globalInstance._Global__UnSuccess)
-        print ("Global Error:",self.globalInstance._Global__Error)
-        print ("Global Screen:",self.globalInstance._Global__InternalScreenId)
-        print ("Global Action:",self.globalInstance._Global__InternalActionId)
-        '''
+
+        self.myClass = self.__class__.__name__
+        self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+
     def isDict(self, argDict):
         #print(self.myClass)
         #print(sys._getframe().f_code.co_name)
@@ -129,9 +126,6 @@ class Utility(object):
             usage:          ( valRequiredArg(<dictionary object>, <keyList>)
         '''
 
-        #myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.Utility')
-        #myModuleLogger.debug("validating dict [{key}] in [{dict}] ".format(dict=argRequestDict, key=argKeyList))
-        ''' another way to check if all key is found in dict '''
         isValidArgument = False
         myMissingOrEmptyKeyList = []
 
@@ -139,15 +133,12 @@ class Utility(object):
         myArgKeyList = copy.deepcopy(argKeyList)
         myIgnoredArgKeyList = copy.deepcopy(argIgnoreList)
         myMainArgData = copy.deepcopy(argRequestDict)
+        myValidationMessage = ''
 
         if not(myIgnoredArgKeyList == None):
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
         #fi
-        '''
-        print('val',myArgKeyList)
-        print('val',myIgnoredArgKeyList)
-        print('val',myMainArgData)
-        '''
+
         # check if all key in dictionary
         if all(key in myMainArgData for key in myArgKeyList):
             # check if any key in dict has None or empty value
@@ -159,6 +150,7 @@ class Utility(object):
                         myMissingOrEmptyKeyList.append(key)
                     #fi
                 #end for loop
+                myValidationMessage = 'Arg Validation; empty key(s) ' + str(myMissingOrEmptyKeyList)
             #fi
         else:
             #need to find out which key is missing
@@ -167,19 +159,24 @@ class Utility(object):
                     myMissingOrEmptyKeyList.append(key)
                 #fi
             #end for loop
+            myValidationMessage = 'Arg Validation; missing key(s) ' + str(myMissingOrEmptyKeyList)
         #fi
-
-
-        #fi
-        '''
-        isValidArgument = True
-        for key in argKeyList:
-            if (not(key in myMainArgData ))  or (myMainArgData[key] == None ):
+        # checking if responsemode key has valid value ('I','E')
+        if isValidArgument and 'ResponseMode' in myMainArgData:
+            if not(myMainArgData['ResponseMode'] in self.globalInstance._Global__ValidResponseModeLsit):
                 isValidArgument = False
-                break
-        '''
-        return isValidArgument, myMissingOrEmptyKeyList 
+                myValidationMessage = 'Arg Validation; ResponseMode key has invalid value, expecting [' +\
+                  str(self.globalInstance._Global__ValidResponseModeLsit) + ']'
+        #fi
+        return isValidArgument, myMissingOrEmptyKeyList, myValidationMessage 
 
+    def valResponseMode(self, argResponseMode):
+        if len(argResponseMode) == 1:
+            return argResponseMode in self.globalInstance._Global__ValidResponseModeLsit
+        else:
+            return False
+
+        
     def getCopy(self, argDictList):
         return copy.deepcopy(argDictList)
 
@@ -190,6 +187,14 @@ class Utility(object):
             usage:          ( isAllArgumentsValid(<*args>)
         '''
         return (all (args))
+
+    def extractLogError(self):
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        myErrorMessage = repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        self.myModuleLogger.error('Error [{err}] occurred'.format(err=myErrorMessage))
+
+        return self.getRequestStatus(\
+                self.globalInstance._Global__UnSuccess,'Error [{err}] occurred'.format(err=myErrorMessage))
 
     def isValidZipCode(self, argZipCode):
         ''' 

@@ -128,10 +128,9 @@
         {
             "Main":
                 {
-                    "GroupName":"","OwnerMemberId":""
+                    "GroupName":"","OwnerMemberId":"", "TotalParticipants":0
                 },
-            "Participants":[], 
-            "Metrics":{"TotalPArticipants":1},    
+            "Participants":[],    
             "_History":{}
         },
     "Participants":
