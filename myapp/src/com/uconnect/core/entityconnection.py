@@ -158,24 +158,17 @@ class Connections(object):
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Could not build Requestor [{req}] while performing "Add Connection" task'.
                             format(req=myMainArgData['_id']))
             #fi
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
-            ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
+            
+            return myRequestStatus
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             if isReqConnectionAdded and (not isInvConnectionAdded) and (not isCleanUpDone):
                 #print(isReqConnectionAdded,isInvConnectionAdded,isCleanUpDone)
                 self.mongoDbInstance.UpdateDoc(self.globalInstance._Global__memberColl, myRequestorCriteria, myRequestorConnData, 'pull',False)                
             #fi
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-        finally:            
-            if 'myRequestStatus' in locals():
-                return myRequestStatus
-            else:
-                raise 
+            return myRequestStatus
+
     #__AddMember2MemberConnection Ends here
 
     def __acceptInvitation(self, argRequestDict):
@@ -298,25 +291,15 @@ class Connections(object):
                     format(inv= myMainArgData['Type'] + ' ' + str(myMainArgData['_id']), 
                             status=self.globalInstance._Global__Accepted_Inv_ConnectionStatus))
             #fi
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
+            return myRequestStatus
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             if isInvConnStatusUpdated and (not isReqConnStatusUpdated) and (not isCleanUpDone):
                 myInviteeConnData = {'Connections.$.Status':self.utilityInstance.getConnStatus4Action('New Connection','Invitee')}
                 self.mongoDbInstance.UpdateDoc(myInviteeCollection, myInviteeCriteria, myInviteeConnData, 'set',False)
             #fi
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-        finally:
-            if 'myRequestStatus' in locals():
-                return myRequestStatus
-            else:
-                raise
-            #fi
+            return myRequestStatus
     #__AcceptInvitation Ends here
 
     def __rejectInvitation(self, argRequestDict):
@@ -452,25 +435,18 @@ class Connections(object):
                     format(inv= myMainArgData['Type'] + ' ' + str(myMainArgData['_id']), 
                             status=self.globalInstance._Global__Accepted_Inv_ConnectionStatus ))
             #fi
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
+
+            return myRequestStatus
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             if isInvConnStatusRemoved and (not isReqConnStatusUpdated) and (not isCleanUpDone):
                 myInviteeConnData = {'Connections.$.Status':self.utilityInstance.getConnStatus4Action('New Connection','Invitee')}
                 self.mongoDbInstance.UpdateDoc(myInviteeCollection, myInviteeCriteria, myInviteeConnData, 'set',False)
             #fi
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-        finally:
-            if 'myRequestStatus' in locals():
-                return myRequestStatus
-            else:
-                raise
-            #fi
+            return myRequestStatus
+
     #__rejectInvitation end here
 
     def __removeConnection(self, argRequestDict):
@@ -607,30 +583,17 @@ class Connections(object):
                     format(req= myMainArgData['Type'] + ' ' + str(myMainArgData['_id']), 
                             status=self.globalInstance._Global__Accepted_Inv_ConnectionStatus ))
             #fi
+
             return myRequestStatus
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            #raise
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            #print('error',string(myErrorMessage))
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             ''' we need to ensure if cleanup is required should there be an issue during failure of Invitee connection '''
             if isRequestorConnRemoved and (not isRequesteeConnRemoved) and (not isCleanUpDone):
                 self.mongoDbInstance.UpdateDoc(myRequestorCollection, myRequestorCriteria, \
                     {'Connections':{myRequestorConnBkupData['Connections'][0]}}, 'addToSet',False)
             #fi
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-            print(myRequestStatus)
-            #raise
-        finally:
-            if 'myRequestStatus' in locals():
-                return myRequestStatus
-            else:
-                raise
-            #fi
+            return myRequestStatus
         #__reoveConnection Ends here
 
     def __favoriteConnection(self,argRequestDict):
@@ -696,19 +659,11 @@ class Connections(object):
                     myMarkFavoriteStatus.get('Message'))
             #fi            
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)            
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info())
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)            
-        finally:
-            if 'myRequestStatus' in locals():
-                return myRequestStatus
-            else:
-                raise
+            return myRequestStatus
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
+            return myRequestStatus
             #fi
         #__favoriteConnection Ends here
 
@@ -776,18 +731,10 @@ class Connections(object):
                     myBlockStatus.get('Message'))
             #fi            
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)            
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info())
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)            
-        finally:
-            if 'myRequestStatus' in locals():
-                return myRequestStatus
-            else:
-                raise
+            return myRequestStatus
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
+            return myRequestStatus
             #fi    
         #__blockConnection Ends here

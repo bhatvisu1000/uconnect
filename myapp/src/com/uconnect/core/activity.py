@@ -50,11 +50,8 @@ class Activity(object):
 
             return myInitActivityLogData
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
-            raise
-        except Exception as error:
-            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             raise
 
     def __logActivity(self, argRequestDict):
@@ -102,23 +99,11 @@ class Activity(object):
             #fi
             return myRequestStatus
 
-        except com.uconnect.core.error.InvalidAuthKey as error:
-            myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
-            #return myRequestStatus
-            raise
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.errorMsg)
-            #return myRequestStatus
-            raise
-        except Exception as error:
-            myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,error.message)
-            #return myRequestStatus
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             raise
 
-    def ackActivity(self, argRequesDict):
+    def acknowledgeActivity(self, argRequesDict):
         pass
     def getActivity(self, argRequesDict):
         pass

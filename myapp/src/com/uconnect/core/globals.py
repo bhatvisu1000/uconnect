@@ -63,7 +63,7 @@ class Global(object):
                 'Accept Connection':{'Requestor':'Accepted','Invitee':'Valid'},
                 'Reject Connection':{'Requestor':'Rejected','Invitee':'Invalid'}
                  }
-        self.__RequestStatus = {'Status':'','Message':'','data':''}
+        self.__RequestStatus = {'Status':'','Message':'','data':'','Traceback':''}
         self.__ArgIsAValidMember = {"MemberId":"","AuthKey":"","EntityId":"","EntityType":""}
         self.__Connection_Action = ['Invite','Accept','Reject','Remove','Favorite','Blocked']
         self.__Connection_Action_Invite = 'Invite'

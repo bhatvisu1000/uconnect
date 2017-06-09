@@ -1,114 +1,174 @@
 {
-  "Registration": {
-    "RegisterEntity": {
-      "Description": "Register/Create a new Entity",
-      "BPS": {
-        "Module": "com.uconnect.core.security",
-        "Class": "Security",
-        "Method": "registerEntity"
-      }
+  "Registration": 
+    {
+      "RegisterEntity": 
+        {
+          "Description": "Register/Create a new Entity",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.security",
+              "Class": "Security",
+              "Method": "registerEntity"
+            }
+          },
+      "GenerateSecCode": 
+        {
+          "Description": "Generate sec code for this login id for authentication",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.security",
+              "Class": "Security",
+              "Method": "genSecurityCode"
+            }
+        },
+      "ValidateSecCode": 
+        {
+          "Description": "Validate sec code for this loginid",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.security",
+              "Class": "Security",
+              "Method": "validateSecurityCode"
+            }
+        }    
     },
-    "GenerateSecCode": {
-      "Description": "Generate sec code for this login id for authentication",
-      "BPS": {
-        "Module": "com.uconnect.core.security",
-        "Class": "Security",
-        "Method": "genSecurityCode"
-      }
+  "Login":  
+    {
+      "IsLoginInUse": 
+        {
+          "Description": "Check if loginid is currenty in use",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.security",
+              "Class": "Security",
+              "Method": "isLoginInUse"
+            }
+        },
+      "Authenticate": 
+        {
+          "Description": "Authenticate login id",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.security",
+              "Class": "Security",
+              "Method": "validateCredential"
+            }
+        },
+      "IsValidAuthentication": 
+        {
+          "Description": "Verify if this is valid authentication",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.security",
+              "Class": "Security",
+              "Method": "isValidAuthentication"
+            }
+        }    
     },
-    "ValidateSecCode": {
-      "Description": "Validate sec code for this loginid",
-      "BPS": {
-        "Module": "com.uconnect.core.security",
-        "Class": "Security",
-        "Method": "validateSecurityCode"
-      }
-    }    
-  },
-  "Login":  {
-    "IsLoginInUse": {
-      "Description": "Check if loginid is currenty in use",
-      "BPS": {
-        "Module": "com.uconnect.core.security",
-        "Class": "Security",
-        "Method": "isLoginInUse"
-      }
-    },
-    "Authenticate": {
-      "Description": "Authenticate login id",
-      "BPS": {
-        "Module": "com.uconnect.core.security",
-        "Class": "Security",
-        "Method": "validateCredential"
-      }
-    },
-    "IsValidAuthentication": {
-      "Description": "Verify if this is valid authentication",
-      "BPS": {
-        "Module": "com.uconnect.core.security",
-        "Class": "Security",
-        "Method": "isValidAuthentication"
-      }
-    }    
-  },
-  "Member": {
-    "getAMemberDetail": {
-      "Description": "Find a Member Details",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "getAMemberDetail"
-        }
-      },
-    "isAValidMember": {
-      "Description": "Is Member a valid member",
-      "BPS": {
-        "Module": "com.uconnect.core.member",
-        "Class": "Member",
-        "Method": "_Member__isAValidMember"
-        }
-      },
-    "updateMemberDetail": {
-      "Description": "Update Member Main/Address/Contact information",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "updateMemberDetail"
-        }
-      },        
-    "UpdateConnectionDetails": {
-      "Description": "Update connection details [Add/Accept/Reject/Remove]",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "UpdateConnectionDetails"
-        }
-      },
-    "SearchMember": {
-      "Description": "Text Seaech on member.Tag",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "SearchMember"
-        }
-      },
-    "GetMemberConnection": {
-      "Description": "Find member connection for a given member",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "getAMemberConnections"
-        }
-      }    
+  "Member": 
+    {
+      "getAMemberDetail": 
+        {
+          "Description": "Find a Member Details",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.memberBPS",
+              "Class": "MemberBPS",
+              "Method": "getAMemberDetail"
+            }
+        },
+      "isAValidMember": 
+        {
+          "Description": "Is Member a valid member",
+          "BPS": 
+            {
+              "Module": "com.uconnect.core.member",
+              "Class": "Member",
+              "Method": "_Member__isAValidMember"
+            }
+        },
+      "updateMemberDetail": 
+        {
+          "Description": "Update Member Main/Address/Contact information",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.memberBPS",
+              "Class": "MemberBPS",
+              "Method": "updateMemberDetail"
+            }
+        },        
+      "UpdateConnectionDetails": 
+        {
+          "Description": "Update connection details [Add/Accept/Reject/Remove]",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.memberBPS",
+              "Class": "MemberBPS",
+              "Method": "UpdateConnectionDetails"
+            }
+        },
+      "SearchMember": 
+        {
+          "Description": "Text Seaech on member.Tag",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.memberBPS",
+              "Class": "MemberBPS",
+              "Method": "SearchMember"
+            }
+        },
+      "GetMemberConnection": 
+        {
+          "Description": "Find member connection for a given member",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.memberBPS",
+              "Class": "MemberBPS",
+              "Method": "getAMemberConnections"
+            }
+        }    
     },
   "Group":
-    {"getAGroupDetail": {
-      "Description": "Get a Group Details",
-      "BPS": {
-        "Module": "com.uconnect.bps.memberBPS",
-        "Class": "MemberBPS",
-        "Method": "getAGroupDetail"
-      }
-    }
-  }  
+    {
+      "NewGroup": 
+        {
+          "Description": "Create a new group",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.groupBPS",
+              "Class": "GroupBPS",
+              "Method": "createAMemberGroup"
+            }
+        },
+      "UpdateGroupDetails":
+      {
+          "Description": "Update group details",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.groupBPS",
+              "Class": "GroupBPS",
+              "Method": "UpdateGroupDetails"
+            }
+        },
+      "GetAGroupDetail": 
+        {
+          "Description": "Get all details of a group",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.groupBPS",
+              "Class": "GroupBPS",
+              "Method": "getAGroupDetail"
+            }
+        },
+      "GetAllGroupOfAMember": 
+        {
+          "Description": "Get All group which a member belongs to ",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.groupBPS",
+              "Class": "GroupBPS",
+              "Method": "getAllGroupOfAMember"
+            }
+        }        
+    }  
 }

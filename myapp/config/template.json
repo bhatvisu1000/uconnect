@@ -200,7 +200,7 @@
                 {
                     "Header":
                         {
-                            "Status":"","Message":"",
+                            "Status":"","Message":"","Traceback":"",
                             "Summary":
                                 {
                                     "TotalDocs":"","TotalPages":"","DocsPerPage":"","CurrentPage":""

@@ -27,23 +27,28 @@ class MongoDbConnection(object):
       self.envInstance = Environment.Instance()
 
    def getConnection(self):
-      myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
-      myModuleLogger.debug("Reading MONGO_URI details ...")
-      myEnvironment = self.envInstance.getCurrentEnvironment()
-      mongoDbEnvDetail = self.envInstance.getEnvironmentDetails(myEnvironment)
-      mongoDbMongoURI  = mongoDbEnvDetail['MongoUri']
-      mongoDbDBName = mongoDbEnvDetail['MongoDBName']
+      try:
+         myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
+         myModuleLogger.debug("Reading MONGO_URI details ...")
+         myEnvironment = self.envInstance.getCurrentEnvironment()
+         mongoDbEnvDetail = self.envInstance.getEnvironmentDetails(myEnvironment)
+         mongoDbMongoURI  = mongoDbEnvDetail['MongoUri']
+         mongoDbDBName = mongoDbEnvDetail['MongoDBName']
 
-      myModuleLogger.debug(" MONGO_URI details [{mongoUri}]".format(mongoUri=mongoDbMongoURI))
-      myModuleLogger.debug(" MongoDb Name [{mongoDB}]".format(mongoDB=mongoDbDBName))
+         myModuleLogger.debug(" MONGO_URI details [{mongoUri}]".format(mongoUri=mongoDbMongoURI))
+         myModuleLogger.debug(" MongoDb Name [{mongoDB}]".format(mongoDB=mongoDbDBName))
 
-      myMongoClient = MongoClient(mongoDbMongoURI)
-      myMongoConn = myMongoClient.get_database(mongoDbDBName)
+         myMongoClient = MongoClient(mongoDbMongoURI)
+         myMongoConn = myMongoClient.get_database(mongoDbDBName)
 
-      myModuleLogger.debug(" MongoDb Connection [{mongoConn}]".format(mongoConn=myMongoConn))
+         myModuleLogger.debug(" MongoDb Connection [{mongoConn}]".format(mongoConn=myMongoConn))
 
-      myLogger.info(myMongoConn)
-      return myMongoConn
+         myLogger.info(myMongoConn)
+         return myMongoConn
+
+      except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
+            raise
 
 @Singleton
 class OracleDBConnection(object):

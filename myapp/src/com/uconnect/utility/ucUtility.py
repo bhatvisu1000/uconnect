@@ -194,7 +194,7 @@ class Utility(object):
         self.myModuleLogger.error('Error [{err}] occurred'.format(err=myErrorMessage))
 
         return self.getRequestStatus(\
-                self.globalInstance._Global__UnSuccess,'Error [{err}] occurred'.format(err=myErrorMessage))
+                self.globalInstance._Global__UnSuccess, repr(exc_value), None, myErrorMessage)
 
     def isValidZipCode(self, argZipCode):
         ''' 
@@ -343,19 +343,20 @@ class Utility(object):
         self.removeKeyFromDict(myActivityLogData, ['Acknowledged','ActivityDate'])
         return myActivityLogData
 
-    def getRequestStatus(self, argStatus, argStatusMessage = None, argData = None):
+    def getRequestStatus(self, argStatus, argStatusMessage = None, argData = None, argTraceBack = None):
         myRequestStatus = self.getCopy(self.globalInstance._Global__RequestStatus)
         if argStatus:
-            if argStatus == self.globalInstance._Global__Success:
-                myRequestStatus.update({'Status' :self.globalInstance._Global__Success})
-                myRequestStatus.update({'Message' : self.globalInstance._Global__Success})
-                myRequestStatus.update({'Data' : argData})
-            elif argStatus == self.globalInstance._Global__UnSuccess:
-                myRequestStatus.update({'Status' : self.globalInstance._Global__UnSuccess})
-                if argStatusMessage:
-                    myRequestStatus.update({'Message' : argStatusMessage})
-                #fi
-            #fi
+            myRequestStatus.update({'Status' :argStatus})
+        if argStatusMessage:
+            myRequestStatus.update({'Message' : argStatusMessage})
+        else:
+            myRequestStatus.update({'Message' : argStatus})
+        #fi
+        if argData:
+            myRequestStatus.update({'Data' : argData})
+        #fi
+        if argTraceBack:
+            myRequestStatus.update({'Traceback' : argTraceBack}) 
         #fi
         return myRequestStatus
 
@@ -388,11 +389,13 @@ class Utility(object):
         elif (argResultType == 'Find'):
             myResponseData['MyResponse']['Header']['Status'] = argResultStatus['Status']
             myResponseData['MyResponse']['Header']['Message'] = argResultStatus['Message']
+            myResponseData['MyResponse']['Header']['Traceback'] = argResultStatus['Traceback']
             #myData = argResult
         elif (argResultType == 'Error'):
             #print("Success",self.globalInstance._Global__Success)
             myResponseData['MyResponse']['Header']['Status'] = argResultStatus['Status']
             myResponseData['MyResponse']['Header']['Message'] = argResultStatus['Message']
+            myResponseData['MyResponse']['Header']['Traceback'] = argResultStatus['Traceback']
             myData = []
 
         ''' if data element passed, we will copy the "Data" to "Data" section, "Data.Summary" to "Header.Summary" secton'''
@@ -493,6 +496,10 @@ class Utility(object):
     def getNonEmptyKeyFromDict(self, argRequestDict):
         ''' return all non empty key from dictionary, passed argument is not changed'''
         return dict ((k,v) for k, v in argRequestDict.iteritems() if v)
+
+    def isAnyKeyInDict(self, argKeyList, argDict):
+        # check if any of the key value from List present in keys in dictionnary
+        return any(key in argKeyList for key in argDict.keys())
 
     def removeKeyFromList(self, argRequestList, argRemoveKeyList):
         ''' remove key(s) from list '''

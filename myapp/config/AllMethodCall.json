@@ -391,8 +391,125 @@
         }
 }
 
-//
+// create a new group
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Group","ActionId":"NewGroup","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Main":{"GroupName":"TestGroup"},
+                    "Participants":[{"MemberId":314291}],
+                    "Auth":
+                        {  
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
 
+//
+// Get Group Details
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Group","ActionId":"GetAGroupDetail","Page":"None"
+                },
+            "MainArg":
+                {
+                    "_id":10087,
+                    "Auth":
+                        {  
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
+// Get all Group which a member belongs to 
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Group","ActionId":"GetAllGroupOfAMember","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Auth":
+                        {  
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
+// update group details
+//UpdateGroupDetails
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Group","ActionId":"UpdateGroupDetails","Page":"None"
+                },
+            "MainArg":
+                {
+                    "Auth":
+                        {  
+                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "LoginId":"vishal",
+                            "LoginType":"Web",
+                            "Password":"bhatt",
+                            "DeviceOs":"Mobile",
+                            "DeviceType":"OS2",
+                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "AppVer":"1.0",
+                            "EntityType":"Member",
+                            "EntityId":314290,
+                            "SessionId":"aaabbbccc"
+                        }
+                }
+        }
+}
+
+
+//
 python
 from com.uconnect.bps.memberBPS import MemberBPS
 member = MemberBPS.Instance()

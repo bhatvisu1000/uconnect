@@ -92,13 +92,8 @@ class MemberBPS(object):
             myResponse = myMemberResult['_id']
             return myResponse
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg            
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            raise
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])            
-            myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             raise
 
     def getAllInformation4Member(self,argRequestDict):
@@ -161,11 +156,8 @@ class MemberBPS(object):
             # we need to combine all results in one result sets
             return myResponse
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=error.errorMsg))
-            raise error
-        except Exception as error:
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             raise error
 
     def updateMemberDetail(self, argRequestDict):
@@ -259,30 +251,15 @@ class MemberBPS(object):
 
             ''' get all the information of a member '''
             myMemberDetailResults = self.getAMemberDetail({'ResponseMode':self.globalInstance._Global__InternalRequest,'Auth':myMainArgData['Auth']})
-            print(myMemberDetailResults)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberDetailResults)
+            #print(myMemberDetailResults)
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberDetailResults)
+            return myResponse
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        except com.uconnect.core.error.InvalidAuthKey as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=error.errorMsg))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        finally:
-            print('myResponse' in locals())
-            if 'myResponse' in locals():
-                return myResponse
-            else:
-                raise
+            return myResponse
 
     def updateMemberSettings(self,argRequestDict):
         pass    
@@ -418,28 +395,12 @@ class MemberBPS(object):
             myResponseData = self.getAMemberConnections(myResponseArgData)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',myResponseData)
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Error')            
-        except com.uconnect.core.error.InvalidAuthKey as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Error')            
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            print('Error',myErrorMessage)
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Error')            
-        finally:
-            if 'myResponse' in locals():
-                return myResponse
-            else:
-                raise
-            #fi
+            return myResponse
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            return myResponse
     # ends ExecConnectionAction
 
     def getAMemberDetail(self,argRequestDict):
@@ -504,26 +465,12 @@ class MemberBPS(object):
             ''' Building response '''           
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',myMemberData)
             
-        except com.uconnect.core.error.InvalidAuthKey as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('InvalidAuthKey: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])            
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
-        finally:
-            if 'myResponse' in locals():
-                return myResponse
-            else:
-                raise
+            return myResponse
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            return myResponse
 
     def getAMemberConnections(self,argRequestDict):
         ''' 
@@ -567,13 +514,6 @@ class MemberBPS(object):
                 raise com.uconnect.core.error.MissingArgumentValues('Auth Arg validation error; entitytype key must be "Member"')
             #fi
 
-            ''' commeting out below code
-            will overwrite EntityType and EntityId if passed in Auth dictionary. 
-            This is to ensure that Auth key must belong to this Member 
-            myMainArgData['Auth'] = self.securityInstance._Security__updateAuthEntity(
-                {'Auth':myMainArgData['Auth'],'EntityType':self.globalInstance._Global__member,'EntityId':myMainArgData['_id']})
-            '''
-
             ''' Validate auth key for this request'''
             if myMainArgData['ResponseMode'] == self.globalInstance._Global__InternalRequest:
                 if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
@@ -613,21 +553,12 @@ class MemberBPS(object):
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
 
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
+            return myResponse
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        finally:
-            if 'myResponse' in locals():
-                return myResponse
-            else:
-                raise
+            return myResponse
 
     def SearchMember(self,argRequestDict):
         ''' 
@@ -676,20 +607,13 @@ class MemberBPS(object):
                 {'Collection':'Member', 'Search':"\"mySearchCriteria\"",'Projection':{'_id':1,'Main':1}, 'Limit':10, 'Skip':"0"}
             mySearchResults = self.mongoDbInstance.SearchText(myTextSearhDocArgDict)
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
+
+            # building response
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', mySearchResults)
-        except com.uconnect.core.error.MissingArgumentValues as error:
-            myErrorMessage = error.errorMsg
-            self.myModuleLogger.exception('MissingArgumentValues: error [{myerror}]'.format(myerror=myErrorMessage))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
+
+            return myResponse
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        except Exception as error:
-            myErrorMessage = repr(sys.exc_info()[1])
-            self.myModuleLogger.exception('Error [{myerror}]'.format(myerror=error.message))
-            myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myErrorMessage)
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-        finally:
-            if 'myResponse' in locals():
-                return myResponse
-            else:
-                raise
-            #fi
+            return myResponse
