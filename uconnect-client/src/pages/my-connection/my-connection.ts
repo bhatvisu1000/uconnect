@@ -4,6 +4,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import { ConnectionService } from "../../services/ConnectionService";
 import {ConnectionSummary} from "../../models/connection/ConnectionSummary"
 import { AlertController } from 'ionic-angular';
+import {ResponseReceived} from "../../models/ResponseReceived"
 
 
 @Component({
@@ -13,6 +14,7 @@ import { AlertController } from 'ionic-angular';
 })
 export class MyConnectionPage {
 	listItems: ConnectionSummary[];
+  public responseReceived: ResponseReceived;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController) {}
 
@@ -40,14 +42,12 @@ export class MyConnectionPage {
 	console.log('ionViewDidLoad MyConnectionPage load end');
     
   }
+
   ionViewWillEnter() {
-    console.log('ionViewWillEnter MyConnectionPage load start');
-  }
-  private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
-    return Promise.reject(error.message || error);
+    console.log('this.responseReceived ' + this.responseReceived);
   }
 
+  
   
   getItems() {
     let alert = this.alertCtrl.create({

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import {Http} from '@angular/http';
+
 import 'rxjs/add/operator/map';
 
 /*

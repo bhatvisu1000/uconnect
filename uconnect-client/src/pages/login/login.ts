@@ -7,6 +7,9 @@ import { AuthService } from "../../services/AuthService";
 
 import { MyTabsPage } from '../my-tabs/my-tabs';
 import { RegistrationPage } from '../registration/registration';
+import {ResponseReceived} from "../../models/ResponseReceived"
+import { MyConnectionPage } from '../my-connection/my-connection';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'page-user',
@@ -15,6 +18,7 @@ import { RegistrationPage } from '../registration/registration';
 export class LoginPage {
   login: {username?: string, password?: string} = {};
   submitted = false;
+  
 
   constructor(public navCtrl: NavController, public authService: AuthService) { }
 
@@ -24,9 +28,11 @@ export class LoginPage {
 
     if (form.valid) {
       this.authService.login(this.login.username, this.login.password);
+
       this.navCtrl.push(MyTabsPage);
     }
   }
+
 
   onSignup() {
     this.navCtrl.push(RegistrationPage);

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Http, Response } from "@angular/http";
 import 'rxjs/Rx';
-import { Headers, RequestOptions } from '@angular/http';
 
 import {ConnectionSummary} from "../models/connection/ConnectionSummary"
 

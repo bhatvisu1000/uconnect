@@ -8,6 +8,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
+
 import { MyApp } from './app.component';
 import { MySchedulePage } from '../pages/my-schedule/my-schedule';
 import { MyActivityPage } from '../pages/my-activity/my-activity';
@@ -21,6 +22,7 @@ import { LoginPage } from '../pages/login/login';
 import { ConnectionService } from "../services/ConnectionService";
 import { RegisterationService } from "../services/RegisterationService";
 import { AuthService } from "../services/AuthService";
+import { HttpService } from "../services/HttpService";
 
 
 
@@ -68,7 +70,7 @@ import { AuthService } from "../services/AuthService";
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
                 ConnectionService, RegisterationService, AuthService,
     InAppBrowser,
-    SplashScreen
+    SplashScreen, HttpService
   ]
 })
 export class AppModule {}

@@ -3,19 +3,19 @@ import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
-import { Http, Response } from "@angular/http";
-import {Observable} from 'rxjs/Observable';
-import { Headers, RequestOptions } from '@angular/http';
+import { Response } from "@angular/http";
+
 import 'rxjs/Rx';
 
 import {SendRequest} from "../models/SendRequest"
 import {Request} from "../models/Request"
 import {Header} from "../models/Header"
-import {MyResponse} from "../models/Response"
-import {Main} from "../models/connection/Main"
+import {MyResponse} from "../models/MyResponse"
+import {ResponseReceived} from "../models/ResponseReceived"
 import {Auth} from "../models/connection/Auth"
 import {LoginRequestData} from "../models/login/LoginRequestData"
 
+import {HttpService} from "./HttpService"
 
 @Injectable()
 export class AuthService {
@@ -26,14 +26,14 @@ export class AuthService {
   private request: Request = null;
   private loginRequestData: LoginRequestData = null;
   private auth: Auth = null;
-  
+  public responseReceived: ResponseReceived = null
   private header:  Header = null;
   private sendRequest: SendRequest = null;
-  private myResponse: MyResponse = null;
+  
 
   constructor(
     public events: Events,
-    public storage: Storage, private http: Http
+    public storage: Storage, private httpService: HttpService
   ) {}
 
   hasFavorite(sessionName: string): boolean {
@@ -51,16 +51,17 @@ export class AuthService {
     }
   };
 
-  login(username: string, password: string): void {
+  login(username: string, password: string) {
     
 
-    let myResponse = this.validateLogin(username, password);
+    this.validateLogin(username, password);
 
     this.storage.set(this.HAS_LOGGED_IN, true);
     this.setUsername(username);
 
 
     this.events.publish('user:login');
+
   };
 
   signup(username: string): void {
@@ -97,7 +98,7 @@ export class AuthService {
     });
   };
 
-  validateLogin(userName: string, password: string) {
+  validateLogin(userName: string, password: string)  {
     this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
     
     this.loginRequestData = new LoginRequestData(this.auth);
@@ -112,32 +113,24 @@ export class AuthService {
 
 
     console.log(this.request);
-    console.log("registeration Serive json data " +     JSON.stringify(this.sendRequest) + " url " + this.registrationUrl);
+    console.log("registeration Service json data " +     JSON.stringify(this.sendRequest) + " url " + this.registrationUrl);
     console.log(JSON.stringify(this.sendRequest));
-    return this.submitMember();
+    this.httpService.submitRequest(this.sendRequest)
+    .subscribe(
+        (response: Response) => {
+          const responseReceived: ResponseReceived = response.json();
+          console.log(responseReceived);          
+         },
+        err => console.log('error ' + err.json().message),
+        () => console.log('Authentication Complete')
+      );
+    
+    
   }
 
-  /*getRecipes() {
-    this.http.get('https://ng-recipe-book.firebaseio.com/recipes.json')
-      .map(
-        (response: Response) => {
-          const recipes: Recipe[] = response.json();
-          for (let recipe of recipes) {
-            if (!recipe['ingredients']) {
-              recipe['ingredients'] = [];
-            }
-          }
-          return recipes;
-        }
-      )
-      .subscribe(
-        (recipes: Recipe[]) => {
-          this.recipeService.setRecipes(recipes);
-        }
-      );
-  }*/ 
+  
 
-  submitMember(): Observable<MyResponse> {
+  /*submitMember(): Observable<MyResponse> {
   
   let headers = new Headers({ 'Content-Type': 'application/json' });
   let options = new RequestOptions({ headers: headers });
@@ -145,10 +138,32 @@ export class AuthService {
     .post(this.registrationUrl, JSON.stringify(this.sendRequest), options)
     .map(this.extractData)
     .catch(this.handleError);
- }
+ }*/
 
- /**submitMember(): Promise<MyResponse> {
-  var deferred = this.$q.defer();
+  /*submitMember(): Observable<MyResponse> {
+  
+  let headers = new Headers({ 'Content-Type': 'application/json' });
+  return this.http
+    .post(this.registrationUrl, JSON.stringify(this.sendRequest), {headers: headers})
+    .subscribe(
+        (response: Response) => {
+          const data = response.json();
+          console.log(data);
+         },
+        err => this.logError(err.json().message),
+        () => console.log('Authentication Complete')
+      );
+  
+
+ }*/
+
+ logError(err) {
+    console.error('There was an error: ' + err);
+  }
+
+
+  /*submitMember(): Promise<MyResponse> {
+  
   let headers = new Headers({ 'Content-Type': 'application/json' });
   return this.http
     .post(this.registrationUrl, JSON.stringify(this.sendRequest), {headers: headers})
@@ -159,14 +174,15 @@ export class AuthService {
 
  }*/
 
-private extractData(res: Response) {
-        let body = res.json();
-        console.log('while extractData RegisterationService' + body);
-        return body.data || {};
+/*private extractData(res: Response) {
+        this.MyResponse = res.json().MyResponse;
+        console.log('while extractData RegisterationService' + this.MyResponse);
+        return this.MyResponse || {};
     }
+
 private handleError(error: Response) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server Error');
     }
-
+*/
 }
