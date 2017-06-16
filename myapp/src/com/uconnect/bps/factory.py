@@ -49,7 +49,7 @@ class Factory(object):
 
             myLibrary, myClass, myMethod = bpsProcessVal
             if myLibrary and myClass and myMethod:
-                myModuleLogger.debug("found, bps process [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
+                self.myModuleLogger.debug("found, bps process [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
                 myResponse = self.__executeBPSPRocess(myLibrary, myClass, myMethod, myMainArgData) 
                 myRquestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)            
             else:
@@ -65,7 +65,7 @@ class Factory(object):
 
         except Exception as err:
             myRequestStatus = self.utilityInstance.extractLogError()
-            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            myResponse = self.utilityInstance.buildResponseData('E', myRequestStatus, 'Error')
             return myResponse
 
     def __findBPSProcess(self, argScreenId, argActionId):

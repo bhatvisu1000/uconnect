@@ -3,6 +3,17 @@ import threading
 import socket
 
 class Server(object):
+    def __init__(self, port, ip):
+        self.port = port
+        self.ip = ip
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.bind((self.ip, self.port))
+        self.socket.listen(1)
+        # Spin up an acceptor thread
+        self.worker = threading.Thread(target=self.accept_forever)
+        self.worker.daemon = True
+        self.worker.start()
+
     def handle(self, connection, address):
         print("OK...connected...")
         try:
@@ -16,6 +27,7 @@ class Server(object):
         finally:
             connection.close()
             print("Connection closed")
+
     def accept_forever(self):
         while True:
             # Accept a connection on the bound socket and fork a child process
@@ -29,16 +41,7 @@ class Server(object):
             # Close the connection fd in the parent, since the child process
             # has its own reference.
             conn.close()
-    def __init__(self, port, ip):
-        self.port = port
-        self.ip = ip
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.bind((self.ip, self.port))
-        self.socket.listen(1)
-        # Spin up an acceptor thread
-        self.worker = threading.Thread(target=self.accept_forever)
-        self.worker.daemon = True
-        self.worker.start()
+
     def join(self):
         # threading.Thread.join() is not interruptible, so tight loop
         # in a sleep-based join

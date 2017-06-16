@@ -49,4 +49,29 @@ print_lock = threading.lock()
 
 target= 'pythonprogramming.net'
 
-https://www.youtube.com/watch?v=icE6PR19C0Y
+def portscan(port):
+    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        myConnection = mySocket.connect((target,port))
+        with print_lock:
+            print('port',port,'is open')
+        myConnection.close()
+    except Exception as e:
+        raise e    
+def threader():
+    while True:
+        worker = q.get()
+        portscan(worker)
+        q.task_done()
+q = Queue()
+
+for x in range(30):
+    t = threading.Thread(target=threader)
+    t.daemon = True
+    t.start()
+
+for worker in range(1,9010):
+    q.put(worker)
+
+q.join()
+#https://www.youtube.com/watch?v=icE6PR19C0Y

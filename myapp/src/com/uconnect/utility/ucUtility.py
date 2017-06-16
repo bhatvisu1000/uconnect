@@ -136,7 +136,9 @@ class Utility(object):
         myValidationMessage = ''
 
         if not(myIgnoredArgKeyList == None):
+            print('IgnoredKeyList is not empty',myArgKeyList, myIgnoredArgKeyList)
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
+            print('IgnoredKeyList removed',myArgKeyList)
         #fi
 
         # check if all key in dictionary
