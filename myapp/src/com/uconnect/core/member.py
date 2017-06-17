@@ -639,7 +639,7 @@ class Member(object):
             #fi
             ''' build response data '''
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',isValidMember)
-            #return myResponse
+            return myResponse
 
         except Exception as err:
             myRequestStatus = self.utilityInstance.extractLogError()

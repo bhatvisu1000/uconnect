@@ -134,10 +134,13 @@ class Utility(object):
         myIgnoredArgKeyList = copy.deepcopy(argIgnoreList)
         myMainArgData = copy.deepcopy(argRequestDict)
         myValidationMessage = ''
+        
+        # we need to remove ignored keys from argRequestDict
 
         if not(myIgnoredArgKeyList == None):
             print('IgnoredKeyList is not empty',myArgKeyList, myIgnoredArgKeyList)
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
+            self.removeKeyFromDict(myMainArgData, myIgnoredArgKeyList)
             print('IgnoredKeyList removed',myArgKeyList)
         #fi
 

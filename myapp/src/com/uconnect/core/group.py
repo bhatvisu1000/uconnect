@@ -388,7 +388,7 @@ class Group(object):
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict)
             #fi
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
-            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             isGroupNameInUse = self.globalInstance._Global__False 
 
             # validating arguments

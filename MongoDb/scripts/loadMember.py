@@ -15,11 +15,24 @@ for line in MemberData:
     #print (line['Main'],line['Address'],['Contact'])
     myRequest = {"Request":
                     {"Header":
-                        {"ScreenId":"MemberRegistration","ActionId":"CreateMember","Page":None},
+                        {"ScreenId":"Registration","ActionId":"RegisterEntity","Page":None},
                      "MainArg":
-                        {"Main":line['Main'],
-                         "Address":{'ZipCode':line['Address']['ZipCode']},
-                         "Contact":{'Mobile':line['Contact']['Mobile'],'Email':line['Main']['FirstName'] + '.' + line['Main']['LastName'] + '@uconnect.com' },
+                        {
+                            "Main":line['Main'],
+                            "Address":{'ZipCode':str(line['Address']['ZipCode'])},
+                            "Contact":{'Mobile':line['Contact']['Mobile'],'Email':line['Main']['FirstName'] + '.' + line['Main']['LastName'] + '@uconnect.com' },
+                            "Auth":
+                            {
+                                "LoginId":line['Main']['FirstName'] + '.' + line['Main']['LastName'] + '@uconnect.com',
+                                "LoginType":"Web",
+                                "Password":line['Main']['FirstName'],
+                                "DeviceOs":"Web",
+                                "DeviceType":"OS2",
+                                "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                                "EntityType":"Member",
+                                "AppVer":"1.0",
+                                "SessionId":"TestSessionId" 
+                            }
                         }
                     }
                   }
@@ -30,8 +43,8 @@ for line in MemberData:
             jsonify({"Status":"Error","Message":"Key error"})
     except Exception as error:
         jsonify({"Status":"Error","Message":"error {error}".format(error=error.message)})
-    MemberData = myFactory.processRequest(myRequest)
-    #print(MemberData)
+    myMember = myFactory.processRequest(myRequest)
+    print(myMember)
 
 # Create a oonnection
 # getting 1st page of 10
@@ -42,16 +55,34 @@ myAllMembers = myAllMembers1 + myAllMembers2
 
 myMemberId = myAllMembers[0]['_id']
 print(myMemberId)
+myAuthInfo = mongodbInstance.findDocument('Auth',{'EntityId':myMemberId},{},False)['Data'][0]
 myAllMembers.pop(0)
 for x in myAllMembers:
     myRequest = {"Request":
                     {"Header":
-                        {"ScreenId":"MemberConnection","ActionId":"LinkMember2Member","Page":None},
+                        {
+                            "ScreenId":"Member","ActionId":"UpdateConnectionDetails","Page":"None"
+                        },
                      "MainArg":
-                        {"MemberId":myMemberId,"ConnectMemberId":x['_id']}
+                        {
+                            "Connections":[{"Id":x['_id'],"Type":"Member","Action":"Invite"}],
+                            "Auth":
+                                {
+                                    "AuthKey":str(myAuthInfo['_id']),
+                                    "LoginType":myAuthInfo['LoginType'],
+                                    "LoginId":myAuthInfo['LoginId'],
+                                    "DeviceOs":myAuthInfo['DeviceOs'],
+                                    "DeviceType":myAuthInfo['DeviceType'],
+                                    "MacAddress":myAuthInfo['MacAddress'],
+                                    "EntityType":myAuthInfo['EntityType'],
+                                    "EntityId":myAuthInfo['EntityId'],
+                                    "AppVer":myAuthInfo['AppVer'],
+                                    "SessionId":myAuthInfo['SessionId']
+                                }
+                        }
                     }
-                  }
-    #print(myRequest)
+                }
+    print(myRequest)
     if not(utilityInstance.isDict(myRequest)):
         jsonify({"Status":"Error","Message":"Invalid argument {arg} passed, argument must be type of dictionary !!!".format(arg=myRequest)})
     try:
@@ -59,7 +90,8 @@ for x in myAllMembers:
             jsonify({"Status":"Error","Message":"Key error"})
     except Exception as error:
         jsonify({"Status":"Error","Message":"error {error}".format(error=error.message)})
-    MemberData = myFactory.processRequest(myRequest)
+    myConnections = myFactory.processRequest(myRequest)
+    print(myConnections)
 
 # Mark Few (5) member connections as a favorite
 # we already have memberid,

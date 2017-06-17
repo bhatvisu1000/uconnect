@@ -67,11 +67,11 @@ class Connections(object):
             if myMainArgData['Type'] == self.globalInstance._Global__member:
                 #validating
                 if myMainArgData['_id'] == myMainArgData['ConnectionId']:
-                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['MemberId'], connect=myMainArgData['ConnectMemberId'] ))                
+                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Member [{member}] and it\'s Connection[{connect}] can not be same'.format(member=myMainArgData['_id'], connect=myMainArgData['ConnectMemberId'] ))                
                 #fi
-                myMemberValidationData = {'_id':myMainArgData['_id'],'ResponseMode':self.globalInstance._Global__InternalRequest}
+                myMemberValidationData = {'_id':myMainArgData['ConnectionId'],'ResponseMode':self.globalInstance._Global__InternalRequest}
                 if (not self.memberInstance._Member__isAValidMember(myMemberValidationData)):
-                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['MemberId'] ))
+                    raise com.uconnect.core.error.MissingArgumentValues('Arg validation error, Invalid MemberId [{member}]'.format(member=myMainArgData['ConnectionId'] ))
                 #fi
                 myRequestorCollection = self.globalInstance._Global__memberColl
                 # requestor is Member and it has been validated, preparing Invitee (revese)connection which will be a member
