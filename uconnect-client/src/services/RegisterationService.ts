@@ -35,7 +35,7 @@ export class RegisterationService {
  createMember(userName: string, password: string, firstName: string,
             lastName: string,
             zipCode: string) {
-    this.main = new Main(firstName, lastName, "", "M");
+    this.main = new Main(firstName, lastName, "sanju", "M");
     
     this.address = new Address("", "", "", zipCode, "", "");
     this.contact = new Contact(userName, "", "N/A");
