@@ -14,6 +14,12 @@ import {Main} from "../models/connection/Main"
 import {Contact} from "../models/connection/Contact"
 import {Auth} from "../models/connection/Auth"
 import {RegistrationRequestData} from "../models/registration/RegistrationRequestData"
+import {HttpService} from "./HttpService"
+
+import {ResponseReceived} from "../models/ResponseReceived"
+
+import {RegistrationPage} from "../pages/registration/registration"
+
 
 @Injectable()
 export class RegisterationService {
@@ -29,7 +35,7 @@ export class RegisterationService {
   private sendRequest: SendRequest = null;
   
   private registrationUrl = 'http://localhost:5000/requestPost';
-  constructor(private http: Http) {
+  constructor(private httpService: HttpService) {
   }
 
  createMember(userName: string, password: string, firstName: string,
@@ -63,13 +69,17 @@ export class RegisterationService {
   }
 
   
- submitMember() {
-  let headers = new Headers({ 'Content-Type': 'application/json' });
-  return this.http
-    .post(this.registrationUrl, JSON.stringify(this.sendRequest), {headers: headers})
-    .toPromise()
-    .then(res => res.json().data)
-    .catch(this.handleError);
+ submitMember(registrationPage: RegistrationPage) {
+  this.httpService.submitRequest(this.sendRequest)
+    .subscribe(
+        (response: Response) => {
+          const responseReceived: ResponseReceived = response.json();
+          console.log(responseReceived); 
+          registrationPage.responseReceived=responseReceived
+         },
+        err => console.log('error ' + err.json().message),
+        () => console.log('Authentication Complete')
+      );
  }
  
 

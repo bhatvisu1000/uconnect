@@ -25,7 +25,7 @@ export class RegistrationPage {
     console.log('before create Member RegistrationPage');
     this.registerationService.createMember(form.value.userId, form.value.password, form.value.firstName, form.value.lastName, form.value.zipCode);
     console.log('before submit RegistrationPage');
-    this.registerationService.submitMember();
+    this.registerationService.submitMember(this);
     console.log('before after RegistrationPage');
     this.navCtrl.push(MyTabsPage);
   }
