@@ -48,7 +48,7 @@ class Transaction(object):
                     format(auth=myMainArgData['AuthKey'], me=self.utilityInstance.whoAmI()))
             #fi
 
-            myDirtyReadData = 
+            myDirtyReadData = ''
             myCriteria = {'_id':myMainArgData['Main']['MemberId']}
             myProjection={'_id':1}
             myFindOne = True
