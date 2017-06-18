@@ -995,7 +995,7 @@ class Security(object):
                     ''' we need to retrieve entityid and entitytype from Auth collection '''
                     myAuthResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__authColl, {'_id':ObjectId(str(myMainAuthArgData['AuthKey']))},{},True)
                     myAuthData =  self.utilityInstance.extr1stDocFromResultSets(myAuthResults)
-                    myResponseData = {'EntityId':myAuthData.get('EntityId'),'EntityType':myAuthData.get('EntityType'),'AuthKey':str(myAuthData.get('_id'))}
+                    myResponseData = {'Auth':{'EntityId':myAuthData.get('EntityId'),'EntityType':myAuthData.get('EntityType'),'AuthKey':str(myAuthData.get('_id'))}}
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
                 else:
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid LoginId/Password')                    
