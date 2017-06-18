@@ -29,8 +29,8 @@ while True:
    print 'Got connection from', addr
 
    # send a thank you message to the client. 
-   data = s.recv(1024)
+   data = c.recv(1024)
    print(data)
-   c.sendto('Thank you for connecting')
+   c.sendall('Thank you for connecting')
    # Close the connection with the client
    c.close()  

@@ -7,7 +7,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
 myport = 1000
-server_address = ('', myport)
+myHost = '' ## this is to get the local ip address
+server_address = (myHost, myport)
 #print >>sys.stderr, 'starting up on %s port %s' % server_address
 print('starting up on {host} '.format(host=server_address))
 sock.bind(server_address)
@@ -23,24 +24,12 @@ while True:
         #print >>sys.stderr, 'connection from', client_address
         print ('got connection from {client} '.format(client=client_address))
         # Receive the data in small chunks and retransmit it
-        myAllData=''
         while True:
-            data = connection.recv(1024)
-            print('data received',data)
-            '''
-            print >>sys.stderr, 'received "%s"' % data
-            if data:
-                print >>sys.stderr, 'sending data back to the client'
-                connection.sendall(data)
-            else:
-                print >>sys.stderr, 'no more data from', client_address
-                break
-            '''
-            if data:
-                myAllData = myAllData + data
-            else:
-                break 
+            myData = connection.recv(1024)
+            print('data received',myData, type(myData))
+    except Exception as err:
+        print(err.message)
     finally:
             # Clean up the connection
-            print('got data from client ... {data}'.format(data=myAllData))
+            print('got data from client ... {data}'.format(data=myData),type(myData))
             connection.close()
