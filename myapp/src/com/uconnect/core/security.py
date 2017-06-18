@@ -825,7 +825,7 @@ class Security(object):
             myArgValidation, myMissingKeys, myArgValMessage\
                     = self.utilityInstance.valRequiredArg(myMainArgData['Address'], myAddressArgKey, \
                         ['Street','City','State','Country'])
-            print('Addres Validation',myArgValidation, myMissingKeys, myArgValMessage )
+            #print('Addres Validation',myArgValidation, myMissingKeys, myArgValMessage )
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
@@ -850,7 +850,7 @@ class Security(object):
             ''' Check if this login is already in use '''
             myLoginArgData = {'Auth':{'LoginId':myMainArgData['Auth']['LoginId']},'ResponseMode':self.globalInstance._Global__InternalRequest}
             myLoginInUseResult = self.isLoginInUse(myLoginArgData)
-            print('LoginStatus',myLoginInUseResult)
+            #print('LoginStatus',myLoginInUseResult)
             if myLoginInUseResult['Status'] == self.globalInstance._Global__True:
                 raise com.uconnect.core.error.InvalidLogin("Requested login [{login}] is already in use".\
                     format(login=myMainArgData['Auth']['LoginId']))
@@ -1050,9 +1050,9 @@ class Security(object):
             myProjection = {'_id':1}
 
             myResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__loginColl, myCriteria, myProjection, True)
-            print(myResults)
+            #print(myResults)
             myLoginData = self.utilityInstance.extr1stDocFromResultSets(myResults)
-            print('login',myLoginData, myCriteria)
+            #print('login',myLoginData, myCriteria)
 
             if myLoginData and '_id' in myLoginData and (not (myLoginData['_id'] == None)) :
                 # loginid found, its in use
@@ -1064,11 +1064,11 @@ class Security(object):
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
                 myRequestStatus.update({'Status':self.globalInstance._Global__False})
                 myRequestStatus.update({'Message':'Login [{login}] is not in use'.format(login=myMainArgData['Auth']['LoginId'])})
-                print('Login',myRequestStatus)
+                #print('Login',myRequestStatus)
             #fi
 
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus,'Find')
-            print('Login Response',myResponse)
+            #print('Login Response',myResponse)
             return myResponse
 
         except Exception as err:
@@ -1115,7 +1115,7 @@ class Security(object):
             #fi
             myContactResults = self.mongoDbInstance.findDocument(myCollection, myCriteria, myProjection, True)
             myContactData = self.utilityInstance.extr1stDocFromResultSets(myContactResults)
-            print('myContactData',myContactData)
+            #print('myContactData',myContactData)
             if myContactData:
                 myValidDeliveryOptions = True
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
@@ -1168,7 +1168,7 @@ class Security(object):
         '''
         try:
             #self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            print('genSecurityCode', argRequestDict)
+            #print('genSecurityCode', argRequestDict)
             if 'MainArg' in argRequestDict:
                 myMainArgData = self.utilityInstance.getCopy(argRequestDict['MainArg'])
             else:

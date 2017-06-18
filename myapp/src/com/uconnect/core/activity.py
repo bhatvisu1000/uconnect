@@ -23,9 +23,12 @@ class Activity(object):
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
 
             myArgKey = ['EntityId','EntityType','ActivityType','Activity']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], key[{key}]'.format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
+            #fi
 
             # deleting the password from Auth
             self.utilityInstance.removeKeyFromDict(myMainArgData, 'Password')
@@ -72,11 +75,12 @@ class Activity(object):
             
             myArgKey = ['EntityId','EntityType','ActivityType','Activity','Auth']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+            
             #print('activitylog',myMainArgData.keys(), myArgKey)
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error arg[{arg}], expected key[{key}]'.
-                    format(arg=myMainArgData.keys(), key=myArgKey))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' valdiating authorization '''
@@ -90,7 +94,7 @@ class Activity(object):
             myActivityLogData = self.__buildInitActivityData(myMainArgData)
             myDbResult = self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global__activityLogColl, myActivityLogData)
 
-            print('Activity',myDbResult)
+            #print('Activity',myDbResult)
             ''' we need to make sure if "Data" key is in Result set, it must not be empty and must have "_id" key in it'''
             if myDbResult[self.globalInstance._Global__StatusKey] == self.globalInstance._Global__TrueStatus:
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success,None,myDbResult['_id'])

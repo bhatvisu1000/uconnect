@@ -361,6 +361,34 @@
         }
 }
 
+// Get a member connections
+{
+    "Request":
+        {
+            "Header":
+                {
+                    "ScreenId":"Member","ActionId":"GetMemberConnection","Page":"None"
+                },
+            "MainArg":
+                {
+                    "ConnectionType":"Member",
+                    "Auth": 
+                        {
+                            "AuthKey": "59448c10df9bba10f49e2dc9", 
+                            "MacAddress": "SDFSDKLGHASKLDFGHSAKLFG214ADFA", 
+                            "AppVer": "1.0", 
+                            "DeviceOs": "Web", 
+                            "DeviceType": "OS2", 
+                            "EntityId": 314343, 
+                            "EntityType": "Member", 
+                            "SessionId": "TestSessionId", 
+                            "LoginType": "Web",
+                            "LoginId": "Ronald.Echolas@uconnect.com"
+                        }
+                }
+        }
+}
+
 // Seacrh member
 {
     "Request":

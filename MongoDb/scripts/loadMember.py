@@ -46,10 +46,8 @@ for line in MemberData:
     myMember = myFactory.processRequest(myRequest)
     print(myMember)
 
-# Create a oonnection
-# getting 1st page of 10
+# Creating connections ....
 myAllMembers1 = mongodbInstance.findAllDocuments4Page('Member',None,{"_id":1},1)['Data']
-# getting 2nd page of 10
 myAllMembers2 = mongodbInstance.findAllDocuments4Page('Member',None,{"_id":1},2)['Data']
 myAllMembers = myAllMembers1 + myAllMembers2
 

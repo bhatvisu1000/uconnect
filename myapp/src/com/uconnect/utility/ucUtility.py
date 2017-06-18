@@ -138,10 +138,10 @@ class Utility(object):
         # we need to remove ignored keys from argRequestDict
 
         if not(myIgnoredArgKeyList == None):
-            print('IgnoredKeyList is not empty',myArgKeyList, myIgnoredArgKeyList)
+            #print('IgnoredKeyList is not empty',myArgKeyList, myIgnoredArgKeyList)
             self.removeKeyFromList(myArgKeyList, myIgnoredArgKeyList)
             self.removeKeyFromDict(myMainArgData, myIgnoredArgKeyList)
-            print('IgnoredKeyList removed',myArgKeyList)
+            #print('IgnoredKeyList removed',myArgKeyList)
         #fi
 
         # check if all key in dictionary
@@ -554,7 +554,7 @@ class Utility(object):
         if argErrorCode in self.envInstance._Environment__errorCodesData:
             myErrorDescription = self.envInstance._Environment__errorCodesData.get(argErrorCode)    
 
-        print(argErrorCode,self.envInstance._Environment__errorCodesData,myErrorDescription)
+        #print(argErrorCode,self.envInstance._Environment__errorCodesData,myErrorDescription)
         return myErrorDescription
     ''' Security Utility '''
 
@@ -626,11 +626,11 @@ class Utility(object):
             raise error
 
     def getDefaultSecCodeLength(self):
-        print (self.envInstance.SecurityCodeLength)
+        #print (self.envInstance.SecurityCodeLength)
         return self.envInstance.SecurityCodeLength
 
     def getRanddomNum(self, argNumLength):
-        print(argNumLength)
+        #print(argNumLength)
         if argNumLength == None: return None
         myLowerBound = 10**(argNumLength-1)
         myUpperBound = 10**argNumLength-1

@@ -159,7 +159,7 @@ class GroupBPS(object):
             return myResponse
         except Exception as err:
             myRequestStatus = self.utilityInstance.extractLogError()
-            print('In Error',myRequestStatus)
+            #print('In Error',myRequestStatus)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
             return myResponse
     #end 
@@ -267,7 +267,7 @@ class GroupBPS(object):
 
             myAggregateDict = {"aggregate":self.globalInstance._Global__groupColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
             myAllParticipantsRawData = self.mongoDbInstance.ExecCommand(myAggregateDict)['result']
-            print('Participants',myAllParticipantsRawData)
+            #print('Participants',myAllParticipantsRawData)
             myAllPArticipants = self.groupInstance._Group__formatParticipantsData(myAllParticipantsRawData)
             
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)

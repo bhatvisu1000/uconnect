@@ -43,10 +43,10 @@ class Member(object):
             myArgKey = ['_id']
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' preparing pipeline for aggregate function '''
@@ -62,7 +62,7 @@ class Member(object):
             myTagResult = self.mongoDbInstance.ExecCommand(myAggregateCommand)
 
             self.myModuleLogger.debug('Tag [{tag}] built'.format(tag=myTagResult))
-            print('tag result:',myTagResult)
+            #print('tag result:',myTagResult)
 
             if 'result' in myTagResult:
                 myTagData = [tag.upper() for tag in [myTagResult['result'][0]['Tag']]]
@@ -96,10 +96,10 @@ class Member(object):
             myArgKey = ['Main','Address','Contact']
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             myMainDict = myMainArgData['Main']
@@ -206,10 +206,11 @@ class Member(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgKey = ['Main','Address','Contact']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
+            #fi
 
             ''' Preparing value to create a new member build initial data '''
             myMemberData = self.__buildInitMembderData({'Main':myMainArgData['Main'],'Address':myMainArgData['Address'],'Contact':myMainArgData['Contact']})
@@ -250,10 +251,10 @@ class Member(object):
             myArgKey = ['MemberId','ConnectionType']
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             myConnectionType = myMainArgData['ConnectionType']
@@ -310,10 +311,10 @@ class Member(object):
             myArgKey = ['ConnectionType','ConnectionRawData']
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             myConnectionType = myMainArgData['ConnectionType']
@@ -367,10 +368,10 @@ class Member(object):
             myArgKey = ['MemberId', 'ConnectMemberId', 'Auth']
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' Validate auth key for this request'''
@@ -423,11 +424,12 @@ class Member(object):
             
             ''' validating arguments '''
             myArgKey = ['Auth','Main']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
+
             # validating security, this has already been validated by BPS process ???
             '''
             if not (self.securityInstance._Security__isValAuthKeyInternal(myMainArgData['Auth'])):
@@ -488,10 +490,10 @@ class Member(object):
             
             ''' validating arguments '''
             myArgKey = ['Auth','Address']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' preparing document '''
@@ -501,7 +503,7 @@ class Member(object):
 
             # removing key(s) if it has any empty values
             myAddressData = self.utilityInstance.removeEmptyValueKeyFromDict({'Address':myMainArgData['Address']})
-            print('AddressData',myAddressData)
+            #print('AddressData',myAddressData)
             # building update data, find all key informarion which need to be changed 
             myAllAddressKey = self.utilityInstance.getAllKeysFromDict(myAddressData['Address'])
 
@@ -512,11 +514,11 @@ class Member(object):
             if 'State' in myAllAddressKey:
                 myAllAddressKey.remove('State')
             #fi                
-            print('Removed City/State,addressData:',myAddressData, myAllAddressKey)
+            #print('Removed City/State,addressData:',myAddressData, myAllAddressKey)
             for key in myAllAddressKey:
                 myAddressUpdateData.update({'Address.'+key : myAddressData['Address'][key]})
             #
-            print('Created address update data', myAddressUpdateData)
+            #print('Created address update data', myAddressUpdateData)
             # will add matching the City/State, if ZipCode is passed
             if 'ZipCode' in myAllAddressKey:
                 myCityNState = self.utilityInstance.getAddressCityState(myAddressData['Address']['ZipCode'])
@@ -563,10 +565,10 @@ class Member(object):
             
             ''' validating arguments '''
             myArgKey = ['Auth','Contact']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' preparing document '''
@@ -596,6 +598,57 @@ class Member(object):
             return myResponse
             #fi
 
+    def __getAMemberConnections(self,argRequestDict):
+        ''' 
+            Description:    Find a member's all connections
+            argRequestDict: Json/Dict; Following key name is expected in this dict/json object
+                            {'_id':'','ResponseMode':''}
+            usage:          <__getAMemberConnections(<argReqJsonDict>)
+            Return:         Json object
+        '''
+        try:
+            #myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
+            if 'MainArg' in argRequestDict:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)['MainArg']
+            else:
+                myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            #fi
+
+            myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
+            self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
+            
+            ''' validating arguments '''
+            myArgKey = ['MemberId','ConnectionType','ResponseMode']
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
+            if not (myArgValidation):
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
+            #fi
+
+            ''' build aggregate pipeline '''
+            myAggregatePipeLine = self.__buildGetAllConnPipeline(\
+                {'MemberId':myMainArgData['MemberId'],'ConnectionType':myMainArgData['ConnectionType']})
+
+            self.myModuleLogger.debug("Pipeline [{pipeline}] will be used to execute the aggregate function")
+
+            # execute aggregate pipeline
+            myAggregateDict = {"aggregate":self.globalInstance._Global__memberColl,"pipeline":myAggregatePipeLine,"allowDiskUse":True}
+            myConnectionRawData = self.mongoDbInstance.ExecCommand(myAggregateDict)
+
+            if self.utilityInstance.isAllArgumentsValid(myConnectionRawData):
+                myMemberConnection = {"Data":self.__buildMyConnection({'ConnectionType':self.globalInstance._Global__member,'ConnectionRawData':myConnectionRawData})}
+            else:
+                myMemberConnection = {}
+            #fi
+
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Find',myMemberConnection)
+            return myResponse
+
+        except Exception as err:
+            myRequestStatus = self.utilityInstance.extractLogError()
+            myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'],myRequestStatus,'Error')
+            return myResponse
+
     def __isAValidMember(self,argRequestDict):
         ''' 
             Description:    Find a member details
@@ -620,10 +673,10 @@ class Member(object):
 
             ''' validating arguments '''
             myArgKey = ['_id','ResponseMode']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             myCriteria = {'_id':myMainArgData['_id'], 'Main.Type':self.globalInstance._Global__member}

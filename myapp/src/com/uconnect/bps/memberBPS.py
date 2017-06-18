@@ -68,10 +68,12 @@ class MemberBPS(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgKey = ['Main','Address','Contact']
-            myArgValidation = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
 
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Arg validation error {arg}'.format(arg=myMainArgData))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
+            #fi
 
             ''' Preparing value to create a new member build initial data '''
             myMemberData = self.memberInstance._Member__buildInitMembderData({'Main':myMainArgData['Main'],'Address':myMainArgData['Address'],'Contact':myMainArgData['Contact']})
@@ -123,12 +125,10 @@ class MemberBPS(object):
             self.myModuleLogger.debug('Argument [{arg}] received'.format(arg = argRequestDict))
 
             myArgKey = ['Auth','ResponseMode']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
-                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' validating Auth arg '''
@@ -185,12 +185,11 @@ class MemberBPS(object):
 
             ''' validating arguments '''
             myArgKey = ['Auth']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
-                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             # will check either Main/Address/Contact/Settings information is passed for update
@@ -223,16 +222,16 @@ class MemberBPS(object):
             if 'Main' in myMainArgData and myMainArgData['Main']:
                 self.myModuleLogger.debug('Got Main[{main}] information which changed'.format(main=myMainArgData['Main']))
                 myUpdateResult = self.memberInstance._Member__updateMemberMain(myMainArgData)
-                print('MainUpdateResult',myUpdateResult,myMainArgData)
+                #print('MainUpdateResult',myUpdateResult,myMainArgData)
             #fi
             if 'Address' in myMainArgData and myMainArgData['Address']:
-                print('In Address')
+                #print('In Address')
                 self.myModuleLogger.debug('Got Address[{address}] information which changed'.format(address=myMainArgData['Address']))
                 myUpdateResult = self.memberInstance._Member__updateMemberAddress(myMainArgData)
 
             #fi
             if 'Contact' in myMainArgData and myMainArgData['Contact']:
-                print('In Contact')
+                #print('In Contact')
                 self.myModuleLogger.debug('Got Contact[{contact}] information which changed'.format(contact=myMainArgData['Contact']))
                 myUpdateResult = self.memberInstance._Member__updateMemberContact(myMainArgData)
 
@@ -288,10 +287,11 @@ class MemberBPS(object):
             # validating arguments
             myArgKey = ['Connections','Auth','ResponseMode']
             myConnectionArgs = myMainArgData['Connections']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             # if connection is passed as dict, converting to list
@@ -342,7 +342,7 @@ class MemberBPS(object):
                 myConnectionArgData = {'_id':myMainArgData['Auth']['EntityId'],'Type':self.globalInstance._Global__member,
                                     'ConnectionId': myConnections['Id'], 'ConnectionType': myConnections['Type']}
                 # we need to populate favorite and block dict as well
-                print('processing connection request [{request}]'.format(request=myConnectionArgData))
+                #print('processing connection request [{request}]'.format(request=myConnectionArgData))
                 if myConnections['Action'] == self.globalInstance._Global__Connection_Action_Invite:
                     myConnectionResults = self.connectionsInstance._Connections__AddAConnection(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] added [{conn}] as a connection '.\
@@ -364,7 +364,7 @@ class MemberBPS(object):
                         format(member=myMainArgData['Auth']['EntityId'], conn=myConnectionArgData['ConnectionType'] + ' ' + \
                             str(myConnectionArgData['ConnectionId']))
                 elif  myConnections['Action'] == self.globalInstance._Global__Connection_Action_Favorite:
-                    print('Fav',myConnections)
+                    #print('Fav',myConnections)
                     myConnectionArgData.update({'Favorite':myConnections['Favorite']}) 
                     myConnectionResults = self.connectionsInstance._Connections__favoriteConnection(myConnectionArgData)
                     myActivityDetails = 'Member [{member}] updated favorite attribute of connection [{conn}]'.\
@@ -385,7 +385,7 @@ class MemberBPS(object):
                 else:
                     myActivityDetails = 'UnSuccess: ' + myActivityDetails
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,myConnectionResults.get('Message'))
-                    print('reqStatus',myRequestStatus)
+                    #print('reqStatus',myRequestStatus)
                 #fi
                 self.myModuleLogger.info(myActivityDetails)
             # end for loop                
@@ -429,12 +429,11 @@ class MemberBPS(object):
 
             myArgKey = ['Auth','ResponseMode']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
-                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
@@ -460,6 +459,18 @@ class MemberBPS(object):
 
             self.myModuleLogger.info('Finding member [{member}] details'.format (member=myMainArgData['Auth']['EntityId']))
             myMemberData = self.mongoDbInstance.findDocument(self.globalInstance._Global__memberColl, myCriteria,myProjection,myFindOne)
+            
+            # get the connection information
+            myConnectionArgs = {'MemberId': myMainArgData['Auth']['EntityId'], 'ConnectionType':self.globalInstance._Global__member,\
+                                 'ResponseMode':self.globalInstance._Global__InternalRequest}
+            myMemberConnections = self.memberInstance._Member__getAMemberConnections(myConnectionArgs)
+            # will update connection information to current result sets, there are only one document in 'Data'
+            if 'Data' in myMemberConnections and 'Connections' in myMemberConnections['Data']:
+                myMemberData['Data'][0].update({'Connections':myMemberConnections['Data']['Connections']})
+            else:
+                myMemberData['Data'][0].update({'Connections':[]})                
+            #fi
+
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
 
             ''' Building response '''           
@@ -502,12 +513,10 @@ class MemberBPS(object):
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
-                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
@@ -534,7 +543,9 @@ class MemberBPS(object):
             myMemberId = myMainArgData['Auth']['EntityId']
             myConnectionType = myMainArgData['ConnectionType']
             
-            ''' build aggregate pipeline '''
+            ''' 
+            commenting below, this has been moved to Memebr
+            build aggregate pipeline 
             myAggregatePipeLine = self.memberInstance._Member__buildGetAllConnPipeline({'MemberId':myMemberId,'ConnectionType':myConnectionType})
             self.myModuleLogger.debug("Pipeline [{pipeline}] will be used to execute the aggregate function")
 
@@ -549,6 +560,10 @@ class MemberBPS(object):
             else:
                 myMemberConnection = {}
             #fi
+            '''
+            myMemberConnectionsArg = {'MemberId':myMemberId,'ConnectionType':myConnectionType,\
+                                        'ResponseMode':self.globalInstance._Global__InternalRequest}
+            myMemberConnection = self.memberInstance._Member__getAMemberConnections(myMemberConnectionsArg)
 
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberConnection)
@@ -565,7 +580,7 @@ class MemberBPS(object):
             Description:    Search memebr based of argument passed
             argRequestDict:     Json/Dict; Following key name is expected in this dict/json object
                             {'SearchCriteria','Page',Auth','ResponseMode'}
-            usage:          <getAMemberDetail(<argReqJsonDict>)
+            usage:          <SearchMember(<argReqJsonDict>)
             Return:         Json object
         '''
         try:
@@ -582,12 +597,10 @@ class MemberBPS(object):
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
-                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             if (myMainArgData['Auth']['EntityType'] != self.globalInstance._Global__member):
@@ -602,7 +615,7 @@ class MemberBPS(object):
             
             # preparing documemt for search
             mySearchCriteria = myMainArgData['SearchCriteria'].upper()
-            print('Search',mySearchCriteria)
+            #print('Search',mySearchCriteria)
             myTextSearhDocArgDict = \
                 {'Collection':'Member', 'Search':"\"mySearchCriteria\"",'Projection':{'_id':1,'Main':1}, 'Limit':10, 'Skip':"0"}
             mySearchResults = self.mongoDbInstance.SearchText(myTextSearhDocArgDict)

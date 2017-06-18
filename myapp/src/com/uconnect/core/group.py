@@ -229,7 +229,7 @@ class Group(object):
             self.myModuleLogger.info('Creating new Group, data [{doc}]'.format(doc=myGroupData))
 
             #persisting group data
-            print(myGroupData)
+            #print(myGroupData)
             myDbResult =  self.mongoDbInstance.InsertOneDoc(self.globalInstance._Global__groupColl, myGroupData)
             myGroupId = myDbResult['_id']
             myGroupResultStatus = self.utilityInstance.getCreateStatus(myDbResult)
@@ -241,9 +241,9 @@ class Group(object):
                     {'_id': myGroupId, 'ResponseMode': self.globalInstance._Global__InternalRequest,\
                      'Participants':[{'MemberId': myMainArgData['Main']['OwnerMemberId'], 'Action': 'Add'}]}
                 myDbStatus = self.__updateGroupParticipants(myParticipantArgData)
-                print('Db Status',myDbStatus, myDbStatus)
+                #print('Db Status',myDbStatus, myDbStatus)
                 if myDbStatus['Status'] == self.globalInstance._Global__Success:
-                    print('Status is Success')
+                    #print('Status is Success')
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
                     myRequestStatus['Data'] = {'_id':myGroupId}
                 else:
@@ -342,7 +342,7 @@ class Group(object):
             
             myGroupOwnerId = self.utilityInstance.extr1stDocFromResultSets(myGrouResult)['Main']['OwnerMemberId']
 
-            print(myAllParticipantsList)
+            #print(myAllParticipantsList)
 
             for myParticipant in myAllParticipantsList:
                 ''' validating Participant arguments '''
@@ -401,7 +401,7 @@ class Group(object):
             myCriteria = {'Main.GroupName':myMainArgData['GroupName'],'Main.OwnerMemberId':myMainArgData['OwnerMemberId']}
 
             if self.mongoDbInstance.findTotDocuments(self.globalInstance._Global__groupColl, myCriteria) > 0:
-                print('group found',self.globalInstance._Global__groupColl,myCriteria)
+                #print('group found',self.globalInstance._Global__groupColl,myCriteria)
                 return self.globalInstance._Global__True 
             else:
                 return self.globalInstance._Global__False 

@@ -54,12 +54,10 @@ class Connections(object):
             myArgKey = ['_id','Type','ConnectionId','ConnectionType']
 
             ''' validating arguments '''
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.\
-                    format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' validating Requestor entity
@@ -206,10 +204,10 @@ class Connections(object):
 
             ''' validating arguments '''
             myArgKey = ['_id','Type','ConnectionId','ConnectionType']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' Validate auth key for this request (we dont need auth val since it has been already performed by BPS process,
@@ -336,10 +334,10 @@ class Connections(object):
 
             ''' validating arguments '''
             myArgKey = ['_id','Type','ConnectionId','ConnectionType']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' Validate auth key for this request (we dont need auth val since it has been already performed by BPS process,
@@ -487,10 +485,10 @@ class Connections(object):
 
             ''' validating arguments '''
             myArgKey = ['_id','Type','ConnectionId','ConnectionType']
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues('Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             ''' Validate auth key for this request (we dont need auth val since it has been already performed by BPS process,
@@ -616,11 +614,11 @@ class Connections(object):
             myArgKey = ['_id','Type','ConnectionId','ConnectionType','Favorite']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
             myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), \
-                        key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             if myMainArgData['Favorite'] not in ["0","1"]:
@@ -651,7 +649,7 @@ class Connections(object):
 
             ##db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
             myMarkFavoriteStatus =  self.mongoDbInstance.UpdateDoc(myCollection, myCriteria, myFavoriteData, 'set',False)
-            print('Favorite Status:',myMarkFavoriteStatus)
+            #print('Favorite Status:',myMarkFavoriteStatus)
             if self.utilityInstance.getUpdateStatus(myMarkFavoriteStatus) == self.globalInstance._Global__Success:
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             else:
@@ -686,12 +684,11 @@ class Connections(object):
             # validating arguments
             myArgKey = ['_id','Type','ConnectionId','ConnectionType','Blocked']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)            
-            myArgValidationResults = self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
-            myArgValidation = self.utilityInstance.extractValFromTuple(myArgValidationResults,0)
+
+            myArgValidation, myMissingKeys, myArgValMessage = \
+                    self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
             if not (myArgValidation):
-                raise com.uconnect.core.error.MissingArgumentValues(\
-                    'Mainarg validation error; main arg(s)[{arg}], missing/empty key(s)[{key}]'.format(arg=myMainArgData.keys(), \
-                        key=self.utilityInstance.extractValFromTuple(myArgValidationResults,1)))
+                raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
             if myMainArgData['Blocked'] not in ["0","1"]:
@@ -723,7 +720,7 @@ class Connections(object):
 
             ##db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
             myBlockedStatus =  self.mongoDbInstance.UpdateDoc(myCollection, myCriteria, myFavoriteData, 'set',False)
-            print('Blocked Status:',myBlockedStatus)
+            #print('Blocked Status:',myBlockedStatus)
             if self.utilityInstance.getUpdateStatus(myBlockedStatus) == self.globalInstance._Global__Success:
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
             else:
