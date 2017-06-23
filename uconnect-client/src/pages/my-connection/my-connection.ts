@@ -6,6 +6,7 @@ import {ConnectionSummary} from "../../models/connection/ConnectionSummary"
 import { AlertController } from 'ionic-angular';
 import {ResponseReceived} from "../../models/ResponseReceived"
 
+import { AuthService } from "../../services/AuthService";
 
 @Component({
   selector: 'page-my-connection',
@@ -16,10 +17,12 @@ export class MyConnectionPage {
 	listItems: ConnectionSummary[];
   public responseReceived: ResponseReceived;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController) {}
+  constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController, public authService: AuthService) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MyConnectionPage load start');
+    
+    
     this.connectionService.fetchList("")
     .subscribe(
                     (list: ConnectionSummary[]) => {
@@ -44,6 +47,7 @@ export class MyConnectionPage {
   }
 
   ionViewWillEnter() {
+      this.responseReceived = this.authService.responseReceived;
     console.log('this.responseReceived ' + this.responseReceived);
   }
 

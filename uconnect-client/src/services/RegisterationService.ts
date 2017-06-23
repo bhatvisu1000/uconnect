@@ -75,7 +75,7 @@ export class RegisterationService {
         (response: Response) => {
           const responseReceived: ResponseReceived = response.json();
           console.log(responseReceived); 
-          registrationPage.responseReceived=responseReceived
+          
          },
         err => console.log('error ' + err.json().message),
         () => console.log('Authentication Complete')

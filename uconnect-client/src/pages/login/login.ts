@@ -11,6 +11,15 @@ import {ResponseReceived} from "../../models/ResponseReceived"
 import { MyConnectionPage } from '../my-connection/my-connection';
 import {Observable} from 'rxjs/Observable';
 
+import {SendRequest} from "../../models/SendRequest"
+import {HttpService} from "../../services/HttpService"
+
+import 'rxjs/Rx';
+
+import { Response } from "@angular/http";
+
+
+
 @Component({
   selector: 'page-user',
   templateUrl: 'login.html'
@@ -19,17 +28,28 @@ export class LoginPage {
   login: {username?: string, password?: string} = {};
   submitted = false;
   
+  private sendRequest: SendRequest = null;
 
-  constructor(public navCtrl: NavController, public authService: AuthService) { }
+  constructor(public navCtrl: NavController, public authService: AuthService, private httpService: HttpService) { }
 
   onLogin(form: NgForm) {
     
     this.submitted = true;
 
     if (form.valid) {
-      this.authService.login(this.login.username, this.login.password);
-
-      this.navCtrl.push(MyTabsPage);
+      this.sendRequest = this.authService.login(this.login.username, this.login.password);
+      this.httpService.submitRequest(this.authService.sendRequest)
+      .subscribe(
+        (response: Response) => {
+          const responseReceived: ResponseReceived = response.json();
+          console.log(responseReceived);
+          this.authService.responseReceived=responseReceived;
+          this.navCtrl.push(MyTabsPage);          
+         },
+        err => console.log('error ' + err.json().message),
+        () => console.log('Authentication Complete')
+      );
+      
     }
   }
 

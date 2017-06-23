@@ -28,7 +28,7 @@ export class AuthService {
   private auth: Auth = null;
   public responseReceived: ResponseReceived = null
   private header:  Header = null;
-  private sendRequest: SendRequest = null;
+  public sendRequest: SendRequest = null;
   
 
   constructor(
@@ -51,7 +51,7 @@ export class AuthService {
     }
   };
 
-  login(username: string, password: string) {
+  login(username: string, password: string): SendRequest {
     
 
     this.validateLogin(username, password);
@@ -60,8 +60,11 @@ export class AuthService {
     this.setUsername(username);
 
 
+
+
     this.events.publish('user:login');
 
+    return this.sendRequest;
   };
 
   signup(username: string): void {
@@ -98,7 +101,7 @@ export class AuthService {
     });
   };
 
-  validateLogin(userName: string, password: string)  {
+  validateLogin(userName: string, password: string): SendRequest  {
     this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
     
     this.loginRequestData = new LoginRequestData(this.auth);
@@ -115,16 +118,8 @@ export class AuthService {
     console.log(this.request);
     console.log("registeration Service json data " +     JSON.stringify(this.sendRequest) + " url " + this.registrationUrl);
     console.log(JSON.stringify(this.sendRequest));
-    this.httpService.submitRequest(this.sendRequest)
-    .subscribe(
-        (response: Response) => {
-          const responseReceived: ResponseReceived = response.json();
-          console.log(responseReceived);          
-         },
-        err => console.log('error ' + err.json().message),
-        () => console.log('Authentication Complete')
-      );
     
+    return this.sendRequest;
     
   }
 
