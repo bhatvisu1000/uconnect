@@ -1,5 +1,4 @@
-import socket
-import sys
+import socket, sys
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,6 +14,7 @@ sock.bind(server_address)
 #Calling listen() puts the socket into server mode, and accept() waits for an incoming connection.
 
 # Listen for incoming connections
+mySigExit = True
 sock.listen(1)
 while True:
     # Wait for a connection
@@ -26,10 +26,23 @@ while True:
         # Receive the data in small chunks and retransmit it
         while True:
             myData = connection.recv(1024)
-            print('data received',myData, type(myData))
+            if myData:
+                print('data received',myData, type(myData))
+                if isinstance(myData, str) and (myData == 'STOP'):
+                    print('Gracefully shutdown ....')
+                    #print('myData',myData)                    
+                    connection.sendall('acknowledged [Server shutdown, ')
+                    sys.exit(1)
+                    #raise SystemExit()
+                else:
+                    connection.sendall('acknowledged [' + myData + ']')
+            else:
+                break
     except Exception as err:
         print(err.message)
+        raise
     finally:
-            # Clean up the connection
-            print('got data from client ... {data}'.format(data=myData),type(myData))
+        # Clean up the connection
+        #print('got data from client ... {data}'.format(data=myData),type(myData))
+        if mySigExit:
             connection.close()

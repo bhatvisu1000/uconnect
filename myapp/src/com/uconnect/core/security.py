@@ -713,7 +713,14 @@ class Security(object):
             elif myLoginInfo and myLoginInfo.get('AccountStatus') == self.globalInstance._Global__LoginStatusPending:
                 myValidLoginRetVal = "LoginError-004"                     
             else:
-                myValidLoginRetVal = "LoginError-999"                     
+                myValidLoginRetVal = "LoginError-002" 
+                ''' recording activity'''
+                self.activityInstance._Activity__logActivity(
+                        {'EntityId':myLoginId, 'EntityType': 'Login', 
+                         'ActivityType':self.globalInstance._Global__Internal, 
+                         'Activity':' Invalid loginid [{entity}]'.
+                                    format(entity=myLoginId),
+                         'Auth': myMainArgData})
             #fi
             return myValidLoginRetVal
 
@@ -901,7 +908,7 @@ class Security(object):
             #fi            
 
             myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myMemberData )
-            myResponse['MyResponse']['Header']['Auth']['AuthKey'] = myAuthKey
+            #myResponse['MyResponse']['Header']['Auth']['AuthKey'] = myAuthKey
             return myResponse
 
         except Exception as err:
@@ -971,7 +978,7 @@ class Security(object):
                     myMainAuthArgData.update({'EntityType':myLoginInfo.get('EntityType')})
 
                     myAuthKey = self.__createAuthentication(myMainAuthArgData)
-                    myResponseData = {'EntityId':myLoginInfo.get('EntityId'),'EntityType':myLoginInfo.get('EntityType'),'AuthKey':myAuthKey}
+                    myResponseData = {'AuthResponse':{'EntityId':myLoginInfo.get('EntityId'),'EntityType':myLoginInfo.get('EntityType'),'AuthKey':myAuthKey}}
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
                 else:
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess, myValidateLoginStatus + '; ' + self.utilityInstance.getErrorCodeDescription(myValidateLoginStatus))
@@ -995,7 +1002,7 @@ class Security(object):
                     ''' we need to retrieve entityid and entitytype from Auth collection '''
                     myAuthResults = self.mongoDbInstance.findDocument(self.globalInstance._Global__authColl, {'_id':ObjectId(str(myMainAuthArgData['AuthKey']))},{},True)
                     myAuthData =  self.utilityInstance.extr1stDocFromResultSets(myAuthResults)
-                    myResponseData = {'Auth':{'EntityId':myAuthData.get('EntityId'),'EntityType':myAuthData.get('EntityType'),'AuthKey':str(myAuthData.get('_id'))}}
+                    myResponseData = {'AuthResponse':{'EntityId':myAuthData.get('EntityId'),'EntityType':myAuthData.get('EntityType'),'AuthKey':str(myAuthData.get('_id'))}}
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)
                 else:
                     myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid LoginId/Password')                    
