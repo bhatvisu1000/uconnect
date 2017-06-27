@@ -44,6 +44,7 @@ export class LoginPage {
           const responseReceived: ResponseReceived = response.json();
           console.log(responseReceived);
           this.authService.responseReceived=responseReceived;
+          this.storage.set('AuthResponse', responseReceived.MyResponse.Data[0]);
           this.navCtrl.push(MyTabsPage);          
          },
         err => console.log('error ' + err.json().message),
