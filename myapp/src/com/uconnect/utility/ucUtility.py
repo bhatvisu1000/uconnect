@@ -134,6 +134,10 @@ class Utility(object):
         myIgnoredArgKeyList = copy.deepcopy(argIgnoreList)
         myMainArgData = copy.deepcopy(argRequestDict)
         myValidationMessage = ''
+
+        # we need to remove all the argument which is not part of validation and if its passed
+        myRemoveKey = list(set(myMainArgData.keys()) - set(myArgKeyList))
+        self.removeKeyFromDict(myMainArgData, myRemoveKey)
         
         # we need to remove ignored keys from argRequestDict
 
