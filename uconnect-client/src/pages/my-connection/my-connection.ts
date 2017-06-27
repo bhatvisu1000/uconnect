@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
+import { Storage } from '@ionic/storage';
+import {HttpService} from "../../services/HttpService"
+
 import { ConnectionService } from "../../services/ConnectionService";
 import {ConnectionSummary} from "../../models/connection/ConnectionSummary"
 import { AlertController } from 'ionic-angular';
 import {ResponseReceived} from "../../models/ResponseReceived"
+import {MyResponse} from "../../models/MyResponse"
+
+import {AuthResponse} from "../../models/response/AuthResponse"
 
 import { AuthService } from "../../services/AuthService";
 
@@ -16,38 +22,27 @@ import { AuthService } from "../../services/AuthService";
 export class MyConnectionPage {
 	listItems: ConnectionSummary[];
   public responseReceived: ResponseReceived;
+  public authResponse: AuthResponse;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController, public authService: AuthService) {}
+  constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController, public authService: AuthService, public storage: Storage, public httpService: HttpService) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MyConnectionPage load start');
     
+    /*this.authResponse = this.storage.get('AuthResponse');*/
     
-    this.connectionService.fetchList("")
-    .subscribe(
-                    (list: ConnectionSummary[]) => {
-                      console.log('ConnectionSummary List inside');
-                      if (list) {
-                      	console.log('ConnectionSummary if List inside');
-                      	for (let entry of list) {
-						    console.log(entry); 
-						}
-                        this.listItems = list;
-                      } else {
-                        this.listItems = [];
-                      }
-                    },
-                    error => {
-                      console.log('error ' + error.json().error);
-                      
-                    }
-                  );
-	console.log('ionViewDidLoad MyConnectionPage load end');
+    this.loadConnectionData();
+	  console.log('ionViewDidLoad MyConnectionPage load end');
     
   }
 
+  loadConnectionData(){
+    this.responseReceived = this.authService.responseReceived;
+    /*tthis.connectionService.createRequest()*/
+
+  }
   ionViewWillEnter() {
-      this.responseReceived = this.authService.responseReceived;
+      
     console.log('this.responseReceived ' + this.responseReceived);
   }
 

@@ -4,32 +4,49 @@ import 'rxjs/Rx';
 
 import {ConnectionSummary} from "../models/connection/ConnectionSummary"
 
+import {SendRequest} from "../models/SendRequest"
+import {Request} from "../models/Request"
+import {Header} from "../models/Header"
+import {MyResponse} from "../models/MyResponse"
+import {ResponseReceived} from "../models/ResponseReceived"
+import {Auth} from "../models/connection/Auth"
+import {LoginRequestData} from "../models/login/LoginRequestData"
+
+
 @Injectable()
 export class ConnectionService {
   private connectionSummarys: ConnectionSummary[] = [];
+
+  private request: Request = null;
+  private loginRequestData: LoginRequestData = null;
+  private auth: Auth = null;
+  public responseReceived: ResponseReceived = null
+  private header:  Header = null;
+  public sendRequest: SendRequest = null;
 
   constructor(private http: Http) {
   }
 
 
-  fetchList(token: string) {
-    console.log('ConnectionService');
-    let headers = new Headers({ 'Content-Type': 'application/json' });
-    /**console.log(JSON.stringify(this.http.get('http://localhost:3000/ConnectionSummary/').map((response: Response) => response.json())));
-    **/
-    //return this.http.get('http://localhost:3000/ConnectionSummary/')
-    return this.http.get('http://localhost:5000/getAllMembers/1', headers)
-        	.map((response: Response) => {
-        return response.json();
-      })
-      .do((connectionSummarys: ConnectionSummary[]) => {
-        if (connectionSummarys) {
-          this.connectionSummarys = connectionSummarys
-        } else {
-          this.connectionSummarys = [];
-        }
-      });
+  createRequest(authKey: string, userName: string): SendRequest  {
+    this.auth = new Auth(userName, "Web/Mobile", "", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", authKey);
+    
+    this.loginRequestData = new LoginRequestData(this.auth);
+    
+    
+    this.header= new Header("Member", "getAMemberDetail", "None");
 
+    
+    this.request= new Request(this.header, this.loginRequestData);
+
+    this.sendRequest= new SendRequest(this.request);
+
+
+    console.log(this.request);
+    console.log("registeration Service json data " +     JSON.stringify(this.sendRequest));
+    console.log(JSON.stringify(this.sendRequest));
+    
+    return this.sendRequest;
   }
 
 private getHeaders(){

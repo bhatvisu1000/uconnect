@@ -3,7 +3,7 @@ import { NgForm } from "@angular/forms";
 import { NavController, NavParams } from 'ionic-angular';
 
 import {Member} from "../../models/member/Member"
-import { RegisterationService } from "../../services/RegisterationService";
+import { RegistrationService } from "../../services/RegistrationService";
 import { MyTabsPage } from '../my-tabs/my-tabs';
 
 @Component({
@@ -13,7 +13,7 @@ import { MyTabsPage } from '../my-tabs/my-tabs';
 
 export class RegistrationPage {
 
-  constructor(public navCtrl: NavController, private registerationService: RegisterationService) {}
+  constructor(public navCtrl: NavController, private registrationService: RegistrationService) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad RegistrationPage');
@@ -23,9 +23,9 @@ export class RegistrationPage {
 
   onAddMember(form: NgForm) {
     console.log('before create Member RegistrationPage');
-    this.registerationService.createMember(form.value.userId, form.value.password, form.value.firstName, form.value.lastName, form.value.zipCode);
+    this.registrationService.createMember(form.value.userId, form.value.password, form.value.firstName, form.value.lastName, form.value.zipCode);
     console.log('before submit RegistrationPage');
-    this.registerationService.submitMember(this);
+    this.registrationService.submitMember(this);
     console.log('before after RegistrationPage');
     this.navCtrl.push(MyTabsPage);
   }

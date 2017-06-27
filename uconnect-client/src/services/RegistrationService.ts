@@ -22,7 +22,7 @@ import {RegistrationPage} from "../pages/registration/registration"
 
 
 @Injectable()
-export class RegisterationService {
+export class RegistrationService {
   private request: Request = null;
   private mainArg: MainArg = null;
   private registrationRequestData: RegistrationRequestData = null;
@@ -46,7 +46,7 @@ export class RegisterationService {
     this.address = new Address("", "", "", zipCode, "", "");
     this.contact = new Contact(userName, "", "N/A");
     
-    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
+    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", "");
     
     this.registrationRequestData = new RegistrationRequestData(this.auth, this.main, this.address, this.contact);
     

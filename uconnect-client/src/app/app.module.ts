@@ -20,9 +20,11 @@ import { RegistrationPage } from '../pages/registration/registration';
 import { LoginPage } from '../pages/login/login';
 
 import { ConnectionService } from "../services/ConnectionService";
-import { RegisterationService } from "../services/RegisterationService";
+import { RegistrationService } from "../services/RegistrationService";
 import { AuthService } from "../services/AuthService";
 import { HttpService } from "../services/HttpService";
+import { SQLStorageService } from "../services/SQLStorageService";
+
 
 
 
@@ -68,9 +70,9 @@ import { HttpService } from "../services/HttpService";
     LoginPage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
-                ConnectionService, RegisterationService, AuthService,
+                ConnectionService, RegistrationService, AuthService,
     InAppBrowser,
-    SplashScreen, HttpService
+    SplashScreen, HttpService, SQLStorageService
   ]
 })
 export class AppModule {}

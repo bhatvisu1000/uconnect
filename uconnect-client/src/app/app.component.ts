@@ -18,7 +18,7 @@ import { LoginPage } from '../pages/login/login';
 import { RegistrationPage } from '../pages/registration/registration';
 
 import { AuthService } from "../services/AuthService";
-import { RegisterationService } from "../services/RegisterationService";
+import { RegistrationService } from "../services/RegistrationService";
 
 export interface PageInterface {
   title: string;
@@ -66,7 +66,7 @@ export class MyApp {
     public authService: AuthService,
     public menu: MenuController,
     public platform: Platform,
-    public registerationService: RegisterationService,
+    public registrationService: RegistrationService,
     public storage: Storage,
     public splashScreen: SplashScreen
   ) {

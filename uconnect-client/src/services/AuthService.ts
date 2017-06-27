@@ -102,7 +102,7 @@ export class AuthService {
   };
 
   validateLogin(userName: string, password: string): SendRequest  {
-    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc");
+    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", "");
     
     this.loginRequestData = new LoginRequestData(this.auth);
     
