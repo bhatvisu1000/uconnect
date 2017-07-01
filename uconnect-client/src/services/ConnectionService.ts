@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Http, Response } from "@angular/http";
 import 'rxjs/Rx';
 
-import {ConnectionSummary} from "../models/connection/ConnectionSummary"
+import {Connections} from "../models/connection/Connections"
 
 import {SendRequest} from "../models/SendRequest"
 import {Request} from "../models/Request"
@@ -15,7 +15,7 @@ import {LoginRequestData} from "../models/login/LoginRequestData"
 
 @Injectable()
 export class ConnectionService {
-  private connectionSummarys: ConnectionSummary[] = [];
+  private connectionSummarys: Connections[] = [];
 
   private request: Request = null;
   private loginRequestData: LoginRequestData = null;
@@ -28,8 +28,8 @@ export class ConnectionService {
   }
 
 
-  createRequest(authKey: string, userName: string): SendRequest  {
-    this.auth = new Auth(userName, "Web/Mobile", "", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", authKey);
+  createRequest(authKey: string, loginid: string, entityId: string): SendRequest  {
+    this.auth = new Auth(loginid, "Web/Mobile", "", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", authKey, entityId);
     
     this.loginRequestData = new LoginRequestData(this.auth);
     

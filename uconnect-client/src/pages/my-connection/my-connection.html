@@ -44,7 +44,7 @@
 <ion-content padding>
 
   <ion-list>
-    <ion-item-sliding *ngFor="let item of listItems; let i = index" (click)="onCheckItem(i)">
+    <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index" (click)="onCheckItem(i)">
     <ion-item>
       
       <ion-avatar item-left>
@@ -53,7 +53,7 @@
       <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
       <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
       <h3>({{ item.Contact.Mobile }})</h3>
-      <h3>({{ item.Main.MutualConnectionCount }})</h3>
+      
       
     </ion-item>
       <ion-item-options side="right">

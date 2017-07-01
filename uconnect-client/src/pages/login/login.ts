@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { NavController } from 'ionic-angular';
+import { NavController, NavParams } from 'ionic-angular';
 
 import { AuthService } from "../../services/AuthService";
 
@@ -50,7 +50,8 @@ export class LoginPage {
           console.log(responseReceived);
           this.authService.responseReceived=responseReceived;
           this.storage.set('AuthResponse', responseReceived.MyResponse.Data[0]);
-          this.navCtrl.push(MyTabsPage);          
+          this.navCtrl.push(MyTabsPage, {loginid: this.login.username});  
+          console.log('navCtrl ');      
          },
         err => console.log('error ' + err.json().message),
         () => console.log('Authentication Complete')

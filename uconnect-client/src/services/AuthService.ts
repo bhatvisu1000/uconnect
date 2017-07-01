@@ -29,6 +29,7 @@ export class AuthService {
   public responseReceived: ResponseReceived = null
   private header:  Header = null;
   public sendRequest: SendRequest = null;
+  public username: string = null;
   
 
   constructor(
@@ -53,7 +54,7 @@ export class AuthService {
 
   login(username: string, password: string): SendRequest {
     
-
+    this.username = username;
     this.validateLogin(username, password);
 
     this.storage.set(this.HAS_LOGGED_IN, true);
@@ -102,7 +103,7 @@ export class AuthService {
   };
 
   validateLogin(userName: string, password: string): SendRequest  {
-    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", "");
+    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", "", "");
     
     this.loginRequestData = new LoginRequestData(this.auth);
     

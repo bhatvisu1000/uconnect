@@ -41,12 +41,12 @@ export class RegistrationService {
  createMember(userName: string, password: string, firstName: string,
             lastName: string,
             zipCode: string) {
-    this.main = new Main(firstName, lastName, "sanju", "M");
+    this.main = new Main(firstName, lastName, "sanju", "M", "Member");
     
     this.address = new Address("", "", "", zipCode, "", "");
-    this.contact = new Contact(userName, "", "N/A");
+    this.contact = new Contact(userName, "");
     
-    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", "");
+    this.auth = new Auth(userName, "Web/Mobile", password, "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", "", "");
     
     this.registrationRequestData = new RegistrationRequestData(this.auth, this.main, this.address, this.contact);
     

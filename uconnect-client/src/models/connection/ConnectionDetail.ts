@@ -1,4 +1,4 @@
-import { ConnectionSummary } from "./ConnectionSummary";
+import { Connections } from "./Connections";
 export class ConnectionDetailEntity {
-  constructor(public ConnectionSummary: ConnectionSummary, public Prefix: string) {}
+  constructor(public Connections: Connections, public Prefix: string) {}
 }

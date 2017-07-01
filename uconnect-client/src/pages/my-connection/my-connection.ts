@@ -4,15 +4,18 @@ import { NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import {HttpService} from "../../services/HttpService"
 
-import { ConnectionService } from "../../services/ConnectionService";
-import {ConnectionSummary} from "../../models/connection/ConnectionSummary"
-import { AlertController } from 'ionic-angular';
+import {ConnectionService } from "../../services/ConnectionService";
+import {Connections} from "../../models/connection/Connections"
+import {AlertController } from 'ionic-angular';
 import {ResponseReceived} from "../../models/ResponseReceived"
 import {MyResponse} from "../../models/MyResponse"
 
 import {AuthResponse} from "../../models/response/AuthResponse"
 
 import { AuthService } from "../../services/AuthService";
+import {SendRequest} from "../../models/SendRequest"
+
+import { Response } from "@angular/http";
 
 @Component({
   selector: 'page-my-connection',
@@ -20,9 +23,11 @@ import { AuthService } from "../../services/AuthService";
   providers: [ConnectionService]
 })
 export class MyConnectionPage {
-	listItems: ConnectionSummary[];
-  public responseReceived: ResponseReceived;
+	listConnectionItems: Connections[];
+  public authResponseReceived: ResponseReceived;
+  public connectionResponseReceived: ResponseReceived;
   public authResponse: AuthResponse;
+  private sendRequest: SendRequest = null;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController, public authService: AuthService, public storage: Storage, public httpService: HttpService) {}
 
@@ -37,13 +42,23 @@ export class MyConnectionPage {
   }
 
   loadConnectionData(){
-    this.responseReceived = this.authService.responseReceived;
-    /*tthis.connectionService.createRequest()*/
-
+    this.authResponseReceived = this.authService.responseReceived;
+    this.sendRequest = this.connectionService.createRequest(
+        this.authResponseReceived.MyResponse.Data[0].AuthResponse.AuthKey, this.authService.username, this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
+    this.httpService.submitRequest(this.sendRequest)
+      .subscribe(
+        (response: Response) => {
+          this.connectionResponseReceived = response.json();
+          this.listConnectionItems = this.connectionResponseReceived.MyResponse.Data[0].Connections;
+          console.log(this.listConnectionItems);
+         },
+        err => console.log('error ' + err.json().message),
+        () => console.log('Authentication Complete')
+      );
   }
   ionViewWillEnter() {
       
-    console.log('this.responseReceived ' + this.responseReceived);
+    console.log('this.responseReceived ' + this.authResponseReceived);
   }
 
   

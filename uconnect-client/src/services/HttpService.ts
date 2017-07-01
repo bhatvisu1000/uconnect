@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 
-import { Storage } from '@ionic/storage';
+
 
 import { Http, Response } from "@angular/http";
 import { Headers, RequestOptions } from '@angular/http';

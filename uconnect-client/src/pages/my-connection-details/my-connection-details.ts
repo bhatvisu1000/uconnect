@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { ConnectionService } from "../../services/ConnectionService";
-import {ConnectionSummary} from "../../models/connection/ConnectionSummary"
+import {Connections} from "../../models/connection/Connections"
 
 @Component({
   selector: 'page-my-connection',
@@ -10,7 +10,7 @@ import {ConnectionSummary} from "../../models/connection/ConnectionSummary"
   providers: [ConnectionService]
 })
 export class MyConnectionPage {
-	listItems: ConnectionSummary[];
+	listItems: Connections[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService) {}
 
