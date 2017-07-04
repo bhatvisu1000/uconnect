@@ -10,14 +10,19 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-segment [(ngModel)]="segment" (ionChange)="updateSchedule()">
+    <ion-segment [(ngModel)]="segment">
       <ion-segment-button value="All">
         All
       </ion-segment-button>
       <ion-segment-button value="Favorite">
         Favorite
       </ion-segment-button>
-      
+      <ion-segment-button value="Group">
+        Group
+      </ion-segment-button>
+      <ion-segment-button value="NewRequest">
+        New Request
+      </ion-segment-button>
     </ion-segment>
 
     <ion-buttons end>
@@ -43,44 +48,46 @@
 
 <ion-content padding>
 
-  <ion-list>
-    <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index" (click)="onCheckItem(i)">
-    <ion-item>
-      
-      <ion-avatar item-left>
-        <img src="../../assets/icon/favicon.ico">
-      </ion-avatar>
-      <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
-      <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
-      <h3>({{ item.Contact.Mobile }})</h3>
-      
-      
-    </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="primary" (click)="removeItem()">
-          <ion-icon name="text"></ion-icon>
-          Schedule
-        </button>
-        <button ion-button color="secondary" (click)="removeItem()">
-          <ion-icon name="call"></ion-icon>
-          More
-        </button>
-        </ion-item-options>
+  <div [ngSwitch]="segment">
+    <ion-list *ngSwitchCase="'All'">
+        
+          <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index">
+          <ion-item>
+            
+            <ion-avatar item-left>
+              <img src="../../assets/icon/favicon.ico">
+            </ion-avatar>
+            <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
+            <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
+            <h3>({{ item.Contact.Mobile }})</h3>
+            
+            
+          </ion-item>
+            <ion-item-options side="right">
+              <button ion-button color="primary" (click)="schedule(item.Id)">
+                <ion-icon name="text"></ion-icon>
+                Schedule
+              </button>
+              <button ion-button color="secondary" (click)="moreActionRight(item.Id)">
+                <ion-icon name="call"></ion-icon>
+                More
+              </button>
+              </ion-item-options>
 
-        <ion-item-options side="left">
-        <button ion-button color="primary" (click)="removeItem()">
-          <ion-icon name="text"></ion-icon>
-          More
-        </button>
-        <button ion-button color="secondary" (click)="removeItem()">
-          <ion-icon name="call"></ion-icon>
-          Call
-        </button>
-      </ion-item-options>
-    
-    </ion-item-sliding>
-  </ion-list>
-<ion-list>
+              <ion-item-options side="left">
+              <button ion-button color="primary" (click)="deleteConnection(item.Id)">
+                <ion-icon name="text"></ion-icon>
+                Delete
+              </button>
+              <button ion-button color="secondary" (click)="call(item.Contact.Mobile)">
+                <ion-icon name="call"></ion-icon>
+                Call
+              </button>
+            </ion-item-options>
+          
+          </ion-item-sliding>
+    </ion-list>
+  <ion-list *ngSwitchCase="'Favorite'">
     <ion-list-header>
       Adjust Text {{contrast}}
     </ion-list-header>
@@ -92,5 +99,5 @@
   </ion-item>
 
   </ion-list>
-
+ </div>
 </ion-content>

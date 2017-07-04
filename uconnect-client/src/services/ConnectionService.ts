@@ -54,4 +54,28 @@ private getHeaders(){
     headers.append('Accept', 'application/json');
     return headers;
   }
- }
+  
+
+
+
+  createDeleteRequest(memberId: string) {
+
+    
+    
+    
+    
+    this.header= new Header("Member", "getAMemberDetail", "None");
+
+    
+    this.request= new Request(this.header, this.loginRequestData);
+
+    this.sendRequest= new SendRequest(this.request);
+
+
+    console.log(this.request);
+    console.log("registeration Service json data " +     JSON.stringify(this.sendRequest));
+    console.log(JSON.stringify(this.sendRequest));
+    
+    return this.sendRequest;
+  }
+}

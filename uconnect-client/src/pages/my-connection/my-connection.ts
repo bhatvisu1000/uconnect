@@ -28,6 +28,7 @@ export class MyConnectionPage {
   public connectionResponseReceived: ResponseReceived;
   public authResponse: AuthResponse;
   private sendRequest: SendRequest = null;
+  segment: string ="All"
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController, public authService: AuthService, public storage: Storage, public httpService: HttpService) {}
 
@@ -90,5 +91,21 @@ export class MyConnectionPage {
     alert.present()
     
   }
+
+  schedule(memberId: string) {
+    let alert = this.alertCtrl.create({
+      title: 'New Friend!',
+      message: 'Your friend, Obi wan Kenobi, just approved your friend request!',
+      buttons: ['Ok']
+    });
+    alert.present()
+  }
+
+  deleteConnection(memberId: string) {
+    this.sendRequest = this.connectionService.createDeleteRequest(this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
+  }
+
+
+
 
 }
