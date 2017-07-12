@@ -731,7 +731,7 @@ class MongoDB(object):
             raise error        
 
 if ( __name__ == "__main__" ):
-    print "In main, I am being called to perform some task"
+    print ("In main, I am being called to perform some task")
     myResult = ""
     myDocDB = MongoDB()
     myResult = myDocDB.getADocument('MEMBER',"MEM201981") 
@@ -740,6 +740,6 @@ if ( __name__ == "__main__" ):
     #print len(myMemberDB.memberResults)
     #list(myMemberDB.memberResults);
     totalRecords = myResult.count()
-    print "Total %s" % totalRecords ," member found"
+    print ("Total %s" % totalRecords ," member found")
     for x in myResult:
-        print x
+        print (x)

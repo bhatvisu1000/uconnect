@@ -283,9 +283,9 @@ def getAMemberFactory(id,type):
 
 @app.route('/getAMember/<memberId>' , methods=['GET','POST'])
 def getAMember(memberId):
-  print session
+  print (session)
   if not('username' in session):
-    print "forbidden"
+    print ("forbidden")
     raise session_expired
   #app.logger.debug('MemberId [%d] passed as an arguments', memberId)
   else:
@@ -311,7 +311,7 @@ def getAllMembers(page):
   return jsonify(myResponseData)
 
 if __name__ == "__main__":
-  print "Initializing flask environment ..."
+  print ("Initializing flask environment ...")
 
   envInstance = Environment.Instance()
   curEnvironment = envInstance.getCurrentEnvironment()
@@ -319,7 +319,7 @@ if __name__ == "__main__":
   myFlaskHost = curEnvDetails['FlaskHost']
   myFlaskPort = int(curEnvDetails['FlaskPort'])
 
-  print "found, flask host:port", myFlaskHost, ":", myFlaskPort
+  print ("found, flask host:port", myFlaskHost, ":", myFlaskPort)
 
   app.run(debug=True, host=myFlaskHost, port=myFlaskPort, threaded=True)
   

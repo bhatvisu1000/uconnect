@@ -4,7 +4,7 @@ import logging, json, logging.config, os, sys
   Logging utility, constructing dictionary object to be used by native logging module
 '''
 
-print "Constructing logging utility foundation"
+print ("Constructing logging utility foundation")
 
 '''
 Constructing  config file name and path

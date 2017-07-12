@@ -31,7 +31,7 @@ while True:
                 if isinstance(myData, str) and (myData == 'STOP'):
                     print('Gracefully shutdown ....')
                     #print('myData',myData)                    
-                    connection.sendall('acknowledged [Server shutdown, ')
+                    connection.sendall('acknowledged [Server shutdown] ')
                     sys.exit(1)
                     #raise SystemExit()
                 else:

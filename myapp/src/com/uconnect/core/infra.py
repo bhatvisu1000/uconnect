@@ -207,6 +207,7 @@ class Environment(object):
     except com.uconnect.core.error.BootStrapError as error:
         myModuleLogger.error("BootStrapError, [{error}]".format(error=error.errorMsg))
         raise error     
+        
     except ValueError as error:
        myModuleLogger.error("Error, loading Template file [{templateFile}] (value error) ".format(templateFile=self.templateFileWPath))
        raise error
