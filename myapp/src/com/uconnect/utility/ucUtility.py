@@ -7,6 +7,9 @@ from com.uconnect.core.globals import Global
 
 myLogger = logging.getLogger('uConnect')
 
+# Python 3:
+#Removed dict.iteritems(), dict.iterkeys(), and dict.itervalues().
+#Instead: use dict.items(), dict.keys(), and dict.values() respectively.@Singleton
 @Singleton
 class Utility(object):
 
@@ -80,7 +83,7 @@ class Utility(object):
 
     def getAllKeysFromDict(self, argDict):
         myKeyList = []
-        for key,value in argDict.iteritems():
+        for key,value in argDict.items():
             myKeyList.append(key)
         return myKeyList
 
@@ -151,10 +154,10 @@ class Utility(object):
         # check if all key in dictionary
         if all(key in myMainArgData for key in myArgKeyList):
             # check if any key in dict has None or empty value
-            if myMainArgData == dict ((key, values) for key, values in myMainArgData.iteritems() if values):
+            if myMainArgData == dict ((key, values) for key, values in myMainArgData.items() if values):
                 isValidArgument = True
             else:
-                for key,val in myMainArgData.iteritems():
+                for key,val in myMainArgData.items():
                     if not val:
                         myMissingOrEmptyKeyList.append(key)
                     #fi
@@ -504,8 +507,8 @@ class Utility(object):
 
     def getNonEmptyKeyFromDict(self, argRequestDict):
         ''' return all non empty key from dictionary, passed argument is not changed'''
-        return dict ((k,v) for k, v in argRequestDict.iteritems() if v)
-
+        #return dict ((k,v) for k, v in argRequestDict.iteritems() if v) ### Iteritems has been changed to items
+        return dict ((k,v) for k, v in argRequestDict.items() if v)
     def isAnyKeyInDict(self, argKeyList, argDict):
         # check if any of the key value from List present in keys in dictionnary
         return any(key in argKeyList for key in argDict.keys())

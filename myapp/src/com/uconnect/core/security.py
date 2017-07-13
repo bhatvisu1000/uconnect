@@ -36,8 +36,8 @@ class Security(object):
                 raise com.uconnect.core.error.MissingArgumentValues(myArgValMessage)
             #fi
 
-            myPasswordText = str(myMainArgData['Password']) 
-            hashPassword = hashpw(myPasswordText, gensalt(rounds=8, prefix='2b'))
+            myPasswordText = str(myMainArgData['Password']).encode('utf-8') 
+            hashPassword = hashpw(myPasswordText, gensalt(rounds=8, prefix=b"2b"))
             #print('hash:' + ':' + myPasswordText + ':' + hashPassword)
             return  hashPassword
 

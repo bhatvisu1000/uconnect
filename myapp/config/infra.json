@@ -5,7 +5,7 @@
      "MongoDBName": "test",
      "MongoUri":"mongodb://localhost:27017/test?connectTimeoutMS=300000&maxPoolSize=100&minPoolSize=10&w=majority",
      "FlaskHost": "127.0.0.1",
-     "FlaskPort": "5000",
+     "FlaskPort": "5008",
      "Comments":"This is Development",
      "logCfg":"loggingConfig.json",
      "myApp":"uConnect",
@@ -17,7 +17,7 @@
      "MongoDBName": "test",
      "MongoUri":"localhost:27017/test",        
      "FlaskHost": "localhost",
-     "FlaskPort": "5000",
+     "FlaskPort": "5008",
      "Comments":"This is Production"        
     }
 }
