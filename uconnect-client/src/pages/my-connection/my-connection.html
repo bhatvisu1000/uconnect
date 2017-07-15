@@ -52,6 +52,7 @@
     <ion-list *ngSwitchCase="'All'">
         
           <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index">
+          
           <ion-item>
             
             <ion-avatar item-left>
@@ -87,7 +88,87 @@
           
           </ion-item-sliding>
     </ion-list>
-  <ion-list *ngSwitchCase="'Favorite'">
+  
+    <ion-list *ngSwitchCase="'Favorite'">
+    <ion-item-sliding *ngFor="let item of listFavouriteConnectionItems; let i = index">
+          
+          <ion-item>
+            
+            <ion-avatar item-left>
+              <img src="../../assets/icon/favicon.ico">
+            </ion-avatar>
+            <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
+            <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
+            <h3>({{ item.Contact.Mobile }})</h3>
+            
+            
+          </ion-item>
+            <ion-item-options side="right">
+              <button ion-button color="primary" (click)="schedule(item.Id)">
+                <ion-icon name="text"></ion-icon>
+                Schedule
+              </button>
+              <button ion-button color="secondary" (click)="moreActionRight(item.Id)">
+                <ion-icon name="call"></ion-icon>
+                More
+              </button>
+              </ion-item-options>
+
+              <ion-item-options side="left">
+              <button ion-button color="primary" (click)="deleteConnection(item.Id)">
+                <ion-icon name="text"></ion-icon>
+                Delete
+              </button>
+              <button ion-button color="secondary" (click)="call(item.Contact.Mobile)">
+                <ion-icon name="call"></ion-icon>
+                Call
+              </button>
+            </ion-item-options>
+          
+          </ion-item-sliding>
+
+  </ion-list>
+
+  <ion-list *ngSwitchCase="'NewRequest'">
+    <ion-item-sliding *ngFor="let item of listNewConnectionItems; let i = index">
+          
+          <ion-item>
+            
+            <ion-avatar item-left>
+              <img src="../../assets/icon/favicon.ico">
+            </ion-avatar>
+            <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
+            <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
+            <h3>({{ item.Contact.Mobile }})</h3>
+            
+            
+          </ion-item>
+            <ion-item-options side="right">
+              <button ion-button color="primary" (click)="schedule(item.Id)">
+                <ion-icon name="text"></ion-icon>
+                Schedule
+              </button>
+              <button ion-button color="secondary" (click)="moreActionRight(item.Id)">
+                <ion-icon name="call"></ion-icon>
+                More
+              </button>
+              </ion-item-options>
+
+              <ion-item-options side="left">
+              <button ion-button color="primary" (click)="deleteConnection(item.Id)">
+                <ion-icon name="text"></ion-icon>
+                Delete
+              </button>
+              <button ion-button color="secondary" (click)="call(item.Contact.Mobile)">
+                <ion-icon name="call"></ion-icon>
+                Call
+              </button>
+            </ion-item-options>
+          
+          </ion-item-sliding>
+
+  </ion-list>
+  <ion-list *ngSwitchCase="'Group'">
     <ion-list-header>
       Adjust Text {{contrast}}
     </ion-list-header>

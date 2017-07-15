@@ -23,7 +23,12 @@ import { Response } from "@angular/http";
   providers: [ConnectionService]
 })
 export class MyConnectionPage {
-	listConnectionItems: Connections[];
+	listConnectionItems: [];
+  listNewConnectionItems: [];
+  listAllConnectionItems: [];
+  listFavouriteConnectionItems: [];
+  listGroupConnectionItems: [];
+  
   public authResponseReceived: ResponseReceived;
   public connectionResponseReceived: ResponseReceived;
   public authResponse: AuthResponse;
@@ -51,6 +56,18 @@ export class MyConnectionPage {
         (response: Response) => {
           this.connectionResponseReceived = response.json();
           this.listConnectionItems = this.connectionResponseReceived.MyResponse.Data[0].Connections;
+
+          for (var i=0; i< this.listConnectionItems.length; i++) {
+            this.listAllConnectionItems.push(this.listConnectionItems[i]);
+            if(this.listConnectionItems[i].Status='Awaiting Response'){
+              this.listNewConnectionItems.push(this.listConnectionItems[i]);
+            }
+
+            if(this.listConnectionItems[i].Favorite='1'){
+              this.listFavouriteConnectionItems.push(this.listConnectionItems[i]);
+            }
+          }
+
           console.log(this.listConnectionItems);
          },
         err => console.log('error ' + err.json().message),
