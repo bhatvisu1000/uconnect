@@ -73,7 +73,7 @@ class Activity(object):
 
             myModuleLogger.debug('Argument [{arg}] received'.format(arg=myMainArgData))
             
-            myArgKey = ['EntityId','EntityType','ActivityType','Activity','Auth']
+            myArgKey = ['EntityId','EntityType','ActivityType','Activity']
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
             
             #print('activitylog',myMainArgData.keys(), myArgKey)

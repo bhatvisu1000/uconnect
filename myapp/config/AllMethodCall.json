@@ -66,7 +66,7 @@
                     "ScreenId":"Registration","ActionId":"ValidateSecCode","Page":"None"
                 },
             "MainArg":
-                {"SecurityCode":{"LoginId":"anil", "SecurityCode":23208}}
+                {"SecurityCode":{"LoginId":"anil", "SecurityCode":88363}}
         }
 }
 
@@ -99,9 +99,9 @@
             "MainArg":
                 {"Auth":
                     {
-                        "LoginId":"vishal",
+                        "LoginId":"anil",
                         "LoginType":"Web",
-                        "Password":"bhatt",
+                        "Password":"anil",
                         "DeviceOs":"Mobile",
                         "DeviceType":"OS2",
                         "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
@@ -126,14 +126,14 @@
                 {
                     "Auth":
                         {
-                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "AuthKey":"59701336df9bba1b60933869",
                             "LoginType":"Web",
-                            "LoginId":"vishal",
+                            "LoginId":"anil",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314290,
+                            "EntityId":314386,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
@@ -199,17 +199,17 @@
                 },
             "MainArg":
                 {
-                    "Connections":[{"Id":314291,"Type":"Member","Action":"Invite"}],
+                    "UpdateConnections":[{"Id":314381,"Type":"Member","Action":"Invite"}],
                     "Auth":
                         {
-                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "AuthKey":"59701336df9bba1b60933869",
                             "LoginType":"Web",
-                            "LoginId":"vishal",
+                            "LoginId":"anil",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314290,
+                            "EntityId":314386,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
@@ -226,7 +226,7 @@
                 },
             "MainArg":
                 {
-                    "Connections":[{"Id":314290,"Type":"Member","Action":"Accept"}],
+                    "Connections":[{"Id":314381,"Type":"Member","Action":"Accept"}],
                     "Auth":
                         {
                             "AuthKey":"592b9acadf9bba38bcf8fafb",
@@ -236,7 +236,7 @@
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314291,
+                            "EntityId":314381,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }

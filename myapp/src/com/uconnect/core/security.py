@@ -659,7 +659,7 @@ class Security(object):
                                         format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
                              'Auth': myMainArgData})
 
-                elif checkpw(str(myPasswordText), str(myStoredHashPassword)):
+                elif checkpw(myPasswordText.encode('utf8'), myStoredHashPassword):
                     ''' we got valid login we need to create authentication'''
                     myValidLoginRetVal = "Success" 
 
@@ -1207,7 +1207,8 @@ class Security(object):
             ''' Preparing value for Security code'''
             myDeliveryOptiosnArg = self.utilityInstance.getCopy(myMainArgData)
             myDeliveryOptiosnArg['ResponseMode'] = self.globalInstance._Global__InternalRequest
-            if not (self.__isValidSecDeliveryOptions(myDeliveryOptiosnArg['SecurityCode'])):
+            #if not (self.__isValidSecDeliveryOptions(myDeliveryOptiosnArg['SecurityCode'])):
+            if not (self.__isValidSecDeliveryOptions(myDeliveryOptiosnArg)):
                 raise com.uconnect.core.error.InvalidSecCodeDeliveryOptions('Delivery options [{delivery}] is not valid for login [{login}]'.
                     format(delivery=myMainArgData['SecurityCode']['DeliveryMethod'] + ' , ' + myMainArgData['SecurityCode']['DeliverTo'],
                            login=myMainArgData['SecurityCode']['LoginId']))
@@ -1229,6 +1230,7 @@ class Security(object):
                 #logging activity
                 self.activityInstance._Activity__logActivity(
                     {'EntityId':mySecurityCodeData['LoginId'], 'EntityType':'LoginId', 
+                     'ActivityType':self.globalInstance._Global__Internal, 
                      'Activity':'Generating new security code [{sec}]'.format(sec=mySecurityCodeData['SecurityCode'])})
             else:
                 myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess)
@@ -1326,6 +1328,7 @@ class Security(object):
 
             self.activityInstance._Activity__logActivity(
                 {'EntityId':myMainArgData['SecurityCode']['LoginId'], 'EntityType':'LoginId', 
+                 'ActivityType':self.globalInstance._Global__Internal,                 
                  'Activity':'Ssecurity code [{sec}] validated'.format(sec=myMainArgData['SecurityCode']['SecurityCode'])})
 
             myRequestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)

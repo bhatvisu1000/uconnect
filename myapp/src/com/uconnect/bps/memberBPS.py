@@ -285,8 +285,8 @@ class MemberBPS(object):
             myRequestStatus = self.utilityInstance.getCopy(self.globalInstance._Global__RequestStatus)
 
             # validating arguments
-            myArgKey = ['Connections','Auth','ResponseMode']
-            myConnectionArgs = myMainArgData['Connections']
+            myArgKey = ['UpdateConnections','Auth','ResponseMode']
+            myConnectionArgs = myMainArgData['UpdateConnections']
 
             myArgValidation, myMissingKeys, myArgValMessage = \
                     self.utilityInstance.valRequiredArg(myMainArgData, myArgKey)
