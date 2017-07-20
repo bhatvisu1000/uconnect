@@ -4,7 +4,7 @@ import { Connections } from "./Connections";
 
 
 export class UpdateConnectionRequest extends MainArg {
-  constructor(public Connections:  Array<Connections>, public Auth: Auth) {
+  constructor(public UpdateConnections:  Array<Connections>, public Auth: Auth) {
 	super();
 
   }
