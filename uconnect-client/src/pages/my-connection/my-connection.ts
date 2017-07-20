@@ -23,11 +23,11 @@ import { Response } from "@angular/http";
   providers: [ConnectionService]
 })
 export class MyConnectionPage {
-	listConnectionItems: [];
-  listNewConnectionItems: [];
-  listAllConnectionItems: [];
-  listFavouriteConnectionItems: [];
-  listGroupConnectionItems: [];
+	listConnectionItems: Connections[]= null;
+  listNewConnectionItems: Connections[]= null;
+  listAllConnectionItems: Connections[]= null;
+  listFavouriteConnectionItems: Connections[]= null;
+  listGroupConnectionItems: Connections[]= null;
   
   public authResponseReceived: ResponseReceived;
   public connectionResponseReceived: ResponseReceived;
@@ -57,7 +57,7 @@ export class MyConnectionPage {
           this.connectionResponseReceived = response.json();
           this.listConnectionItems = this.connectionResponseReceived.MyResponse.Data[0].Connections;
 
-          for (var i=0; i< this.listConnectionItems.length; i++) {
+          /**for (var i=0; i< this.listConnectionItems.length; i++) {
             this.listAllConnectionItems.push(this.listConnectionItems[i]);
             if(this.listConnectionItems[i].Status='Awaiting Response'){
               this.listNewConnectionItems.push(this.listConnectionItems[i]);
@@ -67,7 +67,7 @@ export class MyConnectionPage {
               this.listFavouriteConnectionItems.push(this.listConnectionItems[i]);
             }
           }
-
+**/
           console.log(this.listConnectionItems);
          },
         err => console.log('error ' + err.json().message),
@@ -77,6 +77,7 @@ export class MyConnectionPage {
   ionViewWillEnter() {
       
     console.log('this.responseReceived ' + this.authResponseReceived);
+    this.loadConnectionData();
   }
 
   
@@ -98,6 +99,16 @@ export class MyConnectionPage {
     });
     alert.present()
   }
+
+  favourite(favouriteOrUnFavoutite: string){
+      let alert = this.alertCtrl.create({
+        title: 'New Friend!',
+        message: 'Your friend, Obi wan Kenobi, just approved your friend request!',
+        buttons: ['Ok']
+      });
+      alert.present()
+    }
+
 
   updateResults() {
   let alert = this.alertCtrl.create({
@@ -122,7 +133,19 @@ export class MyConnectionPage {
     this.sendRequest = this.connectionService.createDeleteRequest(this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
   }
 
-
+ updateConnection(memberId: string, action: string) {
+    this.sendRequest = this.connectionService.createUpdateConnectionsRequest(memberId, action);
+    this.httpService.submitRequest(this.sendRequest)
+      .subscribe(
+        (response: Response) => {
+          this.connectionResponseReceived = response.json();
+          this.loadConnectionData();
+          console.log(this.listConnectionItems);
+         },
+        err => console.log('error ' + err.json().message),
+        () => console.log('Authentication Complete')
+      );
+  }
 
 
 }

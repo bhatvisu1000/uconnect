@@ -113,7 +113,7 @@ export class MyApp {
     if (page.logsOut === true) {
       // Give the menu time to close before changing to logged out
       this.authService.logout();
-      this.rootPage = LoginPage;
+      this.nav.setRoot(LoginPage);
     }
   }
 

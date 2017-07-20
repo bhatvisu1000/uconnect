@@ -62,21 +62,38 @@
             <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
             <h3>({{ item.Contact.Mobile }})</h3>
             
-            
+            <div *ngIf="item.Favorite == 1">
+              <ion-icon ios="ios-star" md="md-star"></ion-icon>
+            </div>
+
           </ion-item>
             <ion-item-options side="right">
               <button ion-button color="primary" (click)="schedule(item.Id)">
                 <ion-icon name="text"></ion-icon>
                 Schedule
               </button>
-              <button ion-button color="secondary" (click)="moreActionRight(item.Id)">
-                <ion-icon name="call"></ion-icon>
-                More
+              
+             
+              <div *ngIf="item.Favorite == 0">
+                <button ion-button color="secondary" (click)="updateConnection(item.Id, 'Favorite')">
+                <ion-icon name="ion-heart"></ion-icon>
+                Favourite
               </button>
+
+              </div>
+
+              <div *ngIf="item.Favorite == 1">
+                <button ion-button color="secondary" (click)="updateConnection(item.Id, 'UnFavorite')">
+                <ion-icon name="ion-heart"></ion-icon>
+                UnFavourite
+              </button>
+
+              </div>
+
               </ion-item-options>
 
               <ion-item-options side="left">
-              <button ion-button color="primary" (click)="deleteConnection(item.Id)">
+              <button ion-button color="primary" (click)="updateConnection(item.Id, 'Remove')">
                 <ion-icon name="text"></ion-icon>
                 Delete
               </button>
