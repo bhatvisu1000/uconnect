@@ -224,17 +224,17 @@ class Connections(object):
                             format( invitee=myMainArgData['Type'] + str(myMainArgData['_id']),\
                                     requestor= myMainArgData['ConnectionType'] + str(myMainArgData['ConnectionId']) ))
             #fi
-
+            # need to validate if this connectin is in wait state
             ''' Building Invitee connection data'''
-            myInviteeCriteria = {'_id':myMainArgData['_id'],'Connections.Id':myMainArgData['ConnectionId'], \
-                                 'Connections.Type': myMainArgData['ConnectionType'],\
-                                 'Connections.Status': self.utilityInstance.getConnStatus4Action('New Connection','Invitee')}
+            myInviteeCriteria = {'_id':myMainArgData['_id'],'Connections.Id':myMainArgData['ConnectionId']}
+            #                     'Connections.Type': myMainArgData['ConnectionType'],\
+            #                     'Connections.Status': self.utilityInstance.getConnStatus4Action('New Connection','Invitee')}
             myInviteeConnData = {'Connections.$.Status':self.utilityInstance.getConnStatus4Action('Accept Connection','Invitee')}
 
             ''' Building Requestor connection data '''
-            myRequestorCriteria = {'_id':myMainArgData['ConnectionId'], 'Connections.Id':myMainArgData['_id'],\
-                                   'Connections.Type':myMainArgData['Type'],\
-                                   'Connections.Status': self.utilityInstance.getConnStatus4Action('New Connection','Requestor')}
+            myRequestorCriteria = {'_id':myMainArgData['ConnectionId'], 'Connections.Id':myMainArgData['_id']}
+            #                       'Connections.Type':myMainArgData['Type'],\
+            #                       'Connections.Status': self.utilityInstance.getConnStatus4Action('New Connection','Requestor')}
             myRequestorConnData = {'Connections.$.Status':self.utilityInstance.getConnStatus4Action('Accept Connection','Requestor')}
 
             ''' persisitng changes in database, Updating invitee's connection status '''
@@ -643,8 +643,9 @@ class Connections(object):
             #fi
 
             ''' Preparing document:    '''
-            myCriteria = {'_id':myMainArgData['_id'],'Connections.Id': myMainArgData['ConnectionId'], \
-                            'Connections.Type':myMainArgData['ConnectionType']}
+            #myCriteria = {'_id':myMainArgData['_id'],'Connections.Id': myMainArgData['ConnectionId'], \
+            #                'Connections.Type':myMainArgData['ConnectionType']}
+            myCriteria = {'_id':myMainArgData['_id'],'Connections.Id': myMainArgData['ConnectionId']}
             myFavoriteData = {"Connections.$.Favorite":int(myMainArgData['Favorite'])}
 
             ##db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})
@@ -714,8 +715,7 @@ class Connections(object):
             #fi
 
             ''' Preparing document:    '''
-            myCriteria = {'_id':myMainArgData['_id'],'Connections.Id': myMainArgData['ConnectionId'], \
-                            'Connections.Type':myMainArgData['ConnectionType']}
+            myCriteria = {'_id':myMainArgData['_id'],'Connections.Id': myMainArgData['ConnectionId']}
             myFavoriteData = {"Connections.$.Blocked":int(myMainArgData['Blocked'])}
 
             ##db.Member.update({'_id':313848,'LinkedBy.MemberId':313850},{ $set : {'LinkedBy.$.Favorite':1}})

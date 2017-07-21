@@ -59,7 +59,7 @@ class Factory(object):
                 myResponse = self.utilityInstance.buildResponseData('E',myRquestStatus,'Error')
             #fi
 
-            self.myModuleLogger.debug("return value from bps process [{responseVal}]".format(responseVal=myResponse))
+            #self.myModuleLogger.debug("return value from bps process [{responseVal}]".format(responseVal=myResponse))
 
             return myResponse
 

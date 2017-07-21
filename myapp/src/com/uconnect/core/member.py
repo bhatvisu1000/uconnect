@@ -305,7 +305,7 @@ class Member(object):
         #argMemberId, argConnectionType
         try:
             #self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
-            self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
+            #self.myModuleLogger.debug('Argument [{arg}] received'.format(arg=argRequestDict))
 
             myMainArgData = self.utilityInstance.getCopy(argRequestDict)            
             myArgKey = ['ConnectionType','ConnectionRawData']
