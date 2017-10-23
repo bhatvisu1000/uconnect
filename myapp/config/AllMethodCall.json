@@ -17,6 +17,7 @@
 
 // Registration
 // Register Member
+// Update is not working, connections.$.id is defualting to 1st record from Connectionss
 {
     "Request":
         {
@@ -313,18 +314,18 @@
                 },
             "MainArg":
                 {
-                    "_id":314290,
-                    "Connections":[{"Id":314291,"Type":"Member","Action":"Favorite","Favorite":1}],
+                    "_id":314386,
+                    "Connections":[{"Id":314381,"Type":"Member","Action":"Favorite","Favorite":1}],
                     "Auth":
                         {
-                            "AuthKey":"5929f4b1df9bba469867ab62",
+                            "AuthKey":"59701336df9bba1b60933869",
                             "LoginType":"Web",
-                            "LoginId":"vishal",
+                            "LoginId":"anil",
                             "DeviceOs":"Mobile",
                             "DeviceType":"OS2",
                             "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
                             "EntityType":"Member",
-                            "EntityId":314290,
+                            "EntityId":314386,
                             "AppVer":"1.0",
                             "SessionId":"aaabbbccc"
                         }
