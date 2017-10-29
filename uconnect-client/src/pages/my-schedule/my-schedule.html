@@ -6,17 +6,75 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-      <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
+  <ion-navbar no-border-bottom>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-segment [(ngModel)]="segment">
+      <ion-segment-button value="UpcomingSchedule">
+        Upcoming Schedule
+      </ion-segment-button>
+      <ion-segment-button value="NewRequest">
+        New Request
+      </ion-segment-button>
+      <ion-segment-button value="All">
+        All
+      </ion-segment-button>
+      <ion-segment-button value="Favourite">
+        Favourite
+      </ion-segment-button>
+       <ion-segment-button value="Create">
+        Create Schedule
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="presentFilter()">
+        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
       </button>
-      <ion-title>Schedule</ion-title>
-  </ion-navbar>
+    </ion-buttons>
+  
+   </ion-navbar>
+  <ion-toolbar no-border-top>
+    <ion-searchbar color="primary"
+                   [(ngModel)]="queryText"
+                   (ionInput)="searchConnection($event)"
+                   placeholder="Search">
+    </ion-searchbar>
+    </ion-toolbar>
 
 
 </ion-header>
 
 
 <ion-content padding>
+ <div [ngSwitch]="segment">
+    <ion-list *ngSwitchCase="'UpcomingSchedule'">
+        
+      
+          
+          <ion-item>
+            
+            <ion-avatar item-left>
+              <img src="../../assets/icon/favicon.ico">
+            </ion-avatar>
+            <h3>Vishal Bhat</h3> 
+            
+              <ion-icon ios="ios-star" md="md-star"></ion-icon>
 
+          </ion-item>
+         <ion-item>
+            
+            <ion-avatar item-left>
+              <img src="../../assets/icon/favicon.ico">
+            </ion-avatar>
+            <h3>Anil Singh</h3> 
+            
+              <ion-icon ios="ios-star" md="md-star"></ion-icon>
+
+          </ion-item>
+      
+    </ion-list>
+ 
+ </div>
 </ion-content>

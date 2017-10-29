@@ -4,16 +4,16 @@ import { NavController, NavParams } from 'ionic-angular';
 import 'rxjs/add/operator/map';
 
 /*
-  Generated class for the MySchedule page.
+  Generated class for the MySchedulePopup page.
 
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 */
 @Component({
   selector: 'page-my-schedule',
-  templateUrl: 'my-schedule.html'
+  templateUrl: 'my-schedule-popup.html'
 })
-export class MySchedulePage {
+export class MySchedulePopupPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {}
 
@@ -25,7 +25,6 @@ export class MySchedulePage {
       var response = this.http.get(url).map(res => res.json());
       return response;
   }*/
-
 
 
 }

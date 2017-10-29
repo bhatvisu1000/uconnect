@@ -10,8 +10,9 @@ import { MyOffersPage } from '../my-offers/my-offers';
   selector: 'page-my-tabs',
   template: `<ion-tabs>
      
-     <ion-tab tabIcon="people" tabTitle="Connection" [root]="myConnectionPage"></ion-tab>
+     
      <ion-tab tabIcon="calendar" tabTitle="Schedule" [root]="mySchedulePage"></ion-tab>
+     <ion-tab tabIcon="people" tabTitle="Connection" [root]="myConnectionPage"></ion-tab>
      <ion-tab tabIcon="pulse" tabTitle="Activity" [root]="myActivityPage"></ion-tab>
      <ion-tab tabIcon="flag" tabTitle="Notification" [root]="myNotificationPage"></ion-tab>
      <ion-tab tabIcon="cash" tabTitle="Offers" [root]="myOffersPage" tabBadge="4" tabBadgeStyle="danger"></ion-tab>

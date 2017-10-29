@@ -81,8 +81,10 @@ private getHeaders(){
     if(action == 'Favorite') {
       this.connections = new Connections(null, null, null, '1', memberId, null, null, "Member", action);
     }else if(action == 'UnFavorite') {
+      this.connections = new Connections(null, null, null, '0', memberId, null, null, "Member", 'Favorite');
+    }else if(action == 'Remove') {
       this.connections = new Connections(null, null, null, '0', memberId, null, null, "Member", action);
-    }else if(action == 'Delete') {
+    }else{
       this.connections = new Connections(null, null, null, '0', memberId, null, null, "Member", action);
     }
     connectionArray.push(this.connections);
