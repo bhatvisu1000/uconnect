@@ -8,6 +8,7 @@
 
   <ion-navbar no-border-bottom>
     <button ion-button menuToggle>
+      <ion-title>My Connection</ion-title>
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-segment [(ngModel)]="segment">
@@ -35,7 +36,7 @@
   <ion-toolbar no-border-top>
     <ion-searchbar color="primary"
                    [(ngModel)]="queryText"
-                   (ionInput)="updateSchedule()"
+                   (ionInput)="searchConnection($event)"
                    placeholder="Search">
     </ion-searchbar>
     </ion-toolbar>
@@ -51,7 +52,7 @@
   <div [ngSwitch]="segment">
     <ion-list *ngSwitchCase="'All'">
         
-          <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index">
+      <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index">
           
           <ion-item>
             
@@ -61,49 +62,79 @@
             <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
             <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
             <h3>({{ item.Contact.Mobile }})</h3>
-            
+            <h3>({{ item.Status }})</h3>
             <div *ngIf="item.Favorite == 1">
               <ion-icon ios="ios-star" md="md-star"></ion-icon>
             </div>
 
           </ion-item>
-            <ion-item-options side="right">
-              <button ion-button color="primary" (click)="schedule(item.Id)">
-                <ion-icon name="text"></ion-icon>
-                Schedule
-              </button>
-              
-             
-              <div *ngIf="item.Favorite == 0">
-                <button ion-button color="secondary" (click)="updateConnection(item.Id, 'Favorite')">
-                <ion-icon name="ion-heart"></ion-icon>
-                Favourite
-              </button>
+            
+            
+          <!--<div *ngIf="item.Status == 'Awaiting Response'">          
+              -->      
+                      <ion-item-options side="right">
+                      
+                        <button ion-button color="secondary" (click)="updateConnection(item.Id, 'Accept')">
+                          <ion-icon name="ion-heart"></ion-icon>
+                          Accept
+                        </button>
 
-              </div>
+                      
 
-              <div *ngIf="item.Favorite == 1">
-                <button ion-button color="secondary" (click)="updateConnection(item.Id, 'UnFavorite')">
-                <ion-icon name="ion-heart"></ion-icon>
-                UnFavourite
-              </button>
+                      
+                        <button ion-button color="secondary" (click)="updateConnection(item.Id, 'Reject')">
+                          <ion-icon name="ion-heart"></ion-icon>
+                          Reject
+                        </button>
 
-              </div>
+                      
+<!--
+                      </ion-item-options>
+           </div>           
+           
 
+           <div *ngIf="item.Status != 'Awaiting Response'">   
+
+                     
+                    
+              <ion-item-options side="right">-->
+                        <button ion-button color="primary" (click)="schedule(item.Id)">
+                          <ion-icon name="text"></ion-icon>
+                          Schedule
+                        </button>
+                        
+                       
+                        <div *ngIf="item.Favorite == 0">
+                          <button ion-button color="secondary" (click)="updateConnection(item.Id, 'Favorite')">
+                           <ion-icon name="ion-heart"></ion-icon>
+                              Favourite
+                          </button>
+                    
+                        </div>
+
+                        <div *ngIf="item.Favorite == 1">
+                          <button ion-button color="secondary" (click)="updateConnection(item.Id, 'UnFavorite')">
+                          <ion-icon name="ion-heart"></ion-icon>
+                          UnFavourite
+                        </button>
+
+                        </div>
+               
               </ion-item-options>
-
-              <ion-item-options side="left">
-              <button ion-button color="primary" (click)="updateConnection(item.Id, 'Remove')">
-                <ion-icon name="text"></ion-icon>
-                Delete
-              </button>
-              <button ion-button color="secondary" (click)="call(item.Contact.Mobile)">
-                <ion-icon name="call"></ion-icon>
-                Call
-              </button>
-            </ion-item-options>
+   <!--       </div> 
+-->
+          <ion-item-options side="left">
+          <button ion-button color="primary" (click)="updateConnection(item.Id, 'Remove')">
+            <ion-icon name="text"></ion-icon>
+            Delete
+          </button>
+          <button ion-button color="secondary" (click)="call(item.Contact.Mobile)">
+            <ion-icon name="call"></ion-icon>
+            Call
+          </button>
+        </ion-item-options>
           
-          </ion-item-sliding>
+      </ion-item-sliding>
     </ion-list>
   
     <ion-list *ngSwitchCase="'Favorite'">

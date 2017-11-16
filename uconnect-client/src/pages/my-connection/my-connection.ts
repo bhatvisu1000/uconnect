@@ -28,7 +28,7 @@ export class MyConnectionPage {
   listAllConnectionItems: Connections[]= null;
   listFavouriteConnectionItems: Connections[]= null;
   listGroupConnectionItems: Connections[]= null;
-  
+  public queryText: string="";
   public authResponseReceived: ResponseReceived;
   public connectionResponseReceived: ResponseReceived;
   public authResponse: AuthResponse;
@@ -120,14 +120,14 @@ export class MyConnectionPage {
     
   }
 
-  schedule(memberId: string) {
+  /**schedule(memberId: string) {
     let alert = this.alertCtrl.create({
       title: 'New Friend!',
       message: 'Your friend, Obi wan Kenobi, just approved your friend request!',
       buttons: ['Ok']
     });
     alert.present()
-  }
+  }**/
 
   deleteConnection(memberId: string) {
     this.sendRequest = this.connectionService.createDeleteRequest(this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
@@ -147,5 +147,42 @@ export class MyConnectionPage {
       );
   }
 
+searchConnection(event: string){
+  let alert = this.alertCtrl.create({
+      title: 'New Friend!',
+      message: this.queryText+event+'Your friend, Obi wan Kenobi, just approved your friend request!',
+      buttons: ['Ok']
+    });
+    alert.present()
+}
+
+
+
+  schedule(memberId: string) {
+  var customTemplate =
+      '<ion-toggle>enable</ion-toggle>' +
+      '<label class="item item-input"><input type="text" placeholder="your address"></label><button ion-button>Default</button>';
+    let confirm = this.alertCtrl.create({
+     
+      title: 'Use this lightsaber?',
+      message: customTemplate,
+      buttons: [
+        {
+          text: 'Disagree',
+          handler: () => {
+            console.log('Disagree clicked');
+          }
+        },
+        {
+          text: 'Agree',
+          handler: () => {
+            console.log('Agree clicked');
+          }
+        }
+      ]
+    });
+    confirm.present();
+    
+    }
 
 }

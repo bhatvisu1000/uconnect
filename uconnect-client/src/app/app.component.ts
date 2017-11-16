@@ -46,8 +46,9 @@ export class MyApp {
   // the login page disables the left menu
   appPages: PageInterface[] = [
     { title: 'Schedule', name: 'TabsPage', component: MyTabsPage, tabComponent: MySchedulePage, index: 0, icon: 'calendar' },
-    { title: 'Activity', name: 'TabsPage', component: MyTabsPage, tabComponent: MyActivityPage, index: 1, icon: 'pulse' },
-    { title: 'Connection', name: 'TabsPage', component: MyTabsPage, tabComponent: MyConnectionPage, index: 2, icon: 'people' },
+    { title: 'Connection', name: 'TabsPage', component: MyTabsPage, tabComponent: MyConnectionPage, index: 1, icon: 'people' },
+    { title: 'Activity', name: 'TabsPage', component: MyTabsPage, tabComponent: MyActivityPage, index: 2, icon: 'pulse' },
+    
     { title: 'Notification', name: 'TabsPage', component: MyTabsPage, tabComponent: MyNotificationPage, index: 3, icon: 'flag' }
   ];
   loggedInPages: PageInterface[] = [

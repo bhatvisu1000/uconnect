@@ -46,7 +46,7 @@ import { SQLStorageService } from "../services/SQLStorageService";
     IonicModule.forRoot(MyApp, {}, {
       links: [
         { component: MyTabsPage, name: 'Tabs', segment: 'tabs' },
-        { component: MySchedulePage, name: 'Schedule', segment: 'schedule' },
+        { component: MySchedulePage, name: 'Schedule', segment: 'schedule' },   
         { component: MyActivityPage, name: 'Activity', segment: 'activity' },
         { component: MyConnectionPage, name: 'Connection', segment: 'connection' },
         { component: MyNotificationPage, name: 'Notification', segment: 'notification' },
