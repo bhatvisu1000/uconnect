@@ -194,6 +194,44 @@
             "InitChange":{"When": "", "Message":""},
             "LastChange":{"when": "", "Message":""}
         },
+    "Schedule":
+        {
+            "ScheduleDetails": 
+                {
+                    "Description"   : "<Subjet/brief description of meeting",
+                    "Requestor"     : "<Member/Venodr>",
+                    "RequestorId"   : "<MemberId/AgentId>",
+                    "Place"         : "<Schedule Place>",
+                    "PlaceGeo"      : "<Geo locartion of Place, if found>",
+                    "StartTime"     : "<Start Datetime of schedule ISODate'>",
+                    "EndTime"       : "<Start Datetime of schedule ISODate>",
+                    "DurationMins"  : "<in minutes, default 30 minutes for Member, for Vendor it should come from their setting>",
+                    "Status"        : "Draft"
+                },
+            "Invitee": 
+                [
+                    {
+                        "Type"    : "<Vendor/Member>",
+                        "Id"      : "InviteeId",
+                        "IsOwner" : "Y/N",
+                        "Status"  : "<Pending/Accepted/Rejected/Proposed New Time>"
+                    }
+                ],
+            "ShareWith":
+                [
+                    {
+                        "MemberId" : "<Family MemberId>"
+                    }
+                ],
+            "Tasks": [],
+            "WaitList" : [], 
+            "Repeat": 
+                {
+                    "RepeatSchedule": "Every Day/Date of Week/Month/Year",
+                    "StartDate": "Repeat Start Date",
+                    "EndDate": "Repeat End Date"
+                }
+        },
     "Response":
         {
             "MyResponse":

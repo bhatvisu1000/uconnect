@@ -1,1 +1,161 @@
-{"m"}
+db.Schedule.Insert({"_id":"ID+ScheudleDate",
+    "Main":{"SchedOwnerId":"","ScheduleOwner":"<Member/Agent>","ScheudleDate":"","ScheduleType":"<Task/Schedule>"},
+    "Vendor":{"VendorId":"","LocationId":"","AgentId":""},
+    "Hrs":[{"Start":"","EndTime":"",
+             "InviteeList":[{"InviteeId":"","InviteeType":"","Status":"<Pending/Accepted/Tentative/Declined>","Response":"<Comments/Response from Invitee>"}],
+             "Task":[{"TaskName":"","AssignedTo":"","DueBy":"","Status":"","Comments":""}],
+             "SharedWith":["<MemberId>","<MemberId>"],
+             "Recurring":{"IsRecurring":"<true/false>","StartDt":"","EndDt":"","Occurrance":"<daily/weekly/monthly/yearly>","Occurrance#":"<occurrance# of this meeting>"},
+             "WaitingList":{"IsWaiting":"<true/false>","QueueInWait":""}
+         }]
+})
+
+{
+  "_id" : "",
+  "ScheduleDetails": {
+    "Description": "",
+    "Requestor": "Member/Venodr",
+    "RequestorId": "MemberId/AgentId",
+    "Place": "Schedule Place",
+    "StartTime": "Start Date and time of meeting",
+    "EndTime" : "Start Date and time of meeting",
+    "Duration" : "<in minutes, default 30 minutes for Member, for Vendor it should come from their setting>",
+    "Status": "Draft/Waiting/WaitLiist (meeting with vendor)/Confirmed (atleast 1 invitee confirms the meeting, will also so n/<total invitee>"
+  },
+  "Invitee": [
+    {
+      "Type": "<Vendor/Member>",
+      "Id": "InviteeId",
+      "IsOwner" : "Y/N",
+      "Status": "<Pending/Accepted/Rejected/Proposed New Time>"
+    }
+  ],
+  "ShareWith":[],
+  "Tasks": [],
+  "WaitList" : [],
+  "Repeat": {
+    "RepeatSchedule": "Every Day/Date of Week/Month/Year",
+    "StartDate": "Repeat Start Date",
+    "EndDate": "Repeat End Date"
+  }
+}
+
+// d = ISODate()
+// d.toString() ## cobvert date to local time zone
+// d.toUTCString() ## convert date to UTC time zone
+
+db.loadServerScripts()
+getNextSequenc('Schedule')
+// In Mongo, u can use following method to calculate the date
+//a = new Date() ## get current date
+//  ISODate("2017-11-03T02:12:39.587Z")
+//a1 = new Date(a.valueOf() + (1000 * 60 * 30)) ## add 30 minutes to am ISO Date
+//  ISODate("2017-11-03T02:19:10.766Z")
+// convert a date to UTC
+// new Date('YYYY-MM-DDTHH:MI:SS')
+
+db.Schedule.insert(
+    {
+      "_id" : getNextSequence('Schedule'),
+      "ScheduleDetails": {
+        "For": "Personal meeting",
+        "Owner": "Member",
+        "OwnerId": 314333,
+        "Place": "Starbucks",
+        "StartTime": new Date('2017-12-01T10:00:00'),
+        "EndTime" : new Date('2017-12-01T10:30:00'),
+        "DurationMins" : 30,
+        "Status": "Waiting",
+        "Comments": ""
+      },
+      "Invitee": [
+        {
+          "Type": "Member",
+          "Id": "31433",
+          "IsOwner":0,
+          "Status": "Waiting"
+        },
+        {
+          "Type": "Member",
+          "Id": "31434",
+          "IsOwner":1,
+          "Status": "Pending"
+        }        
+      ],
+      "ShareWith" : [],
+      "Tasks": [],
+      "WaitList" : [],
+      "RepeatSchedule": {
+        "RepeatSchedule": "Every Day/Date of Week/Month/Year",
+        "StartDate": "Meeting Start Date",
+        "EndDate": "Meeting End Date"
+      }
+    }
+)
+
+db.Schedule.insert(
+    {
+      "_id" : getNextSequence('Schedule'),
+      "ScheduleDetails": {
+        "For": "Personal meeting",
+        "Owner": "Member",
+        "OwnerId": 314333,
+        "Place": "Starbucks",
+        "StartTime": new Date('2017-12-01T11:00:00'),
+        "EndTime" : new Date('2017-12-01T11:30:00'),
+        "DurationMins" : 30,
+        "Status": "Confirmed",
+        "Comments": "My Personal time"
+      },
+      "Invitee": [
+        {
+          "Type": "Member",
+          "Id": "31433",
+          "IsOwner":0,
+          "Status": "Confirmed"
+        }        
+      ],
+      "Tasks": [],
+      "WaitList" : [],
+      "RepeatSchedule": {
+        "RepeatSchedule": "Every Day/Date of Week/Month/Year",
+        "StartDate": "Meeting Start Date",
+        "EndDate": "Meeting End Date"
+      }
+    }
+)
+
+// find an available schedule
+// db.Schedule.find({'ScheduleDetails.Owner':'Member','ScheduleDetails.OwnerId':314333,'ScheduleDetails.StartTime' : {$gte : new Date('2017-12-01T10:00:00')}, 'ScheduleDetails.EndTime':{$lte : new Date('2017-12-01T10:30:00')}},{'ScheduleDetails.StartTime':1,'ScheduleDetails.EndTime':1,})
+// db.Schedule.find({'ScheduleDetails.Owner':'Member','ScheduleDetails.OwnerId':314333,'ScheduleDetails.StartTime' : {$gte : new Date('2017-12-01T10:00:00')}, 'ScheduleDetails.EndTime':{$lte : new Date('2017-12-01T10:30:00')}},{'ScheduleDetails.StartTime':1,'ScheduleDetails.EndTime':1,})
+
+// Check if time slot is open
+
+# Find 
+var start = new Date('2017-12-01T10:30:00')
+var end   = new Date('2017-12-01T11:00:00')
+
+
+db.Schedule.find(
+    {
+        'ScheduleDetails.Owner':'Member',
+        'ScheduleDetails.OwnerId':314333,
+        $or:
+            [{$and: 
+                [{'ScheduleDetails.StartTime' : {$gte : start}},
+                 {$or:[
+                    {'ScheduleDetails.EndTime'    : {$lte : end}},
+                    {'ScheduleDetails.StartTime'  : {$lt  : end}}
+                    ]
+                 }
+                ]
+            },
+            {$and: 
+                [{'ScheduleDetails.StartTime' : {$lte : start }},
+                 {'ScheduleDetails.EndTime'   : {$gt  : start }}, 
+                 {'ScheduleDetails.EndTime'   : {$lt  : end }}, 
+                  ]
+            }]
+    },
+    {'ScheduleDetails.StartTime':1,'ScheduleDetails.EndTime':1,}
+).count()

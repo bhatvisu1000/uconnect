@@ -10,7 +10,7 @@ from com.uconnect.core.security import Security
 
 myLogger = logging.getLogger('uConnect')
 
-@Singleton
+#@Singleton
 class GroupBPS(object):
     def __init__(self):
         ''' 
@@ -18,10 +18,10 @@ class GroupBPS(object):
             usage:          Called internally
             Return:         N/A
         '''        
-        self.utilityInstance = Utility.Instance()
-        self.mongoDbInstance = MongoDB.Instance()
-        self.globalInstance = Global.Instance()
-        self.securityInstance = Security.Instance() 
+        self.util = Utility()
+        self.mongo = MongoDB()
+        self.globaL = Global()
+        self.sec = Security() 
 
         self.myClass = self.__class__.__name__
         self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)

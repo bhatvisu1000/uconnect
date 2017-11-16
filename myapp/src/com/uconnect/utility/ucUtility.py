@@ -1,5 +1,7 @@
-import os,sys,traceback,json,datetime,copy,random, com.uconnect.core.error
+import os,sys,traceback,json,datetime,copy,random, pytz, com.uconnect.core.error
 
+from geopy.geocoders import Nominatim
+from geopy.distance import *
 from com.uconnect.core.singleton import Singleton
 from com.uconnect.utility.ucLogging import logging
 from com.uconnect.core.infra import Environment
@@ -10,12 +12,13 @@ myLogger = logging.getLogger('uConnect')
 # Python 3:
 #Removed dict.iteritems(), dict.iterkeys(), and dict.itervalues().
 #Instead: use dict.items(), dict.keys(), and dict.values() respectively.@Singleton
-@Singleton
-class Utility(object):
+#@Singleton
+class Utility(object, metaclass=Singleton):
 
     def __init__(self):
-        self.envInstance = Environment.Instance()
-        self.globalInstance = Global.Instance()
+        self.env = Environment()
+        self.globaL = Global()
+        self.geolocator = Nominatim()
         self.myClass = self.__class__.__name__
         self.myPythonFile = os.path.basename(__file__)
 
@@ -175,16 +178,16 @@ class Utility(object):
         #fi
         # checking if responsemode key has valid value ('I','E')
         if isValidArgument and 'ResponseMode' in myMainArgData:
-            if not(myMainArgData['ResponseMode'] in self.globalInstance._Global__ValidResponseModeLsit):
+            if not(myMainArgData['ResponseMode'] in self.globaL._Global__ValidResponseModeLsit):
                 isValidArgument = False
                 myValidationMessage = 'Arg Validation; ResponseMode key has invalid value, expecting [' +\
-                  str(self.globalInstance._Global__ValidResponseModeLsit) + ']'
+                  str(self.globaL._Global__ValidResponseModeLsit) + ']'
         #fi
         return isValidArgument, myMissingOrEmptyKeyList, myValidationMessage 
 
     def valResponseMode(self, argResponseMode):
         if len(argResponseMode) == 1:
-            return argResponseMode in self.globalInstance._Global__ValidResponseModeLsit
+            return argResponseMode in self.globaL._Global__ValidResponseModeLsit
         else:
             return False
 
@@ -202,11 +205,39 @@ class Utility(object):
 
     def extractLogError(self):
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        myErrorMessage = repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
-        self.myModuleLogger.error('Error [{err}] occurred'.format(err=myErrorMessage))
+        #myErrorMessage = repr(traceback.format_exception(exc_type, exc_value, exc_traceback,limit=1))
+        #myErrorMessage = repr(exc_type, exc_value, exc_traceback)
+        #myErrorMessage = traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2, file=sys.stdout)
+        '''
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print("*** print_tb:")
+        traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+        print("*** print_exception:")
+        # exc_type below is ignored on 3.5 and later
+        traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                  limit=2, file=sys.stdout)
+        print("*** print_exc:")
+        traceback.print_exc(limit=2, file=sys.stdout)
+        print("*** format_exc, first and last line:")
+        formatted_lines = traceback.format_exc().splitlines()
+        print(formatted_lines[0])
+        print(formatted_lines[-1])
+        print("*** format_exception:")
+        # exc_type below is ignored on 3.5 and later
+        print(repr(traceback.format_exception(exc_type, exc_value,
+                                              exc_traceback)))
+        print("*** extract_tb:")
+        print(repr(traceback.extract_tb(exc_traceback)))
+        print("*** format_tb:")
+        print(repr(traceback.format_tb(exc_traceback)))
+        print("*** tb_lineno:", exc_traceback.tb_lineno)
+        '''
+        myErrorMessage = traceback.format_exc().splitlines()
+        #myErrorMessage = traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2)
+        #self.myModuleLogger.error('Error [{err}] occurred'.format(err=myErrorMessage))
 
         return self.getRequestStatus(\
-                self.globalInstance._Global__UnSuccess, repr(exc_value), None, myErrorMessage)
+                self.globaL._Global__UnSuccess, repr(exc_value), None, myErrorMessage)
 
     def isValidZipCode(self, argZipCode):
         ''' 
@@ -214,7 +245,7 @@ class Utility(object):
             Arguments:      Zipcode
             usage:          ( isValidZipCode(<zipciode>)
         '''
-        return argZipCode in self.envInstance._Environment__zipCodeData
+        return argZipCode in self.env._Environment__zipCodeData
 
     def findPagingValue(self, argTotDocuments, argPageSize, argRequestedPage = None):
         ''' 
@@ -269,16 +300,16 @@ class Utility(object):
         myIsoDate = datetime.datetime.strptime(myIsoDateString, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     def getCreateStatus(self,argCreateResult):
-        myCreateStatus = self.globalInstance._Global__UnSuccess
+        myCreateStatus = self.globaL._Global__UnSuccess
         if argCreateResult and ('_id' in argCreateResult):
-            myCreateStatus = self.globalInstance._Global__Success
+            myCreateStatus = self.globaL._Global__Success
 
         return myCreateStatus
 
     def getUpdateStatus(self,argUdateResult):
-        myUpdateStatus = self.globalInstance._Global__UnSuccess
+        myUpdateStatus = self.globaL._Global__UnSuccess
         if argUdateResult and ('modified' in argUdateResult) and (int(argUdateResult['modified'])) > 0:
-            myUpdateStatus = self.globalInstance._Global__Success
+            myUpdateStatus = self.globaL._Global__Success
         
         return myUpdateStatus
 
@@ -298,12 +329,12 @@ class Utility(object):
         myStatus = myScreenId = myActionId = myRequestData = ''
 
         if self.isDict(argRequestDict):
-            myStatus = self.globalInstance._Global__Success
+            myStatus = self.globaL._Global__Success
             myScreenId = argRequestDict['Request']['Header']['ScreenId']
             myActionId = argRequestDict['Request']['Header']['ActionId']
             myRequestData = argRequestDict['Request']['MainArg']
         else:
-            myStatus = self.globalInstance._Global__Error
+            myStatus = self.globaL._Global__Error
 
         return myStatus, myScreenId, myActionId, myRequestData 
 
@@ -321,20 +352,20 @@ class Utility(object):
             Arguments:      Request json dict data, will use screenId:99999, ActionId: 99999
             usage:          ( builRequestData(<argRequestDict>)
         '''
-        myRequestData = self.getTemplateCopy(self.globalInstance._Global__RequestTemplate)
+        myRequestData = self.getTemplateCopy(self.globaL._Global__RequestTemplate)
         #print ('Request:', myRequestData)
-        #print ('Internal Scr:', self.globalInstance._Global__InternalScreenId)
-        myRequestData["Request"]["Header"]["ScreenId"] = self.globalInstance._Global__InternalScreenId
-        myRequestData["Request"]["Header"]["ActionId"] = self.globalInstance._Global__InternalActionId 
-        myRequestData["Request"]["Header"]["Page"] = self.globalInstance._Global__InternalPage
+        #print ('Internal Scr:', self.globaL._Global__InternalScreenId)
+        myRequestData["Request"]["Header"]["ScreenId"] = self.globaL._Global__InternalScreenId
+        myRequestData["Request"]["Header"]["ActionId"] = self.globaL._Global__InternalActionId 
+        myRequestData["Request"]["Header"]["Page"] = self.globaL._Global__InternalPage
         myRequestData["Request"]["MainArg"] = argRequestDict["Data"]
 
         return myRequestData
 
     def buildInitHistData(self):
         ''' building initial history data for a given collection '''
-        #myHistoryData = self.envInstance.defaultsData["History"]
-        myHistoryData = self.getTemplateCopy(self.globalInstance._Global__HistoryTemplate)
+        #myHistoryData = self.env.defaultsData["History"]
+        myHistoryData = self.getTemplateCopy(self.globaL._Global__HistoryTemplate)
 
         myHistoryData["InitChange"]["When"]=datetime.datetime.utcnow()
         myHistoryData["InitChange"]["Message"]="Initial creation"            
@@ -345,7 +376,7 @@ class Utility(object):
 
     def buildActivityArg(self,argEntityId, argEntityType, argActivityType, argActivity, argAuth=None):
 
-        myActivityLogData = self.getTemplateCopy(self.globalInstance._Global__activityLogColl)
+        myActivityLogData = self.getTemplateCopy(self.globaL._Global__activityLogColl)
 
         myActivityLogData["EntityType"]=argEntityType
         myActivityLogData["EntityId"]=argEntityId            
@@ -356,7 +387,7 @@ class Utility(object):
         return myActivityLogData
 
     def getRequestStatus(self, argStatus, argStatusMessage = None, argData = None, argTraceBack = None):
-        myRequestStatus = self.getCopy(self.globalInstance._Global__RequestStatus)
+        myRequestStatus = self.getCopy(self.globaL._Global__RequestStatus)
         if argStatus:
             myRequestStatus.update({'Status' :argStatus})
         if argStatusMessage:
@@ -377,7 +408,7 @@ class Utility(object):
         ''' if this is internal request, we should not built the response, response will be built by mehtod whcih
         was called externally     '''
 
-        if (argResponseMode == self.globalInstance._Global__InternalRequest):
+        if (argResponseMode == self.globaL._Global__InternalRequest):
             if argResultData:
                 return argResultData
             else:
@@ -385,8 +416,8 @@ class Utility(object):
             #fi
         #fi
 
-        #myResponseData = self.envInstance.getTemplateCopy(self.globalInstance._ResponseTemplate)
-        myResponseData = self.getTemplateCopy(self.globalInstance._Global__ResponseTemplate)
+        #myResponseData = self.env.getTemplateCopy(self.globaL._ResponseTemplate)
+        myResponseData = self.getTemplateCopy(self.globaL._Global__ResponseTemplate)
         #print("Response",myResponseData)
         myData = argResultData
 
@@ -404,53 +435,54 @@ class Utility(object):
             myResponseData['MyResponse']['Header']['Traceback'] = argResultStatus['Traceback']
             #myData = argResult
         elif (argResultType == 'Error'):
-            #print("Success",self.globalInstance._Global__Success)
+            #print("Success",self.globaL._Global__Success)
             myResponseData['MyResponse']['Header']['Status'] = argResultStatus['Status']
             myResponseData['MyResponse']['Header']['Message'] = argResultStatus['Message']
             myResponseData['MyResponse']['Header']['Traceback'] = argResultStatus['Traceback']
             myData = []
 
+        #print('util 1',myResponseData)
         ''' if data element passed, we will copy the "Data" to "Data" section, "Data.Summary" to "Header.Summary" secton'''
         try:
             # if myData is not iterable, exception will be raised, will ignore the exception 
-            if (myData) and (self.globalInstance._Global__DataKey in myData) and (myData[self.globalInstance._Global__DataKey]):
-                myResponseData['MyResponse'][self.globalInstance._Global__DataKey] = myData[self.globalInstance._Global__DataKey]
-                if (self.globalInstance._Global__SummaryKey in myData) and (myData[self.globalInstance._Global__SummaryKey]):
-                    myResponseData['MyResponse']['Header'][self.globalInstance._Global__SummaryKey]= myData[self.globalInstance._Global__SummaryKey]    
-            elif (myData) and (self.globalInstance._Global__DataKey not in myData):
+            if (myData) and (self.globaL._Global__DataKey in myData) and (myData[self.globaL._Global__DataKey]):
+                myResponseData['MyResponse'][self.globaL._Global__DataKey] = myData[self.globaL._Global__DataKey]
+                if (self.globaL._Global__SummaryKey in myData) and (myData[self.globaL._Global__SummaryKey]):
+                    myResponseData['MyResponse']['Header'][self.globaL._Global__SummaryKey]= myData[self.globaL._Global__SummaryKey]    
+            elif (myData) and (self.globaL._Global__DataKey not in myData):
                 ''' we got data but "data" key is missing '''
                 if self.isDict:
-                    myResponseData['MyResponse'][self.globalInstance._Global__DataKey] = [myData]
+                    myResponseData['MyResponse'][self.globaL._Global__DataKey] = [myData]
                 else:
-                    myResponseData['MyResponse'][self.globalInstance._Global__DataKey] = myData
+                    myResponseData['MyResponse'][self.globaL._Global__DataKey] = myData
                 #fi
             #fi                    
         except TypeError:
             pass
-
+        #print('util 2',myResponseData)
         return myResponseData 
 
     def extrAllDocFromResultSets(self, argResultSets):
-        if (self.globalInstance._Global__DataKey in argResultSets) and (argResultSets[self.globalInstance._Global__DataKey]):
-            return argResultSets[self.globalInstance._Global__DataKey]
+        if (self.globaL._Global__DataKey in argResultSets) and (argResultSets[self.globaL._Global__DataKey]):
+            return argResultSets[self.globaL._Global__DataKey]
         else:
             return None
 
     def extr1stDocFromResultSets(self, argResultSets):
-        if (self.globalInstance._Global__DataKey in argResultSets) and (argResultSets[self.globalInstance._Global__DataKey]):
-            return argResultSets[self.globalInstance._Global__DataKey][0]
+        if (self.globaL._Global__DataKey in argResultSets) and (argResultSets[self.globaL._Global__DataKey]):
+            return argResultSets[self.globaL._Global__DataKey][0]
         else:
             return None
 
     def extrSummFromResultSets(self, argResultSets):
-        if self.globalInstance._Global__SummaryKey in argResultSets:
-            return argResultSets[self.globalInstance._Global__SummaryKey]
+        if self.globaL._Global__SummaryKey in argResultSets:
+            return argResultSets[self.globaL._Global__SummaryKey]
         else:
             return None
 
     def extrStatusFromResultSets(self, argResultSets):
-        if (self.globalInstance._Global__StatusKey in argResultSets[self.globalInstance._Global__SummaryKey]):
-            return argResultSets[self.globalInstance._Global__SummaryKey][self.globalInstance._Global__StatusKey]
+        if (self.globaL._Global__StatusKey in argResultSets[self.globaL._Global__SummaryKey]):
+            return argResultSets[self.globaL._Global__SummaryKey][self.globaL._Global__StatusKey]
         else:
             return None
 
@@ -536,7 +568,7 @@ class Utility(object):
             we dont need auth validation since we dont have a way to find this request for which memberid
         '''
 
-        myAllowedConnection = self.globalInstance._Global__ConnectionStatus.keys()
+        myAllowedConnection = self.globaL._Global__ConnectionStatus.keys()
 
         ''' validating arguments '''
         if (not argAction) or (not argActionBy) :
@@ -548,20 +580,20 @@ class Utility(object):
             raise com.uconnect.core.error.MissingArgumentValues('Action key must have either on of this value {expectVal}, got [{arg}] '.
                 format(expectVal=myAllowedConnection, arg=argAction))
 
-        if not(argActionBy in self.globalInstance._Global__ConnectionStatus.get(argAction).keys()):
+        if not(argActionBy in self.globaL._Global__ConnectionStatus.get(argAction).keys()):
             raise com.uconnect.core.error.MissingArgumentValues('ActionBy key must have either one of this value [{expectVal}], got [{arg}] '.
-                format(expectVal=self.globalInstance._Global__ConnectionStatus.get(argAction).keys(),
+                format(expectVal=self.globaL._Global__ConnectionStatus.get(argAction).keys(),
                        arg=argActionBy))
 
-        return self.globalInstance._Global__ConnectionStatus.get(argAction).get(argActionBy)
+        return self.globaL._Global__ConnectionStatus.get(argAction).get(argActionBy)
 
 
     def getErrorCodeDescription(self, argErrorCode):
         myErrorDescription = ''
-        if argErrorCode in self.envInstance._Environment__errorCodesData:
-            myErrorDescription = self.envInstance._Environment__errorCodesData.get(argErrorCode)    
+        if argErrorCode in self.env._Environment__errorCodesData:
+            myErrorDescription = self.env._Environment__errorCodesData.get(argErrorCode)    
 
-        #print(argErrorCode,self.envInstance._Environment__errorCodesData,myErrorDescription)
+        #print(argErrorCode,self.env._Environment__errorCodesData,myErrorDescription)
         return myErrorDescription
     ''' Security Utility '''
 
@@ -573,8 +605,8 @@ class Utility(object):
 
         try:
 
-          if argTemplate in self.envInstance._Environment__templateData:
-            return copy.deepcopy(self.envInstance._Environment__templateData[argTemplate])
+          if argTemplate in self.env._Environment__templateData:
+            return copy.deepcopy(self.env._Environment__templateData[argTemplate])
           else:
             raise com.uconnect.core.error.InvalidTemplate('Template [{template}] is missing in template repository !!! '.format(template=argTemplate))
 
@@ -585,18 +617,18 @@ class Utility(object):
            myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
            raise
     def getAuthValidDuration(self):
-        return self.envInstance.AuthValidDuration
+        return self.env.AuthValidDuration
 
     def getExclColl4Id(self):
-        return self.envInstance.exclColl4Id
+        return self.env.exclColl4Id
     def getMaxPageSize(self):
-        return self.envInstance.maxPageSize
+        return self.env.maxPageSize
 
     def getAddressCityState(self,argZipCode):
 
         try:
-            if argZipCode in self.envInstance._Environment__zipCodeData:
-                return self.envInstance._Environment__zipCodeData[argZipCode]['City'], self.envInstance._Environment__zipCodeData[argZipCode]['State'] 
+            if argZipCode in self.env._Environment__zipCodeData:
+                return self.env._Environment__zipCodeData[argZipCode]['City'], self.env._Environment__zipCodeData[argZipCode]['State'] 
             else:
                 raise com.uconnect.core.error.InvalidZipCode('Invalid Zipcode {zipcode} !!!'.format(zipcode = argZipCode))
         except Exception as error:
@@ -607,10 +639,10 @@ class Utility(object):
         try:
             #myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
             #myModuleLogger.debug("Argument(s) [{arg}] received ".format(arg=(argScreenId + ',' + argActionId)))
-            if (argScreenId in self.envInstance._Environment__factoryMetaData) and (argActionId in self.envInstance._Environment__factoryMetaData[argScreenId]):
-                myLibrary = self.envInstance._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
-                myClass   = self.envInstance._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Class']
-                myMethod  = self.envInstance._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Method']
+            if (argScreenId in self.env._Environment__factoryMetaData) and (argActionId in self.env._Environment__factoryMetaData[argScreenId]):
+                myLibrary = self.env._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Module']
+                myClass   = self.env._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Class']
+                myMethod  = self.env._Environment__factoryMetaData[argScreenId][argActionId]['BPS']['Method']
                 return myLibrary, myClass, myMethod 
             else:
                 raise com.uconnect.core.error.InvalidScreenAction('Invalid Screen/Action Id [{screen}],[{action}] !!!'.format(screen = argScreenId, action = argActionId))
@@ -624,17 +656,19 @@ class Utility(object):
             #myModuleLogger = logging.getLogger('uConnect.'+__name__+'.Environment')
             #myModuleLogger.debug("Argument [{arg}] received ".format(arg=argConnectionType))
 
-            if argConnectionType in self.envInstance._Environment__templateData['Connections']:
-                return copy.deepcopy(self.envInstance._Environment__templateData['Connections'][argConnectionType])
+            if argConnectionType in self.env._Environment__templateData['Connections']:
+                return copy.deepcopy(self.env._Environment__templateData['Connections'][argConnectionType])
             else:
                 raise com.uconnect.core.error.InvalidConnectionType('Connection type [{connType}] is missing in template repository !!! '.format(connType=argConnectionType))
         except Exception as error:
             #myModuleLogger.error("Error, an error occurred [{error}]".format(error=error.message))
             raise error
 
+    # Security utility
+
     def getDefaultSecCodeLength(self):
-        #print (self.envInstance.SecurityCodeLength)
-        return self.envInstance.SecurityCodeLength
+        #print (self.env.SecurityCodeLength)
+        return self.env.SecurityCodeLength
 
     def getRanddomNum(self, argNumLength):
         #print(argNumLength)
@@ -642,6 +676,187 @@ class Utility(object):
         myLowerBound = 10**(argNumLength-1)
         myUpperBound = 10**argNumLength-1
         return random.randint(myLowerBound, myUpperBound)
+
+    # Date time function utility
+
+    def isValidDate(self, dateArg, formatArg):
+        try:
+            if isinstance(dateArg, datetime.datetime):
+                return True
+            if datetime.datetime.strptime(dateArg,formatArg):
+                return True
+        except ValueError as err:
+            print(sys.exc_info())
+            raise ValueError('Invalid Date Format')
+        except Exception as err:
+            print(sys.exc_info())
+            return False
+
+    def getTimeZone(self, argtz):
+        try:
+            if self.isValidTZ(argtz):
+                timeZone = pytz.timezone(argtz)
+                return timeZone
+            else:
+                return None
+        except Exception as err:
+            return None
+
+    def isValidTZ(self, argTZ):
+        return argTZ in pytz.all_timezones
+
+    def getAllValidTimeZone(self):
+        return pytz.all_timezones
+
+    def convertStr2Date(self, dateStrArg, dateStrFormat, sourceTZ, targetTZ='UTC'):
+        '''
+        Description: Format date into a time zone, expected date format is 'YYYY-MM-DD HH24:MI:SS'
+        '''
+        try:
+            #myDateFormat = '%Y-%m-%d %H:%M:%S'
+            if isinstance(dateStrArg,str) and self.isValidDate(dateStrArg,dateStrFormat):
+                mySourceTimeZone = self.getTimeZone(sourceTZ)
+                myTargetTimeZone = self.getTimeZone(targetTZ)
+                if mySourceTimeZone and myTargetTimeZone:
+                    #print(mySourceTimeZone, myTargetTimeZone)
+                    mydate = datetime.datetime.strptime(dateStrArg,dateStrFormat)
+                    #converting date to source time zone
+                    mySrcTZDate = mySourceTimeZone.localize(datetime.datetime.strptime(dateStrArg,dateStrFormat))
+                    myTargetTZDate = mySrcTZDate.astimezone(myTargetTimeZone)
+                    #myDateSrcTZ = pytz.datetime.datetime.astimezone(myDate,mySourceTimeZone)
+                    #mydateTrgTZ =  datetime.datetime.astimezone(myDate,myTargetTimeZone)
+                    #myDateSrcTZ = mySourceTimeZone.localize(myDate)
+                    #myDateTrgTZ = myTargetTimeZone.localize(myDate)
+                    #print(myDateSrcTZ, mydateTrgTZ)            
+                    #print('Date: {date}, timezone: {tz}'.format(date=mydate,tz=mydate.tzname()))
+                    return myTargetTZDate
+                else:
+                    return None
+            else:
+                return None
+        except Exception as err:
+            self.extractLogError()
+            raise
+
+    def getTimeFromDate(self, dateArg):
+        '''
+        return time in tuple format from a given date object
+        '''
+        return dateArg.time()
+        
+    def addTime2Date(self, dateArg, secsArg = 0, minutesArg = 0, daysArg = 0):
+        '''
+        Descrition: Add time to an existing date. date must be an object of datetime
+        dateArg     : Date object of datetime
+        secsArg     : Seconds to add to date, drfault is 0
+        minsArg     : Minutes to add to date, drfault is 0
+        daysArg     : Days to add to date, drfault is 0
+
+        addTime2Date(date,10,5,1) --> Add 1 day, 5 minutes and 10 seconds to date
+
+        '''
+        if isinstance(dateArg, datetime.datetime):
+            return dateArg + datetime.timedelta(days = daysArg, seconds = secsArg, minutes = minutesArg)
+    '''
+    def getCurrentDateTimeTZ(self, tzArg = self.globaL._Global__currentTZ):
+        myCurrentDateTime = datetime.datetime.now()
+        return myCurrentDateTime.astimezone(pytz.timezone(tzArg))
+    '''
+    def getCurrentDateTimeTZ(self):
+        return datetime.datetime.now()
+
+    ### Dictionary utils
+    def copyKeyValuesFromTo(self, argKeyList, argSourceDict, argTargetDict):
+        '''
+        Copy Key value as stated in argKeyList from argSourceDict to argTargetDict
+        '''
+        for key in argKeyList:
+            if key in argSourceDict:
+                argTargetDict.update({key: argSourceDict[key]})
+
+    def copyDictFromTo(self, argSourceDict, argTargetDict):
+        '''
+        Copy Key value as stated in argKeyList from argSourceDict to argTargetDict, if source has any nested dict/list that will be overwritten as well
+        '''
+        argTargetDict.update(argTargetDict)
+
+    ### GEO ...
+    def getGeoLocation(self,argPlace):
+        '''
+        will return address as a tuple of a given Place/Zipcode/Landmark/City
+        '''
+        location = self.geolocator.geocode(argPlace)
+        #print(location,argPlace)
+        if location:
+            myAddress = location.address.split(',')
+            return tuple(myAddress)
+        else:
+            raise ValueError('Invalid location [{place}]'.format(place = argPlace))
+
+    def getGeoCodeForAnAddress(self, argAddress):
+        '''
+        will return GEO co ordinates of an address (address can be a valida street address or zipcode) a tuple of a given zipcode
+        '''
+        location = self.geolocator.geocode(argAddress)
+        if location:
+            return tuple([location.latitude, location.longitude])
+        else:
+            raise ValueError ('Address [{add}] not found'.format(add = argAddress))
+
+    def getAddressForGeoCode(self, argLatitude, argLongitude):
+        '''
+        will return GEO co ordinates of an address (address can be a valida street address or zipcode) a tuple of a given zipcode
+        '''
+        # we need to pass longitude and latitude as a string seperated by comma as valid point
+        location = self.geolocator.reverse(str(','.join([str(argLatitude),str(argLongitude)])))
+        return tuple(location.address.split(','))
+
+    def getDistBetweenAddress(self, argStartAddress, ArgEndAddress, argVincenty):
+        '''
+        Defualt to miles (unit value is 'km' or 'm')
+        if argUnit not in ['m','km']:
+            raise ValueError('argUnit must be in [\'km\',\'m\' ')
+        '''
+        if type(argVincenty) != bool:
+            raise ValueError('argVincenty must be of type boolean ')
+
+        myStartGeo = self.getGeoCodeForAnAddress(argStartAddress)
+        myEndGeo = self.getGeoCodeForAnAddress(ArgEndAddress)
+        return self.getDistBetweenGeo(myStartGeo,myEndGeo, argVincenty)
+   
+    def getDistBetweenGeo(self, argStartGeo, argEndGeo, argVincenty):
+        if argVincenty:
+            return vincenty(argStartGeo, argEndGeo).miles
+        else:
+            return great_circle(argStartGeo, argEndGeo).miles
+
+    # Schedule utils
+    def getScheduleStatus(self, argCurStatus, argInvitee):
+        '''
+        Return Schedule status, based upon Invitee list passed, if any of invitee status is 'Confirmed', Schedule status is Confirmed
+        '''
+
+        # if current schedule status is 'Draft', it will stay as 'Draft'
+        if argCurStatus == self.globaL._Global__ScheduleDraftStaus:
+            return self.globaL._Global__ScheduleDraftStaus
+
+        myUniqStatus = set()
+        # [myUniqStatus.add(inv['Status'] for inv in argInvitee) if 'Invitee' in inv] # One liner is returing None at the end of call, skipping one liner code
+        for invitee in argInvitee:
+            myUniqStatus.add(invitee['Status'])
+
+        #here is the logic for schedule status
+        #1, if we have only one distinct invitee status = 'Owner', status is confirmed
+        #2, if we have more than one invitee status and if 'Confirmed' is in the list, status is 'Pending' 
+        if len(myUniqStatus) == 1 and self.globaL._Global__ScheduleOwnerStatus in myUniqStatus:
+            return self.globaL._Global__ScheduleConfirmedStatus
+
+        if len(myUniqStatus) > 1 and self.globaL._Global__ScheduleConfirmedStatus in myUniqStatus:
+            return self.globaL._Global__ScheduleConfirmedStatus
+        
+        if len(myUniqStatus) > 1 and self.globaL._Global__ScheduleConfirmedStatus not in myUniqStatus:
+            return self.globaL._Global__ScheduleWaitingStatus
+
 
 ''' Pop dict items
 >>> for x in a.keys():
