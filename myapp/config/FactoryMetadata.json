@@ -170,5 +170,38 @@
               "Method": "getAllGroupOfAMember"
             }
         }        
-    }  
+    },  
+  "Schedule":
+    {
+      "NewSchedule": 
+        {
+          "Description": "Create a new Schedule",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.scheduleBPS",
+              "Class": "ScheduleBPS",
+              "Method": "CreateNewSchedule"
+            }
+        },
+      "GetMyAllSchedules": 
+        {
+          "Description": "Get all schedule of a Member/Vendor",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.scheduleBPS",
+              "Class": "ScheduleBPS",
+              "Method": "GetMyAllSchedules"
+            }
+        },
+      "GetASchedule": 
+        {
+          "Description": "Get a schedule details",
+          "BPS": 
+            {
+              "Module": "com.uconnect.bps.scheduleBPS",
+              "Class": "ScheduleBPS",
+              "Method": "GetAScheduleDetail"
+            }
+        }
+    }
 }

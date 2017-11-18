@@ -1,9 +1,10 @@
-import copy
+import copy, tzlocal
 
 from com.uconnect.core.singleton import Singleton
+
 ### We need Json Path to validate the data structure for MainArg in request json data
-@Singleton
-class Global(object):
+#@Singleton
+class Global(object, metaclass=Singleton):
     def __init__(self):
 
         self.__memberColl = self.__member = 'Member'
@@ -17,6 +18,7 @@ class Global(object):
         self.__activityLogColl = self.__activityLog = 'ActivityLog'
         self.__securityCodeColl = self.__securityCode = 'SecurityCode'
         self.__securityCodeColl_Hist = 'SecurityCodeHist'
+        self.__scheduleColl = self.__schedule = 'Schedule'
 
         self.__True = True
         self.__TrueStatus = True
@@ -72,3 +74,12 @@ class Global(object):
         self.__Connection_Action_Removed = 'Remove'
         self.__Connection_Action_Favorite = 'Favorite'
         self.__Connection_Action_Block = 'Blocked'
+        #Schedule
+        self.__defaultDateFormat = '%Y-%m-%d %H:%M:%S'
+        self.__currentTZ = tzlocal.get_localzone().zone
+        self.__utcTZ = 'UTC'
+        self.__ScheduleDraftStaus = 'Draft'
+        self.__ScheduleOwnerStaus = 'Owner'
+        self.__SchedulePendingStaus = 'Pending'
+        self.__ScheduleWaitingStaus = 'Waiting'
+        self.__ScheduleConfirmedStaus = 'Confirmed'

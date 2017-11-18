@@ -11,8 +11,8 @@ import logging, com.uconnect.utility.ucLogging
 
 #'\x95\x8d\xe3\xab\x18\xc2\xc6\xeb\xd4+\x11H<\xdc\xd8m\xaf\xae0\xcfb\xdc\x84\x92\xc5\xb2\xado\x98\xc5\x08\xa9\xbb/\x95\xe9/\xda\x10\xaa\x1f\xb7k\x956SLCIj\r7v\xdbm\\\x1e\xdc\xf3M&$\xb0\xce\xdb\x18\xd6\xa3\x13\x85\xd0m\r\x1a]\xbe\xf8\xd8Q\xcf\xed\xaf\x0b\x827TB\xb7'
 myLogger = logging.getLogger('uConnect')
-utilityInstance = Utility.Instance()
-myFactory = Factory.Instance()
+util = Utility()
+factory = Factory()
 
 app = Flask(__name__)
 CORS(app)
@@ -55,7 +55,7 @@ def login():
   '''
 @app.route('/insert')
 def insert():
-  Member = MongoDB.Instance()
+  Member = MongoDB()
   MemberData = Member.InsertOneDoc('Member',{ 'Main':{'FirstName':'Aditya','LastName':'Singh'},'Address':{'Street':'44 Helena Street','City':'East Brunswick','State':'NJ','ZipCode':'08816'}})
   return jsonify(MemberData)
 
@@ -104,11 +104,11 @@ def processRequestOrig(requestType,memberId,connType):
                   }
 
   app.logger.debug('got a request [{request}]'.format(request=requestType))
-  myFactory = Factory.Instance()
+  factory = Factory()
   
   ''' extrcat value from argument passed '''
   
-  myArgumentTuple = utilityInstance.extractRequest(argRequests)
+  myArgumentTuple = util.extractRequest(argRequests)
   myArgTupleStatus = myArgumentTuple[0]  
   myScreenId = myArgumentTuple[1]
   myActionId = myArgumentTuple[2]
@@ -118,9 +118,9 @@ def processRequestOrig(requestType,memberId,connType):
   ''' if we can extract value passed as an argument, will proceed else will build the responseDict with empty dataset '''
 
   if myArgTupleStatus == 'Success':
-    myResults = myFactory.processRequest(myScreenId,myActionId,myArgumentData)
+    myResults = factory.processRequest(myScreenId,myActionId,myArgumentData)
 
-  myResponseData = utilityInstance.buildResponseData(myResults,myArgTupleStatus,myArgTupleStatus)
+  myResponseData = util.buildResponseData(myResults,myArgTupleStatus,myArgTupleStatus)
 
   return jsonify(myResponseData)
 
@@ -130,9 +130,9 @@ def requestPost():
   #print (request.is_json)
   myRequest = request.get_json()
   #print (myRequest)
-  myMemberId = 10067
-  
-  if not(utilityInstance.isDict(myRequest)):
+  #myMemberId = 10067
+
+  if not(util.isDict(myRequest)):
     return jsonify({"Status":"Error","Message":"Invalid argument {arg} passed, argument must be type of dictionary !!!".format(arg=myRequest)})
 
   try:
@@ -142,10 +142,11 @@ def requestPost():
     return jsonify({"Status":"Error","Message":"error {error}".format(error=error.message)})
 
   app.logger.debug('got request {request}'.format(request=myRequest))
-  myFactory = Factory.Instance()
-  MemberData = myFactory.processRequest(myRequest)
+  factory = Factory()
+  #print(myRequest)
+  MemberData = factory.processRequest(myRequest)
   return jsonify(MemberData)
-
+'''
 @app.route('/request1/<requestType>', methods=['POST'])
 def request1(requestType):
   #print(request.headers)
@@ -241,7 +242,7 @@ def request1(requestType):
 
   #myRequest = json.dump(request)
   #print (myRequest)
-  if not(utilityInstance.isDict(myRequest)):
+  if not(util.isDict(myRequest)):
     return jsonify({"Status":"Error","Message":"Invalid argument {arg} passed, argument must be type of dictionary !!!".format(arg=myRequest)})
 
   try:
@@ -251,8 +252,8 @@ def request1(requestType):
     return jsonify({"Status":"Error","Message":"error {error}".format(error=error.message)})
 
   app.logger.debug('got request {request}'.format(request=myRequest))
-  myFactory = Factory.Instance()
-  MemberData = myFactory.processRequest(myRequest)
+  factory = Factory()
+  MemberData = factory.processRequest(myRequest)
   return jsonify(MemberData)
 
 @app.route('/testFactory/<id>/<type>' , methods=['GET','POST'])
@@ -267,7 +268,7 @@ def getAMemberFactory(id,type):
                         "Auth":{}
                       }
                     }  
-    myData = myFactory.processRequest(myArgRequest)
+    myData = factory.processRequest(myArgRequest)
   elif (type == "Group"):
     app.logger.debug('got a request to retrieve Group details for [%s]',id )
     myArgRequest = {"Request":
@@ -277,7 +278,7 @@ def getAMemberFactory(id,type):
                         "Auth":{}
                       }
                     }  
-    myData = myFactory.processRequest(myArgRequest)
+    myData = factory.processRequest(myArgRequest)
 
   return jsonify(myData)
 
@@ -290,7 +291,7 @@ def getAMember(memberId):
   #app.logger.debug('MemberId [%d] passed as an arguments', memberId)
   else:
     app.logger.debug('got a request to retrieve member details for [%s]',memberId )
-    Member = MongoDB.Instance()
+    Member = MongoDB()
     criteria={"_id":memberId}
     MemberData = Member.findDocument('Member',criteria,{},True)
 
@@ -300,22 +301,22 @@ def getAMember(memberId):
 def getAllMembers(page):
 
   app.logger.debug('got a request to retrieve all member\'s details, page# [%s] ', page)
-  Member = MongoDB.Instance()
+  Member = MongoDB()
   
   #if (page == "summary"):
   #  MemberData = Memebr.getAllMemberDetailsSummary('Summary')
   #else
   MemberData = Member.findAllDocuments4Page('Member',{},{},page)
-  myResponseData = utilityInstance.buildResponseData(MemberData,0,'Success')
+  myResponseData = util.buildResponseData(MemberData,0,'Success')
   #print MemberData.count()
   return jsonify(myResponseData)
-
+'''
 if __name__ == "__main__":
   print ("Initializing flask environment ...")
 
-  envInstance = Environment.Instance()
-  curEnvironment = envInstance.getCurrentEnvironment()
-  curEnvDetails = envInstance.getEnvironmentDetails(curEnvironment)
+  env = Environment()
+  curEnv = env.getCurrentEnvironment()
+  curEnvDetails = env.getEnvironmentDetails(curEnv)
   myFlaskHost = curEnvDetails['FlaskHost']
   myFlaskPort = int(curEnvDetails['FlaskPort'])
 

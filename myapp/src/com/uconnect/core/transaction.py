@@ -9,7 +9,7 @@ from com.uconnect.core.globals import Global
 
 myLogger = logging.getLogger('uConnect')
 
-class Transaction(object):
+class Transaction(object, metaclass=Singleton):
 
     def __init__(self):
         pass

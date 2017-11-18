@@ -606,7 +606,176 @@ myConnection = member.AcceptConnection(arg)
 print(myConnection)
 exit()
 
+// Schedule (create new schedule)
+from com.uconnect.core.schedule import Schedule
+sched = Schedule()
+argRequestDict= {
+    "MainArg":{
+        "ScheduleDetails" : {
+            "Description"   : "Discuss project",
+            "Requestor"     : "Member",
+            "RequestorId"   : 316426,
+            "Place"         : "StartBucks, North Brunswick, NJ",
+            "StartTime"     : "2017-11-15 12:00:00",
+            "DurationMins"  : 30
+        },
+        "Invitee": [
+            {
+              "Type"    : "Member",
+              "Id"      : 316431,
+              "IsOwner" : "N"
+            }
+        ],
+        "ShareWith":[{"MemberId" : "<Family memberid"}],
+        "Tasks": [],
+        "WaitList" : [], 
+        "Repeat": {
+            "RepeatSchedule": "Every Day/Date of Week/Month/Year",
+            "StartDate": "Repeat Start Date",
+            "EndDate": "Repeat End Date"
+        },
+        "Auth" :{"AuthKey" : "5a099fe7df9bba180cf72141",
+            "LoginId" : "michael.smith@uconnect.com",
+            "LoginType" : "Web",
+            "DeviceType" : "OS2",
+            "DeviceOs" : "Web",
+            "MacAddress" : "MichaelSmithmichael.smith@uconnect.com",
+            "SessionId" : "0.5927596525712753",
+            "EntityType" : "Member",
+            "EntityId" : 316426,
+            "AppVer" : "1.0"
+        }
+    }
+}
 
+myResult = sched._Schedule__createASchedule(argRequestDict)
+print(myResult)
+
+// Schedule (Get a schedule details)
+from com.uconnect.core.schedule import Schedule
+sched = Schedule()
+argRequestDict = {
+    "MainArg":{
+        "ScheduleId" : 10031,
+        "Auth" :{"AuthKey" : "5a099fe7df9bba180cf72141",
+            "LoginId" : "michael.smith@uconnect.com",
+            "LoginType" : "Web",
+            "DeviceType" : "OS2",
+            "DeviceOs" : "Web",
+            "MacAddress" : "MichaelSmithmichael.smith@uconnect.com",
+            "SessionId" : "0.5927596525712753",
+            "EntityType" : "Member",
+            "EntityId" : 316426,
+            "AppVer" : "1.0"
+        }
+    }
+}
+myResult = sched._Schedule__getAScheduleDetail(argRequestDict)
+print(myResult)
+
+// Schedule (Get all schedule details)
+from com.uconnect.core.scheduleBPS import ScheduleBPS
+sched = ScheduleBPS()
+argRequestDict = {
+    "MainArg":{
+        "ScheduleFor" : "Member", 
+        "ScheduleForWho": 316426, 
+        "ResponseMode":"I"}}
+myResult = sched._Schedule__getMyAllSchedules(argRequestDict)
+print(myResult)
+
+// Postman
+//Create a new schedule
+{
+    "Request" : {
+        "Header" : {
+            "ScreenId":"Schedule","ActionId":"NewSchedule","Page":"None"
+        },
+        "MainArg":{
+            "ScheduleDetails" : {
+                "Description"   : "Discuss project",
+                "Requestor"     : "Member",
+                    "RequestorId"   : 316426,
+                    "Place"         : "StartBucks, North Brunswick, NJ",
+                    "StartTime"     : "2017-11-19 12:00:00",
+                    "DurationMins"  : 30
+                },
+                "Invitee": [
+                    {
+                      "Type"    : "Member",
+                      "Id"      : 316431,
+                      "IsOwner" : "N"
+                    }
+                ],
+                "ShareWith":[{"MemberId" : "<Family memberid"}],
+                "Tasks": [],
+                "WaitList" : [], 
+                "Repeat": {
+                    "RepeatSchedule": "Every Day/Date of Week/Month/Year",
+                    "StartDate": "Repeat Start Date",
+                    "EndDate": "Repeat End Date"
+                },
+                "Auth" :{"AuthKey" : "5a099fe7df9bba180cf72141",
+                    "LoginId" : "michael.smith@uconnect.com",
+                    "LoginType" : "Web",
+                    "DeviceType" : "OS2",
+                    "DeviceOs" : "Web",
+                    "MacAddress" : "MichaelSmithmichael.smith@uconnect.com",
+                    "SessionId" : "0.5927596525712753",
+                    "EntityType" : "Member",
+                    "EntityId" : 316426,
+                    "AppVer" : "1.0"
+                }
+            }
+        }
+}
+// Get a schedule details
+{
+    "Request" : {
+        "Header" : {
+            "ScreenId":"Schedule","ActionId":"GetASchedule","Page":"None"
+        },
+        "MainArg":{
+            "ScheduleId" : 10031,
+            "Auth" :{"AuthKey" : "5a099fe7df9bba180cf72141",
+                "LoginId" : "michael.smith@uconnect.com",
+                "LoginType" : "Web",
+                "DeviceType" : "OS2",
+                "DeviceOs" : "Web",
+                "MacAddress" : "MichaelSmithmichael.smith@uconnect.com",
+                "SessionId" : "0.5927596525712753",
+                "EntityType" : "Member",
+                "EntityId" : 316426,
+                "AppVer" : "1.0"
+            }
+        }
+    }
+}
+
+// Get my all schedule details
+{
+    "Request" : {
+        "Header" : {
+            "ScreenId":"Schedule","ActionId":"GetMyAllSchedules","Page":"None"
+        },
+        "MainArg":{
+            "Auth" :{"AuthKey" : "5a099fe7df9bba180cf72141",
+                "LoginId" : "michael.smith@uconnect.com",
+                "LoginType" : "Web",
+                "DeviceType" : "OS2",
+                "DeviceOs" : "Web",
+                "MacAddress" : "MichaelSmithmichael.smith@uconnect.com",
+                "SessionId" : "0.5927596525712753",
+                "EntityType" : "Member",
+                "EntityId" : 316426,
+                "AppVer" : "1.0"
+            }
+        }
+    }
+}
+
+myResult = sched.GetScheduleDetails(argRequestDict)
+print(myResult)
 
 // create a collection for feed (external to users) and activity log for internal purpose only
 // we also need to create a collection to hold entitytype/id and any changes (which type of changes)

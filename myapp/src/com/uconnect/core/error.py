@@ -1,65 +1,65 @@
 from com.uconnect.core.singleton import Singleton
 
 #@Singleton
-class ucException(Exception):
+class ucException(Exception, metaclass=Singleton):
     def __init__(self,errorMsg):
         self.errorMsg = errorMsg
     def __str__(self):
         return repr(self.errorMsg)
 
-@Singleton
-class MissingConfigFile(ucException):
+#@Singleton
+class MissingConfigFile(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class MissingArgumentValues(ucException):
+class MissingArgumentValues(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class NullKeyValue(ucException):
+class NullKeyValue(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class BootStrapError(ucException):
+class BootStrapError(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidCollection(ucException):
+class InvalidCollection(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class MongoDBError(ucException):
+class MongoDBError(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class NotListValue(ucException):
+class NotListValue(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidOperator(ucException):
+class InvalidOperator(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidTemplate(ucException):
+class InvalidTemplate(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidConnectionType(ucException):
+class InvalidConnectionType(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidZipCode(ucException):
+class InvalidZipCode(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidScreen(ucException):
+class InvalidScreen(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidAction(ucException):
+class InvalidAction(ucException, metaclass=Singleton):
     pass
 #@Singleton
-class InvalidScreenAction(ucException):
+class InvalidScreenAction(ucException, metaclass=Singleton):
     pass
-class DBError(ucException):
+class DBError(ucException, metaclass=Singleton):
     pass
-class InvalidAuthKey(ucException):
+class InvalidAuthKey(ucException, metaclass=Singleton):
     pass
-class InvalidEntity(ucException):
+class InvalidEntity(ucException, metaclass=Singleton):
     pass
-class InvalidLogin(ucException):
+class InvalidLogin(ucException, metaclass=Singleton):
     pass
-class InvalidSecCodeDeliveryOptions(ucException):
+class InvalidSecCodeDeliveryOptions(ucException, metaclass=Singleton):
     pass
-class InvalidSecurityCode(ucException):
+class InvalidSecurityCode(ucException, metaclass=Singleton):
     pass    
-class DuplicateGroup(ucException):
+class DuplicateGroup(ucException, metaclass=Singleton):
     pass        

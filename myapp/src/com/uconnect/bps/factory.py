@@ -8,14 +8,14 @@ from com.uconnect.core.globals import Global
 
 myLogger = logging.getLogger('uConnect')
 
-@Singleton
+#@Singleton
 class Factory(object):
     '''
     This is Factory class, this will execute a BO process as mapped in config/FactoryMetadata.json
     '''
     def __init__(self):
-        self.utilityInstance = Utility.Instance()
-        self.globalInstance = Global.Instance()
+        self.util = Utility()
+        self.globaL = Global()
 
         self.myClass = self.__class__.__name__
         self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
@@ -30,11 +30,11 @@ class Factory(object):
         try:
 
             self.myModuleLogger.debug("arg received [{args}]".format(args=argRequestDict))
-            myMainArgData = self.utilityInstance.getCopy(argRequestDict)
+            myMainArgData = self.util.getCopy(argRequestDict)
 
             ''' Validating argumemt received '''
-            self.utilityInstance.valBPSArguments(myMainArgData)
-            myArgValidation = self.utilityInstance.valBPSArguments(myMainArgData)
+            #self.util.valBPSArguments(myMainArgData)
+            myArgValidation = self.util.valBPSArguments(myMainArgData)
 
             if not (myArgValidation):
                 raise com.uconnect.core.error.MissingArgumentValues("Arg validation error {arg}".format(arg=myMainArgData))
@@ -50,13 +50,14 @@ class Factory(object):
             myLibrary, myClass, myMethod = bpsProcessVal
             if myLibrary and myClass and myMethod:
                 self.myModuleLogger.debug("found, bps process [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
+                #print('found [{lib}]'.format(lib=(myLibrary, myClass, myMethod)))
                 myResponse = self.__executeBPSPRocess(myLibrary, myClass, myMethod, myMainArgData) 
-                myRquestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__Success)            
+                myRquestStatus = self.util.getRequestStatus(self.globaL._Global__Success)            
             else:
                 self.myModuleLogger.debug("did not find mapped bps process, value from navigating factoty data [{bpsprocVal}]".format(bpsprocVal=bpsProcessVal))
-                myRquestStatus = self.utilityInstance.getRequestStatus(self.globalInstance._Global__UnSuccess,'Invalid Screen [{screen}] Action [{action}]'.
+                myRquestStatus = self.util.getRequestStatus(self.globaL._Global__UnSuccess,'Invalid Screen [{screen}] Action [{action}]'.
                                     format(screen=myScreenId, action=myActionId))            
-                myResponse = self.utilityInstance.buildResponseData('E',myRquestStatus,'Error')
+                myResponse = self.util.buildResponseData('E',myRquestStatus,'Error')
             #fi
 
             #self.myModuleLogger.debug("return value from bps process [{responseVal}]".format(responseVal=myResponse))
@@ -64,8 +65,8 @@ class Factory(object):
             return myResponse
 
         except Exception as err:
-            myRequestStatus = self.utilityInstance.extractLogError()
-            myResponse = self.utilityInstance.buildResponseData('E', myRequestStatus, 'Error')
+            myRequestStatus = self.util.extractLogError()
+            myResponse = self.util.buildResponseData('E', myRequestStatus, 'Error')
             return myResponse
 
     def __findBPSProcess(self, argScreenId, argActionId):
@@ -82,7 +83,7 @@ class Factory(object):
 
             myLibrary = myClass = myMethod  = ''
 
-            myLibClassMethod = self.utilityInstance.getModuleClassMethod(argScreenId, argActionId)
+            myLibClassMethod = self.util.getModuleClassMethod(argScreenId, argActionId)
             if not( myLibClassMethod[0] == None):
                 myLibrary = myLibClassMethod[0]
                 myClass   = myLibClassMethod[1]
@@ -93,8 +94,8 @@ class Factory(object):
             return myLibrary, myClass, myMethod
 
         except Exception as err:
-            myRequestStatus = self.utilityInstance.extractLogError()
-            #myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            myRequestStatus = self.util.extractLogError()
+            #myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
             raise
 
     def __executeBPSPRocess(self, argLibrary, argClass, argMethod, argReqJsonDict):
@@ -108,7 +109,7 @@ class Factory(object):
         try:
 
             self.myModuleLogger.debug("arg received [{lib},{cls},{method},{args}]".format(lib=argLibrary,cls=argClass,method=argMethod,args=argReqJsonDict))
-
+            #print('Library/Module',argLibrary,argClass, argMethod)
             myModule = importlib.import_module(argLibrary)
             myClass = getattr(myModule, argClass)
             # if singleton, get an instance else instantiate the class
@@ -117,19 +118,20 @@ class Factory(object):
             else:
                 myCallableClass = myClass()
 
+            #print('imported')
             # get the method from this class
             myMethod = getattr(myCallableClass,argMethod)
             ''' Only MainArg need to be passed  '''
-            myMainArg = {'MainArg':self.utilityInstance.extMainArgFromReq(argReqJsonDict)}
+            myMainArg = {'MainArg':self.util.extMainArgFromReq(argReqJsonDict)}
             ''' need to mark that this response is external '''
-            myMainArg['MainArg'].update({'ResponseMode':self.globalInstance._Global__ExternalRequest})
-
+            myMainArg['MainArg'].update({'ResponseMode':self.globaL._Global__ExternalRequest})
+            #print('Factory executing param',myMainArg)
             # execute the method
             myResults = myMethod(myMainArg)
 
             return (myResults)
 
         except Exception as err:
-            myRequestStatus = self.utilityInstance.extractLogError()
-            #myResponse = self.utilityInstance.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
+            myRequestStatus = self.util.extractLogError()
+            #myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
             raise

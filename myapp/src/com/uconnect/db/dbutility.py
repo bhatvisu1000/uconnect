@@ -6,11 +6,11 @@ from com.uconnect.core.globals import Global
 from com.uconnect.db.mongodb import MongoDB
 from com.uconnect.utility.ucUtility import Utility
 
-@Singleton
-class DBUtility(object):
+#@Singleton
+class DBUtility(object, metaclass=Singleton):
     def __init__(self):
-        self.mongoDbInstance = MongoDB.Instance()
-        self.globalInstance = Global.Instance()
+        self.mongoDbInstance = MongoDB()
+        self.globalInstance = Global()
 
     def isIdExists(self, argCollection, argId):
 

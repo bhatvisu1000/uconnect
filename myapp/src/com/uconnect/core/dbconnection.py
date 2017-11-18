@@ -2,36 +2,39 @@ from pymongo import MongoClient
 from com.uconnect.core.infra import Environment
 from com.uconnect.core.singleton import Singleton
 import logging, com.uconnect.utility.ucLogging
+from com.uconnect.utility.ucUtility import Utility
 
 # lets the parent logger from config file
 myLogger = logging.getLogger('uConnect')
 
-@Singleton
-class DbConnection(object):
+class DbConnection(object, metaclass=Singleton):
 
    #__metaclass__ = ABCMeta
    #MyConnection.register(tuple)
    #assert issubclass(tuple, MyConnection)
    #assert isinstance((), MyConnection)
 
+   def __init__(self):
+      self.util = Utility()
+
    def getConnection(self):
      pass
 
-@Singleton
-class MongoDbConnection(object):
+class MongoDbConnection(object, metaclass=Singleton):
    '''
      MongoDbConnection class
    '''
    def __init__(self):
       myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
-      self.envInstance = Environment.Instance()
+      self.env = Environment()
+      self.util = Utility()
 
    def getConnection(self):
       try:
          myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.MongoDbConnection')
          myModuleLogger.debug("Reading MONGO_URI details ...")
-         myEnvironment = self.envInstance.getCurrentEnvironment()
-         mongoDbEnvDetail = self.envInstance.getEnvironmentDetails(myEnvironment)
+         myEnvironment = self.env.getCurrentEnvironment()
+         mongoDbEnvDetail = self.env.getEnvironmentDetails(myEnvironment)
          mongoDbMongoURI  = mongoDbEnvDetail['MongoUri']
          mongoDbDBName = mongoDbEnvDetail['MongoDBName']
 
@@ -47,16 +50,18 @@ class MongoDbConnection(object):
          return myMongoConn
 
       except Exception as err:
-            myRequestStatus = self.utilityInstance.extractLogError()
+            myRequestStatus = self.util.extractLogError()
             raise
 
-@Singleton
-class OracleDBConnection(object):
+class OracleDBConnection(object, metaclass=Singleton):
    def getConnection(self):
       pass
 
-@Singleton
-class ConnectionBuilder(object):
+class ConnectionBuilder(object, metaclass=Singleton):
+   def __init__(self):
+      self.util = Utility()
+      self.mongo = MongoDbConnection()
+
    def buildConnection(self, argDbType):
       ''' 
          Description:    Initializes dbconnection for a given environment and database. This method calls getConnection
@@ -69,8 +74,7 @@ class ConnectionBuilder(object):
       
       if (argDbType == "MongoDB" ):
          myModuleLogger.info('Connection request is for [{db}] database'.format(db=argDbType))
-         mongoDbConnInstance = MongoDbConnection.Instance()
-         myMongoDbConn = mongoDbConnInstance.getConnection()
+         myMongoDbConn = self.mongo.getConnection()
       
       return myMongoDbConn
 

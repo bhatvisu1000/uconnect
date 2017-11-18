@@ -6,8 +6,8 @@ from com.uconnect.core.globals import Global
 
 myLogger = logging.getLogger('uConnect')
 
-@Singleton
-class Environment(object):
+#@Singleton
+class Environment(object, metaclass=Singleton):
   '''
   This is initialization class, this is the first class excuted during initialization process
   '''
@@ -31,7 +31,7 @@ class Environment(object):
     self.__zipCodeData = {}
     self.__templateData = {}
 
-    self.globalInstance = Global.Instance()
+    self.globaL = Global()
 
     ''' building core path - globals.json'''
     
