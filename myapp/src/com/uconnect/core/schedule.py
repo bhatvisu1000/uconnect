@@ -23,6 +23,8 @@ class Schedule(object, metaclass=Singleton):
         self.myClass = self.__class__.__name__
         self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
 
+    # get the Open slot for days 02-JAN-2018 for Member/Vendor (Display all slot with Open/Busy status)
+    #[12AM to 12AM] {'12:00 - 12:30-- Open, 12:30-01:00 -- Busy  .... 12:00]
     def isTimeSlotOpen(self, argFor, argWho, argWhen, argDurationMins):
         '''
         Description: Return True/False if timeslot is available for Member/Vendor
