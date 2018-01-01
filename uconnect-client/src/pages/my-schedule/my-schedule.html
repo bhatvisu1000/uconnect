@@ -28,11 +28,7 @@
       </ion-segment-button>
     </ion-segment>
 
-    <ion-buttons end>
-      <button ion-button icon-only (click)="presentFilter()">
-        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
-      </button>
-    </ion-buttons>
+    
   
    </ion-navbar>
   <ion-toolbar no-border-top>
@@ -41,6 +37,11 @@
                    (ionInput)="searchConnection($event)"
                    placeholder="Search">
     </ion-searchbar>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="presentFilter()">
+        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
+      </button>
+    </ion-buttons>
     </ion-toolbar>
 
 

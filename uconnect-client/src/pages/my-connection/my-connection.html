@@ -8,8 +8,9 @@
 
   <ion-navbar no-border-bottom>
     <button ion-button menuToggle>
-      <ion-title>My Connection</ion-title>
+
       <ion-icon name="menu"></ion-icon>
+      <ion-title>My Connection</ion-title>  
     </button>
     <ion-segment [(ngModel)]="segment">
       <ion-segment-button value="All">
@@ -26,12 +27,7 @@
       </ion-segment-button>
     </ion-segment>
 
-    <ion-buttons end>
-      <button ion-button icon-only (click)="presentFilter()">
-        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
-      </button>
-    </ion-buttons>
-  
+   
    </ion-navbar>
   <ion-toolbar no-border-top>
     <ion-searchbar color="primary"
@@ -39,6 +35,12 @@
                    (ionInput)="searchConnection($event)"
                    placeholder="Search">
     </ion-searchbar>
+     <ion-buttons end>
+      <button ion-button icon-only (click)="presentFilter()">
+        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
+      </button>
+    </ion-buttons>
+  
     </ion-toolbar>
     
  

@@ -7,7 +7,7 @@ class loadTestData(object):
 
         print('initializing')
 
-        testDataFile = 'c:\\app\\uconnect\\MongoDb\\json\\MemberTestData.json'
+        testDataFile = os.path.join(os.getenv('UCONNECT_HOME'), '..\\MongoDb\\json\\MemberTestData.json')
         templateFile = os.path.join(os.getenv('UCONNECT_CONFIG'),'template.json')
         self.myRegScreen = 'Registration'
         self.myRegAction = 'RegisterEntity'
