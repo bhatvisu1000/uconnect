@@ -39,8 +39,7 @@ class ScheduleBPS(object):
 
                 #if 'Data' in myResponse['Response']:
                 #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
-                myResponse = {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}
-
+                myResponse = {'MyResponse' : {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}}
             else:
                 myRequestStatus = self.util.getRequestStatus(
                     self.globaL._Global__UnSuccess, myScheduleResults['Message'])
@@ -71,7 +70,7 @@ class ScheduleBPS(object):
             print(myResponse)
             #if 'Data' in myResponse['Response']:
             #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
-            myResponse = {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}
+            myResponse = {'MyResponse' : {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}}
 
             return myResponse
         except Exception as err:
@@ -107,7 +106,7 @@ class ScheduleBPS(object):
     
                 #if 'Data' in myResponse['Response']:
                 #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
-                myResponse = {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}
+                myResponse = {'MyResponse' : {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}}
 
             else:
                 myRequestStatus = self.util.getRequestStatus(
