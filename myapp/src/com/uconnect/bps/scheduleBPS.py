@@ -39,7 +39,7 @@ class ScheduleBPS(object):
 
                 #if 'Data' in myResponse['Response']:
                 #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
-                myResponse = {'Header' : myResponse['Header'], 'Data' : [{'Schedule':myResponse['Data']}]}
+                myResponse = {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}
 
             else:
                 myRequestStatus = self.util.getRequestStatus(
@@ -68,10 +68,10 @@ class ScheduleBPS(object):
             myScheduleData = self.sched._Schedule__getMyAllSchedules({'ScheduleFor' : myScheduleFor, 'ScheduleForWho': myScheduleForWho, 'ResponseMode':myMainArgData['ResponseMode']})
             myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
             myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
-
+            print(myResponse)
             #if 'Data' in myResponse['Response']:
             #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
-            myResponse = {'Header' : myResponse['Header'], 'Data' : [{'Schedule':myResponse['Data']}]}
+            myResponse = {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}
 
             return myResponse
         except Exception as err:
@@ -107,7 +107,7 @@ class ScheduleBPS(object):
     
                 #if 'Data' in myResponse['Response']:
                 #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
-                myResponse = {'Header' : myResponse['Header'], 'Data' : [{'Schedule':myResponse['Data']}]}
+                myResponse = {'Header' : myResponse['MyResponse']['Header'], 'Data' : [{'Schedule':myResponse['MyResponse']['Data']}]}
 
             else:
                 myRequestStatus = self.util.getRequestStatus(
