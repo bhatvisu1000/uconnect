@@ -3,14 +3,11 @@ import { Injectable } from '@angular/core';
 import { Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
-import { Response } from "@angular/http";
-
 import 'rxjs/Rx';
 
 import {SendRequest} from "../models/SendRequest"
 import {Request} from "../models/Request"
 import {Header} from "../models/Header"
-import {MyResponse} from "../models/MyResponse"
 import {ResponseReceived} from "../models/ResponseReceived"
 import {Auth} from "../models/connection/Auth"
 import {LoginRequestData} from "../models/login/LoginRequestData"
@@ -25,7 +22,7 @@ export class AuthService {
   private registrationUrl = 'http://localhost:5000/requestPost';
   private request: Request = null;
   private loginRequestData: LoginRequestData = null;
-  private auth: Auth = null;
+  public auth: Auth = null;
   public responseReceived: ResponseReceived = null
   private header:  Header = null;
   public sendRequest: SendRequest = null;
@@ -107,7 +104,7 @@ export class AuthService {
     
     this.loginRequestData = new LoginRequestData(this.auth);
     
-    
+    this.storage.set('Auth', this.auth);
     this.header= new Header("Login", "Authenticate", "None");
 
     
@@ -124,7 +121,15 @@ export class AuthService {
     
   }
 
+  public setAuth(auth: Auth){
+    this.auth=auth;
+  }
   
+  public getAuth(): Auth {
+
+    return this.auth;
+  
+  }
 
   /*submitMember(): Observable<MyResponse> {
   

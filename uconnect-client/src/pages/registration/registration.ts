@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from "@angular/forms";
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 
-import {Member} from "../../models/member/Member"
 import { RegistrationService } from "../../services/RegistrationService";
 import { MyTabsPage } from '../my-tabs/my-tabs';
 

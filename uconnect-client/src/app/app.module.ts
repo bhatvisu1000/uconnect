@@ -13,6 +13,7 @@ import { MyApp } from './app.component';
 import { MySchedulePage } from '../pages/my-schedule/my-schedule';
 import { MyActivityPage } from '../pages/my-activity/my-activity';
 import { MyConnectionPage } from '../pages/my-connection/my-connection';
+import { MyCreateSchedulePage } from '../pages/my-create-schedule/my-create-schedule';
 import { MyNotificationPage } from '../pages/my-notification/my-notification';
 import { MyOffersPage } from '../pages/my-offers/my-offers';
 import { MyTabsPage } from '../pages/my-tabs/my-tabs';
@@ -38,7 +39,8 @@ import { SQLStorageService } from "../services/SQLStorageService";
     MyOffersPage,
     RegistrationPage,
     MyTabsPage,
-    LoginPage
+    LoginPage,
+    MyCreateSchedulePage
   ],  
   imports: [
     BrowserModule,
@@ -67,7 +69,8 @@ import { SQLStorageService } from "../services/SQLStorageService";
     MyOffersPage,
     RegistrationPage,
     MyTabsPage,
-    LoginPage
+    LoginPage,
+    MyCreateSchedulePage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
                 ConnectionService, RegistrationService, AuthService,

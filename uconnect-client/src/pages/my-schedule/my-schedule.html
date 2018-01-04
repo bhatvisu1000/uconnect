@@ -10,7 +10,30 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-segment [(ngModel)]="segment">
+    
+
+    <ion-toolbar no-border-top>
+     <ion-searchbar color="primary"
+                   [(ngModel)]="queryText"
+                   (ionInput)="searchSchedule($event)"
+                   placeholder="Search" [showCancelButton]="shouldShowCancel" debounce="3000">
+    </ion-searchbar>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="presentFilter()">
+        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
+      </button>
+    </ion-buttons>
+    </ion-toolbar>
+  
+   </ion-navbar>
+  
+
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-segment [(ngModel)]="segment">
       <ion-segment-button value="UpcomingSchedule">
         Upcoming Schedule
       </ion-segment-button>
@@ -26,56 +49,38 @@
        <ion-segment-button value="Create">
         Create Schedule
       </ion-segment-button>
-    </ion-segment>
-
-    
-  
-   </ion-navbar>
-  <ion-toolbar no-border-top>
-    <ion-searchbar color="primary"
-                   [(ngModel)]="queryText"
-                   (ionInput)="searchConnection($event)"
-                   placeholder="Search">
-    </ion-searchbar>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="presentFilter()">
-        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
-      </button>
-    </ion-buttons>
-    </ion-toolbar>
-
-
-</ion-header>
-
-
-<ion-content padding>
+    </ion-segment>  
  <div [ngSwitch]="segment">
     <ion-list *ngSwitchCase="'UpcomingSchedule'">
         
-      
+      <ion-item-sliding *ngFor="let item of listScheduleItems; let i = index">
           
           <ion-item>
             
             <ion-avatar item-left>
               <img src="../../assets/icon/favicon.ico">
             </ion-avatar>
-            <h3>Vishal Bhat</h3> 
-            
-              <ion-icon ios="ios-star" md="md-star"></ion-icon>
-
+           
           </ion-item>
-         <ion-item>
             
-            <ion-avatar item-left>
-              <img src="../../assets/icon/favicon.ico">
-            </ion-avatar>
-            <h3>Anil Singh</h3> 
-            
-              <ion-icon ios="ios-star" md="md-star"></ion-icon>
+           <ion-item-options side="right">
+                
+                  <button ion-button color="secondary">
+                    <ion-icon name="ion-heart"></ion-icon>
+                    Accept
+                  </button>
 
-          </ion-item>
-      
+       
+          </ion-item-options>
+  
+          
+      </ion-item-sliding>
     </ion-list>
+    
+          
+          	
+      
+   
  
  </div>
 </ion-content>

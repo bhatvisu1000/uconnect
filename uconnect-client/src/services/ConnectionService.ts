@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Http, Response } from "@angular/http";
+import { Http } from "@angular/http";
 import 'rxjs/Rx';
 
 import {Connections} from "../models/connection/Connections"
@@ -7,11 +7,15 @@ import {Connections} from "../models/connection/Connections"
 import {SendRequest} from "../models/SendRequest"
 import {Request} from "../models/Request"
 import {Header} from "../models/Header"
-import {MyResponse} from "../models/MyResponse"
+//import {MyResponse} from "../models/MyResponse"
 import {ResponseReceived} from "../models/ResponseReceived"
 import {Auth} from "../models/connection/Auth"
+import {SearchConnection} from "../models/member/SearchConnection"
+
+import {AuthService} from "./AuthService"
 import {LoginRequestData} from "../models/login/LoginRequestData"
 import {UpdateConnectionRequest} from "../models/connection/UpdateConnectionRequest"
+import {SQLStorageService} from "./SQLStorageService"
 
 @Injectable()
 export class ConnectionService {
@@ -24,12 +28,17 @@ export class ConnectionService {
   private header:  Header = null;
   public sendRequest: SendRequest = null;
   private updateConnectionRequest: UpdateConnectionRequest = null;
-  constructor(private http: Http) {
+  private searchConnection: SearchConnection = null;
+  
+  
+
+  constructor(private http: Http, private sqlStorageService: SQLStorageService) {
+    
   }
 
 
-  createRequest(authKey: string, loginid: string, entityId: string): SendRequest  {
-    this.auth = new Auth(loginid, "Web/Mobile", "", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc", authKey, entityId);
+  createRequest(auth: Auth): SendRequest  {
+    this.auth = auth;
     
     this.loginRequestData = new LoginRequestData(this.auth);
     
@@ -49,12 +58,12 @@ export class ConnectionService {
     return this.sendRequest;
   }
 
-private getHeaders(){
+/*private getHeaders(){
     let headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }
-  
+  */
   createDeleteRequest(memberId: string) {
     
     this.header= new Header("Member", "getAMemberDetail", "None");
@@ -65,6 +74,26 @@ private getHeaders(){
     this.sendRequest= new SendRequest(this.request);
 
 
+    console.log(this.request);
+    console.log("registeration Service json data " +     JSON.stringify(this.sendRequest));
+    console.log(JSON.stringify(this.sendRequest));
+    
+    return this.sendRequest;
+  }
+
+createSearchRequest(auth: Auth, searchInputRequestData: string, page: String, loaclAuthService: AuthService) {
+    
+    
+    this.searchConnection = new SearchConnection(searchInputRequestData, page, auth);
+    
+    this.header= new Header("Member", "SearchMember", "None");
+
+    
+    this.request= new Request(this.header, this.searchConnection);
+
+    this.sendRequest= new SendRequest(this.request);
+    
+    
     console.log(this.request);
     console.log("registeration Service json data " +     JSON.stringify(this.sendRequest));
     console.log(JSON.stringify(this.sendRequest));

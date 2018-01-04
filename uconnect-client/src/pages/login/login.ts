@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 
 import { AuthService } from "../../services/AuthService";
 
@@ -10,12 +10,8 @@ import { Storage } from '@ionic/storage';
 import { MyTabsPage } from '../my-tabs/my-tabs';
 import { RegistrationPage } from '../registration/registration';
 import {ResponseReceived} from "../../models/ResponseReceived"
-import {MyConnectionPage } from '../my-connection/my-connection';
-import {Observable} from 'rxjs/Observable';
 
 import {SendRequest} from "../../models/SendRequest"
-import {Data} from "../../models/response/Data"
-import {MyResponse} from "../../models/MyResponse"
 
 import {HttpService} from "../../services/HttpService"
 

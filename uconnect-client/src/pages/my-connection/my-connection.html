@@ -10,9 +10,28 @@
     <button ion-button menuToggle>
 
       <ion-icon name="menu"></ion-icon>
-      <ion-title>My Connection</ion-title>  
+        
     </button>
-    <ion-segment [(ngModel)]="segment">
+    
+<ion-toolbar no-border-top>
+    <ion-searchbar color="primary"
+                   [(ngModel)]="queryText"
+                   (ionInput)="searchConnection($event)"
+                   placeholder="Search" showCancelButton="True" debounce="3000">
+    </ion-searchbar>
+     <ion-buttons end>
+      <button ion-button icon-only (click)="presentFilter()">
+        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
+      </button>
+    </ion-buttons>
+    </ion-toolbar>
+   </ion-navbar>
+    
+</ion-header>
+
+
+<ion-content padding>
+<ion-segment [(ngModel)]="segment">
       <ion-segment-button value="All">
         All
       </ion-segment-button>
@@ -26,31 +45,6 @@
         New Request
       </ion-segment-button>
     </ion-segment>
-
-   
-   </ion-navbar>
-  <ion-toolbar no-border-top>
-    <ion-searchbar color="primary"
-                   [(ngModel)]="queryText"
-                   (ionInput)="searchConnection($event)"
-                   placeholder="Search">
-    </ion-searchbar>
-     <ion-buttons end>
-      <button ion-button icon-only (click)="presentFilter()">
-        <ion-icon ios="ios-options-outline" md="md-options"></ion-icon>
-      </button>
-    </ion-buttons>
-  
-    </ion-toolbar>
-    
- 
-
-  
-</ion-header>
-
-
-<ion-content padding>
-
   <div [ngSwitch]="segment">
     <ion-list *ngSwitchCase="'All'">
         
@@ -100,7 +94,7 @@
                      
                     
               <ion-item-options side="right">-->
-                        <button ion-button color="primary" (click)="schedule(item.Id)">
+                        <button ion-button color="primary" (click)="createSchedule(item.Id, item.Main.FirstName, item.Main.LastName)">
                           <ion-icon name="text"></ion-icon>
                           Schedule
                         </button>
@@ -154,7 +148,7 @@
             
           </ion-item>
             <ion-item-options side="right">
-              <button ion-button color="primary" (click)="schedule(item.Id)">
+              <button ion-button color="primary" (click)="createSchedule(item.Id, item.Main.FirstName, item.Main.LastName)">
                 <ion-icon name="text"></ion-icon>
                 Schedule
               </button>
@@ -194,7 +188,7 @@
             
           </ion-item>
             <ion-item-options side="right">
-              <button ion-button color="primary" (click)="schedule(item.Id)">
+              <button ion-button color="primary" (click)="createSchedule(item.Id, item.Main.FirstName, item.Main.LastName)">
                 <ion-icon name="text"></ion-icon>
                 Schedule
               </button>

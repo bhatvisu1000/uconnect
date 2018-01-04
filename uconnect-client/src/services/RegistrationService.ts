@@ -1,14 +1,11 @@
 import { Injectable } from "@angular/core";
-import { Http, Response } from "@angular/http";
-import {Observable} from 'rxjs/Observable';
-import { Headers, RequestOptions } from '@angular/http';
+import { Response } from "@angular/http";
+
 import 'rxjs/Rx';
 
 import {SendRequest} from "../models/SendRequest"
 import {Request} from "../models/Request"
 import {Header} from "../models/Header"
-import {MainArg} from "../models/MainArg"
-import {MyResponse} from "../models/Response"
 import {Address} from "../models/connection/Address"
 import {Main} from "../models/connection/Main"
 import {Contact} from "../models/connection/Contact"
@@ -24,7 +21,6 @@ import {RegistrationPage} from "../pages/registration/registration"
 @Injectable()
 export class RegistrationService {
   private request: Request = null;
-  private mainArg: MainArg = null;
   private registrationRequestData: RegistrationRequestData = null;
   private auth: Auth = null;
   private main: Main = null;
@@ -91,7 +87,7 @@ export class RegistrationService {
     .post(this.registrationUrl, JSON.stringify(this.sendRequest), options)
     .map(this.extractData)
     .catch(this.handleError);
- }*/
+ }
 
 private extractData(res: Response) {
         let body = res.json();
@@ -102,25 +98,6 @@ private handleError(error: Response) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server Error');
     }
-
-/**addProduct(product: Product) {                
-        let body = JSON.stringify(product);            
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-
-        return this.http.post(this.productsUrl, body, options)
-            .map(this.extractData)
-            .catch(this.handleError);
-    }
-
-    private extractData(res: Response) {
-        let body = res.json();
-        return body.data || {};
-    }
-
-    private handleError(error: Response) {
-        console.error(error);
-        return Observable.throw(error.json().error || 'Server Error');
-    }
 */
+
  }

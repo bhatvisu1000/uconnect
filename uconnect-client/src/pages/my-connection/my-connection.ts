@@ -8,7 +8,6 @@ import {ConnectionService } from "../../services/ConnectionService";
 import {Connections} from "../../models/connection/Connections"
 import {AlertController } from 'ionic-angular';
 import {ResponseReceived} from "../../models/ResponseReceived"
-import {MyResponse} from "../../models/MyResponse"
 
 import {AuthResponse} from "../../models/response/AuthResponse"
 
@@ -16,6 +15,9 @@ import { AuthService } from "../../services/AuthService";
 import {SendRequest} from "../../models/SendRequest"
 
 import { Response } from "@angular/http";
+import {Auth} from "../../models/connection/Auth"
+import {MyCreateSchedulePage} from "../my-create-schedule/my-create-schedule"
+
 
 @Component({
   selector: 'page-my-connection',
@@ -33,6 +35,8 @@ export class MyConnectionPage {
   public connectionResponseReceived: ResponseReceived;
   public authResponse: AuthResponse;
   private sendRequest: SendRequest = null;
+  private auth: Auth = null;
+
   segment: string ="All"
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private connectionService: ConnectionService, public alertCtrl: AlertController, public authService: AuthService, public storage: Storage, public httpService: HttpService) {}
@@ -49,8 +53,12 @@ export class MyConnectionPage {
 
   loadConnectionData(){
     this.authResponseReceived = this.authService.responseReceived;
-    this.sendRequest = this.connectionService.createRequest(
-        this.authResponseReceived.MyResponse.Data[0].AuthResponse.AuthKey, this.authService.username, this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
+    
+    this.auth = new Auth(this.authService.username, "Web/Mobile", "", "IOS", "Mobile", "SDFSDKLGHASKLDFGHSAKLFG214ADFA",  "Member", "1.1", "aaabbbccc",   this.authResponseReceived.MyResponse.Data[0].AuthResponse.AuthKey, this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
+    
+    this.authService.setAuth(this.auth);
+    
+    this.sendRequest = this.connectionService.createRequest(this.auth);
     this.httpService.submitRequest(this.sendRequest)
       .subscribe(
         (response: Response) => {
@@ -80,7 +88,9 @@ export class MyConnectionPage {
     this.loadConnectionData();
   }
 
-  
+  ngOnInit() {
+    this.loadConnectionData();
+  }
   
   getItems() {
     let alert = this.alertCtrl.create({
@@ -120,15 +130,6 @@ export class MyConnectionPage {
     
   }
 
-  /**schedule(memberId: string) {
-    let alert = this.alertCtrl.create({
-      title: 'New Friend!',
-      message: 'Your friend, Obi wan Kenobi, just approved your friend request!',
-      buttons: ['Ok']
-    });
-    alert.present()
-  }**/
-
   deleteConnection(memberId: string) {
     this.sendRequest = this.connectionService.createDeleteRequest(this.authResponseReceived.MyResponse.Data[0].AuthResponse.EntityId);
   }
@@ -147,19 +148,31 @@ export class MyConnectionPage {
       );
   }
 
-searchConnection(event: string){
-  let alert = this.alertCtrl.create({
-      title: 'New Friend!',
-      message: this.queryText+event+'Your friend, Obi wan Kenobi, just approved your friend request!',
-      buttons: ['Ok']
-    });
-    alert.present()
+searchConnection(event){
+  
+     this.sendRequest = this.connectionService.createSearchRequest(this.authService.getAuth(), event.target.value, "0", this.authService);
+      this.httpService.submitRequest(this.sendRequest)
+        .subscribe(
+          (response: Response) => {
+            this.connectionResponseReceived = response.json();
+            
+            console.log(this.listConnectionItems);
+           },
+          err => console.log('error ' + err.json().message),
+          () => console.log('Authentication Complete')
+        );
+    let alert = this.alertCtrl.create({
+        title: 'New Friend!',
+        message: event.target.value+'Your friend, Obi wan Kenobi, just approved your friend request!',
+        buttons: ['Ok']
+      });
+      alert.present()
 }
 
 
 
-  schedule(memberId: string) {
-  var customTemplate =
+  createSchedule(memberId: string, firstName: string, lastName: string) {
+  /**var customTemplate =
       '<ion-toggle>enable</ion-toggle>' +
       '<label class="item item-input"><input type="text" placeholder="your address"></label><button ion-button>Default</button>';
     let confirm = this.alertCtrl.create({
@@ -182,7 +195,9 @@ searchConnection(event: string){
       ]
     });
     confirm.present();
-    
+    **/
+
+      this.navCtrl.push(MyCreateSchedulePage, {targetMemberid: memberId, targetFirstName: firstName, targetLastName: lastName, auth: this.auth});
     }
 
 }
