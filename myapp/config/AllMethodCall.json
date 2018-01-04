@@ -615,16 +615,13 @@ argRequestDict= {
             "RequestorId"   : 316426,
             "Place"         : "StartBucks, North Brunswick, NJ",
             "StartTime"     : "2017-11-15 12:00:00",
-            "DurationMins"  : 30,
-            "Status"        : "Draft/In-Progress/Scheduled"
+            "DurationMins"  : 30
         },
-        "Invitee": [
+        "Invitee": [ 
             {
               "Type"    : "Member",
               "Id"      : 316431,
-              "IsOwner" : "N",
-              "Status"  : "Pending/Accepted/Rejected/Proposed",
-              "Proposal" : {"When":"", "Where":""}
+              "IsOwner" : "N"
             }
         ],
         "ShareWith":[{"MemberId" : "<Family memberid"}],

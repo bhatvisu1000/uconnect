@@ -37,8 +37,9 @@ class ScheduleBPS(object):
                 #print('Sched BPS',myMainArgData['ResponseMode'],myScheduleData)
                 myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
 
-                if 'Data' in myResponse['Response']:
-                    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+                #if 'Data' in myResponse['Response']:
+                #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+                myResponse = {'Header' : myResponse['Header'], 'Data' : [{'Schedule':myResponse['Data']}]}
 
             else:
                 myRequestStatus = self.util.getRequestStatus(
@@ -68,8 +69,9 @@ class ScheduleBPS(object):
             myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
             myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
 
-            if 'Data' in myResponse['Response']:
-                myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+            #if 'Data' in myResponse['Response']:
+            #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+            myResponse = {'Header' : myResponse['Header'], 'Data' : [{'Schedule':myResponse['Data']}]}
 
             return myResponse
         except Exception as err:
@@ -103,8 +105,9 @@ class ScheduleBPS(object):
                 myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
                 myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
     
-                if 'Data' in myResponse['Response']:
-                    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+                #if 'Data' in myResponse['Response']:
+                #    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+                myResponse = {'Header' : myResponse['Header'], 'Data' : [{'Schedule':myResponse['Data']}]}
 
             else:
                 myRequestStatus = self.util.getRequestStatus(
