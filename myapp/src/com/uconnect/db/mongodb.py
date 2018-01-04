@@ -34,8 +34,8 @@ class MongoDB(object, metaclass=Singleton):
         self.myClass = self.__class__.__name__
         self.myModuleLogger = logging.getLogger('uConnect.' +str(__name__) + '.' + self.myClass)
 
-        myModuleLogger.debug("Initialization details: conn[{myConn}], myPageSize[{myPageSize}]".format(myConn=self.conn, myPageSize=self.myPageSize))
-        myModuleLogger.debug("initialization completed")
+        #myModuleLogger.debug("Initialization details: conn[{myConn}], myPageSize[{myPageSize}]".format(myConn=self.conn, myPageSize=self.myPageSize))
+        #myModuleLogger.debug("initialization completed")
 
         ## validate all the collections
 
@@ -247,8 +247,8 @@ class MongoDB(object, metaclass=Singleton):
             except Exception as error:
                 raise com.uconnect.core.error.InvalidCollection("Can not set collection to [{coll}], error[{error}]".format(coll=argCollection,err=error.message))
 
-            myModuleLogger.debug("myDb value after assigning collection [{col}]: [{mydb}]".format(col=argCollection,mydb=myDb))        
-            myModuleLogger.debug("connection [{conn}] will be used to get this member information".format(conn=myDb))        
+            #myModuleLogger.debug("myDb value after assigning collection [{col}]: [{mydb}]".format(col=argCollection,mydb=myDb))        
+            myModuleLogger.debug("using connection [{conn}] to find the document criteria [{criteroa}]".format(conn=myDb, criteria=argCriteria))        
 
             myTotDocuments = myDb.find(argCriteria).count()
 

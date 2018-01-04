@@ -531,7 +531,7 @@ class Security(object, metaclass=Singleton):
 
             # checking if Authkey passed is a valid type of object id
             if not (ObjectId.is_valid(myMainArgData['AuthKey'])):
-                raise com.uconnect.error.InvalidAuthKey('Invalid Auth key [{auth}]'.format (auth=myMainArgData['AuthKey']))
+                raise com.uconnect.error.InvalidAuthKey('Invalid Auth key [{auth}], auth key must be a valid object id !!!'.format (auth=myMainArgData['AuthKey']))
             #fi
 
             if not({'EntityType','EntityId','AuthKey','DeviceType','DeviceOs','MacAddress','AppVer'} <= set(myMainArgData)):
@@ -551,9 +551,10 @@ class Security(object, metaclass=Singleton):
                           'ExpiryDate':{'$gte': datetime.datetime.utcnow()},
                           'AppVer':myMainArgData['AppVer']}
             myProjection = {}
-            #print('criteria',myCriteria)
+            self.myModuleLogger.debug('__isValidAuthentication: criteria',myCriteria)
             myResults = self.mongo.findDocument(self.globaL._Global__authColl, myCriteria, myProjection,False)
             myResultsData = self.util.extr1stDocFromResultSets(myResults)
+            self.myModuleLogger.debug('__isValidAuthentication: results',myResultsData)
             '''if argkey passed and argkey from db is not matching return False '''
 
             if myResultsData and ('_id' in myResultsData) and (str(myMainArgData['AuthKey']) == str(myResultsData['_id'])):
@@ -562,6 +563,7 @@ class Security(object, metaclass=Singleton):
                 return False
 
         except Exception as err:
+            self.myModuleLogger.debug('Error',err)
             myRequestStatus = self.util.extractLogError()
             return False
 
@@ -642,90 +644,103 @@ class Security(object, metaclass=Singleton):
             myLoginInfo = self.__getLoginInfo(myLoginArgData)
             myValidLoginRetVal = 0
 
+            print('LoginInfo [{info}] found '.format(info=myLoginInfo))
             if myLoginInfo:
                 myMainArgData.update({'EntityId':myLoginInfo['EntityId']})
                 myMainArgData.update({'EntityType':myLoginInfo['EntityType']})
-            #fi
 
-            if myLoginInfo and myLoginInfo.get('AccountStatus') == self.globaL._Global__LoginStatusOpen:
-                myStoredHashPassword = myLoginInfo.get('Password')
-                #print (myPasswordText,myStoredHashPassword)
+                if myLoginInfo.get('AccountStatus') == self.globaL._Global__LoginStatusOpen:
+                    print ('Account is Open')
+                    myStoredHashPassword = myLoginInfo.get('Password')
 
-                if myStoredHashPassword == None:
-                    myValidLoginRetVal = "LoginError-001" 
-
-                    ''' recording activity'''
-                    self.activity._Activity__logActivity(
-                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
-                             'ActivityType':self.globaL._Global__Internal, 
-                             'Activity':' Invalid loginid [{entity}]'.
-                                        format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
-                             'Auth': myMainArgData})
-
-                #elif checkpw(myPasswordText.encode('utf8'), myStoredHashPassword.encode('utf-8')):
-                elif checkpw(myPasswordText.encode('utf-8'), myStoredHashPassword):
-                    ''' we got valid login we need to create authentication'''
-                    myValidLoginRetVal = "Success" 
-
-                    ''' recording activity'''
-                    ''' recording activity'''
-                    self.activity._Activity__logActivity(
-                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
-                             'ActivityType':self.globaL._Global__Internal, 
-                             'Activity':'Invalid loginid [{entity}]'.
-                                        format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
-                             'Auth': myMainArgData})
-                else:
-                    myValidLoginRetVal = "LoginError-002"                     
-                    ''' we got invalid password, lets increase the invalid count by 1 '''            
-                    myDbResults = self.mongo.UpdateDoc(self.globaL._Global__loginColl, myLoginCriteria, {'PasswordRetryCount':1}, 'inc')
-                    myLoginInfo = self.__getLoginInfo(myLoginArgData)
-
-                    ''' recording activity'''
-                    self.activity._Activity__logActivity(
-                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
-                             'ActivityType':self.globaL._Global__Internal, 
-                             'Activity':'Invalid password for Login [{login}] !!! Maximum password try count; current value [{current}] '.
-                                    format(login=myMainArgData['LoginId'], current=myLoginInfo.get('PasswordRetryCount')),
-                             'Auth': myMainArgData})
-
-                    if myLoginInfo.get('PasswordRetryCount') >= 3:
-                        myDbResults = self.mongo.UpdateDoc(self.globaL._Global__loginColl, myLoginCriteria, {'AccountStatus':'Locked'}, 'set')
-                        # expire all authentication
-                        self.__expireAllAuthentication(myMainArgData)
+                    if myStoredHashPassword == None:
+                        print ('Found null stored hash password')
+                        myValidLoginRetVal = "LoginError-001" 
 
                         ''' recording activity'''
                         self.activity._Activity__logActivity(
                                 {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
                                  'ActivityType':self.globaL._Global__Internal, 
-                                 'Activity':'Account is locked for [{login}] !!! Expiring all valid authentication '.
-                                        format(login=myMainArgData['LoginId']),
+                                 'Activity':' Invalid loginid [{entity}]'.
+                                            format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
                                  'Auth': myMainArgData})
-                    #fi
-                #fi
-            elif myLoginInfo and myLoginInfo.get('AccountStatus') == self.globaL._Global__LoginStatusLocked:
-                myValidLoginRetVal = "LoginError-003"                     
 
-                ''' recording activity'''
-                ''' recording activity'''
-                self.activity._Activity__logActivity(
-                        {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
-                         'ActivityType':self.globaL._Global__Internal, 
-                         'Activity':'Password verification attempt, account is locked for [{login}] !!!'.
-                                format(login=myMainArgData['LoginId']),
-                         'Auth': myMainArgData})
-            elif myLoginInfo and myLoginInfo.get('AccountStatus') == self.globaL._Global__LoginStatusPending:
-                myValidLoginRetVal = "LoginError-004"                     
+                        return myValidLoginRetVal
+                        #elif checkpw(myPasswordText.encode('utf8'), myStoredHashPassword.encode('utf-8')):
+                    if checkpw(myPasswordText.encode('utf-8'), myStoredHashPassword):
+                        print ('Password verified, creating auth')
+                        myValidLoginRetVal = "Success" 
+
+                        ''' recording activity'''
+                        self.activity._Activity__logActivity(
+                                {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                                 'ActivityType':self.globaL._Global__Internal, 
+                                 'Activity':'Invalid loginid [{entity}]'.
+                                            format(entity=myMainArgData['EntityType'] + ' - ' + str(myMainArgData['EntityId'])),
+                                 'Auth': myMainArgData})
+                    else:
+                        print ('Invalid password, increasing the invalid login count by 1')
+                        myValidLoginRetVal = "LoginError-002"                     
+                        ''' we got invalid password, lets increase the invalid count by 1 '''            
+                        myDbResults = self.mongo.UpdateDoc(self.globaL._Global__loginColl, myLoginCriteria, {'PasswordRetryCount':1}, 'inc')
+                        myLoginInfo = self.__getLoginInfo(myLoginArgData)
+
+                        ''' recording activity'''
+                        self.activity._Activity__logActivity(
+                            {
+                                'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                                 'ActivityType':self.globaL._Global__Internal, 
+                                 'Activity':'Invalid password for Login [{login}] !!! Maximum password try count; current value [{current}] '.
+                                        format(login=myMainArgData['LoginId'], current=myLoginInfo.get('PasswordRetryCount')),
+                                 'Auth': myMainArgData
+                            }
+                        )
+
+                        if myLoginInfo.get('PasswordRetryCount') >= 3:
+                            print ('Invalid password count by reached max allowed count, expiring all auth')
+                            myDbResults = self.mongo.UpdateDoc(self.globaL._Global__loginColl, myLoginCriteria, {'AccountStatus':'Locked'}, 'set')
+                            # expire all authentication
+                            self.__expireAllAuthentication(myMainArgData)
+
+                            ''' recording activity'''
+                            self.activity._Activity__logActivity(
+                                    {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                                     'ActivityType':self.globaL._Global__Internal, 
+                                     'Activity':'Account is locked for [{login}] !!! Expiring all valid authentication '.
+                                            format(login=myMainArgData['LoginId']),
+                                     'Auth': myMainArgData})
+
+                elif myLoginInfo.get('AccountStatus') == self.globaL._Global__LoginStatusLocked:
+                    myValidLoginRetVal = "LoginError-003"                     
+                    ''' recording activity'''
+                    self.activity._Activity__logActivity(
+                            {'EntityId':myMainArgData['EntityId'], 'EntityType':myMainArgData['EntityType'], 
+                             'ActivityType':self.globaL._Global__Internal, 
+                             'Activity':'Password verification attempt, account is locked for [{login}] !!!'.
+                                    format(login=myMainArgData['LoginId']),
+                             'Auth': myMainArgData})
+                elif myLoginInfo and myLoginInfo.get('AccountStatus') == self.globaL._Global__LoginStatusPending:
+                    myValidLoginRetVal = "LoginError-004"                     
+                else:
+                    myValidLoginRetVal = "LoginError-002" 
+                    ''' recording activity'''
+                    self.activity._Activity__logActivity(
+                            {'EntityId':myLoginId, 'EntityType': 'Login', 
+                             'ActivityType':self.globaL._Global__Internal, 
+                             'Activity':'Invalid Account status [{status}] for [{entity}]'.
+                                        format(entity=myLoginId, status=myLoginInfo.get('AccountStatus')),
+                             'Auth': myMainArgData})
+                #fi
             else:
-                myValidLoginRetVal = "LoginError-002" 
+                myValidLoginRetVal = "LoginError-005"
                 ''' recording activity'''
                 self.activity._Activity__logActivity(
                         {'EntityId':myLoginId, 'EntityType': 'Login', 
                          'ActivityType':self.globaL._Global__Internal, 
-                         'Activity':' Invalid loginid [{entity}]'.
+                         'Activity':' Login id [{entity}] not found in repository [LoginInfo]'.
                                     format(entity=myLoginId),
                          'Auth': myMainArgData})
-            #fi
+
             return myValidLoginRetVal
 
         except Exception as err:
@@ -964,6 +979,7 @@ class Security(object, metaclass=Singleton):
 
                 ''' validating auth arguments '''
                 #myArgValidationResults = self.util.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','AuthKey'])
+                print('Lginid and password is provided, will validate it and generate new auth key')
                 myArgValidation, myMissingKeys, myArgValMessage = \
                         self.util.valRequiredArg(myMainAuthArgData, myAuthArgKey,['ExpiryDate','EntityId','AuthKey'])
                 if not (myArgValidation):
@@ -971,10 +987,11 @@ class Security(object, metaclass=Singleton):
                 #fi
 
                 myValidateLoginStatus = self.__isValidLogin(myMainAuthArgData)
-
+                print('Is this valid login',myValidateLoginStatus)
                 if myValidateLoginStatus == self.globaL._Global__Success:
                     ''' we need to check if this device is 1st time used, if yes, we would need security code validation '''
                     ''' we need to return newAuthKey, EntityId and EntityType for this loginId '''
+                    print('Login info is valid')
                     myLoginInfo = self.__getLoginInfo({'LoginId':myMainAuthArgData['LoginId']})
 
                     ''' injecting entitytype and entityid '''
@@ -985,7 +1002,8 @@ class Security(object, metaclass=Singleton):
                     myResponseData = {'AuthResponse':{'EntityId':myLoginInfo.get('EntityId'),'EntityType':myLoginInfo.get('EntityType'),'AuthKey':myAuthKey}}
                     myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
                 else:
-                    myRequestStatus = self.util.getRequestStatus(self.globaL._Global__UnSuccess, myValidateLoginStatus + '; ' + self.util.getErrorCodeDescription(myValidateLoginStatus))
+                    print('Login info is invalid')
+                    myRequestStatus = self.util.getRequestStatus(self.globaL._Global__UnSuccess, ''.join([str(myValidateLoginStatus), '; ', str(self.util.getErrorCodeDescription(myValidateLoginStatus))]))
                 #fi
             elif 'AuthKey' in myMainAuthArgData: 
 
@@ -999,7 +1017,7 @@ class Security(object, metaclass=Singleton):
 
                 # checking if Authkey passed is a valid type of object id
                 if not (ObjectId.is_valid(myMainArgData['AuthKey'])):
-                    raise com.uconnect.error.InvalidAuthKey('Invalid Auth key [{auth}]'.format (auth=myMainArgData['AuthKey']))
+                    raise com.uconnect.error.InvalidAuthKey('Invalid Auth key (auth key must be type of object id) [{auth}]'.format (auth=myMainArgData['AuthKey']))
 
                 ''' perform authkey validation '''
                 if self.__isValidAuthentication(myMainAuthArgData):

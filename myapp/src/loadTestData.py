@@ -224,7 +224,7 @@ class loadTestData(object):
                 #print(myResult)
                 myResultStatus, myResultMessage = self.parseResult(myResult)
                 if myResultStatus == 'Success':
-                    print('Schedule between {member} and {inv} creatino was successful '.format(member = myAuth['EntityId'], inv = invitee['_id']))
+                    print('Schedule between {member} and {inv} creation was successful '.format(member = myAuth['EntityId'], inv = invitee['_id']))
                 else:
                     print('Schedule between {member} and {inv} creation was unsuccessful** '.format(member = myAuth['EntityId'], inv = invitee['_id']))
                     print('Error',myResult)

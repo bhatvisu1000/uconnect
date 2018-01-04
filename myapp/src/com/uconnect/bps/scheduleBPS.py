@@ -36,6 +36,10 @@ class ScheduleBPS(object):
                 myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
                 #print('Sched BPS',myMainArgData['ResponseMode'],myScheduleData)
                 myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
+
+                if 'Data' in myResponse['Response']:
+                    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+
             else:
                 myRequestStatus = self.util.getRequestStatus(
                     self.globaL._Global__UnSuccess, myScheduleResults['Message'])
@@ -63,6 +67,9 @@ class ScheduleBPS(object):
             myScheduleData = self.sched._Schedule__getMyAllSchedules({'ScheduleFor' : myScheduleFor, 'ScheduleForWho': myScheduleForWho, 'ResponseMode':myMainArgData['ResponseMode']})
             myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
             myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
+
+            if 'Data' in myResponse['Response']:
+                myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
 
             return myResponse
         except Exception as err:
@@ -95,14 +102,19 @@ class ScheduleBPS(object):
                 myScheduleData = self.sched._Schedule__getAScheduleDetail({'ScheduleId' : myScheduleId, 'ResponseMode': myMainArgData['ResponseMode']})
                 myRequestStatus = self.util.getRequestStatus(self.globaL._Global__Success)
                 myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Find', myScheduleData )
+    
+                if 'Data' in myResponse['Response']:
+                    myResponse['Response']['Data'] = ['Schedules' :  myResponse['Response']['Data']]
+
             else:
                 myRequestStatus = self.util.getRequestStatus(
                     self.globaL._Global__UnSuccess, "Schedule {sched} does not belong to {who} ".
                         format(sched=myScheduleId, who=(myScheduleFor,myScheduleForWho)))
                 myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')
-                return myResponse
+                #return myResponse
 
             return myResponse
+
         except Exception as err:
             myRequestStatus = self.util.extractLogError()
             myResponse = self.util.buildResponseData(myMainArgData['ResponseMode'], myRequestStatus, 'Error')

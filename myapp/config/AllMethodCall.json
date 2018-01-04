@@ -100,15 +100,15 @@
             "MainArg":
                 {"Auth":
                     {
-                        "LoginId":"anil",
+                        "LoginId":"michael.smith@uconnect.com",
                         "LoginType":"Web",
-                        "Password":"anil",
-                        "DeviceOs":"Mobile",
+                        "Password":"Michael",
+                        "DeviceOs":"Web",
                         "DeviceType":"OS2",
-                        "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                        "MacAddress":"MACADDRESS:001",
                         "EntityType":"Member",
                         "AppVer":"1.0",
-                        "SessionId":"aaabbbccc"
+                        "SessionId":"0.41061901426557024"
                     }
                 }
         }
@@ -400,21 +400,19 @@
                 },
             "MainArg":
                 {
-                    "SearchCriteria":"anil",
+                    "SearchCriteria":"smit",
                     "Page":"0",
                     "Auth":
                         {  
-                            "AuthKey":"5929f4b1df9bba469867ab62",
-                            "LoginId":"vishal",
+                            "AuthKey":"5a400424df9bba29582065c0",
                             "LoginType":"Web",
-                            "Password":"bhatt",
-                            "DeviceOs":"Mobile",
+                            "DeviceOs":"Web",
                             "DeviceType":"OS2",
-                            "MacAddress":"SDFSDKLGHASKLDFGHSAKLFG214ADFA",
+                            "MacAddress":"MACADDRESS:001",
                             "AppVer":"1.0",
                             "EntityType":"Member",
-                            "EntityId":314290,
-                            "SessionId":"aaabbbccc"
+                            "EntityId":317803,
+                            "SessionId":"0.41061901426557024"
                         }
                 }
         }
@@ -617,13 +615,16 @@ argRequestDict= {
             "RequestorId"   : 316426,
             "Place"         : "StartBucks, North Brunswick, NJ",
             "StartTime"     : "2017-11-15 12:00:00",
-            "DurationMins"  : 30
+            "DurationMins"  : 30,
+            "Status"        : "Draft/In-Progress/Scheduled"
         },
         "Invitee": [
             {
               "Type"    : "Member",
               "Id"      : 316431,
-              "IsOwner" : "N"
+              "IsOwner" : "N",
+              "Status"  : "Pending/Accepted/Rejected/Proposed",
+              "Proposal" : {"When":"", "Where":""}
             }
         ],
         "ShareWith":[{"MemberId" : "<Family memberid"}],

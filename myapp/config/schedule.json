@@ -27,7 +27,8 @@ db.Schedule.Insert({"_id":"ID+ScheudleDate",
       "Type": "<Vendor/Member>",
       "Id": "InviteeId",
       "IsOwner" : "Y/N",
-      "Status": "<Pending/Accepted/Rejected/Proposed New Time>"
+      "Status": "<Pending/Accepted/Rejected/Proposed New Time>",
+      "Proposal" : {"When" : "", "Where" : ""}
     }
   ],
   "ShareWith":[],
@@ -73,7 +74,8 @@ db.Schedule.insert(
           "Type": "Member",
           "Id": "31433",
           "IsOwner":0,
-          "Status": "Waiting"
+          "Status": "Waiting",
+          "Visible" : true
         },
         {
           "Type": "Member",
