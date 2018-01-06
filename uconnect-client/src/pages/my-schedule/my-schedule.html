@@ -34,21 +34,13 @@
 
 <ion-content padding>
   <ion-segment [(ngModel)]="segment">
-      <ion-segment-button value="UpcomingSchedule">
-        Upcoming Schedule
-      </ion-segment-button>
-      <ion-segment-button value="NewRequest">
-        New Request
-      </ion-segment-button>
       <ion-segment-button value="All">
         All
       </ion-segment-button>
-      <ion-segment-button value="Favourite">
+      <ion-segment-button value="Flagged">
         Favourite
       </ion-segment-button>
-       <ion-segment-button value="Create">
-        Create Schedule
-      </ion-segment-button>
+        
     </ion-segment>  
  <div [ngSwitch]="segment">
     <ion-list *ngSwitchCase="'UpcomingSchedule'">
@@ -60,7 +52,7 @@
             <ion-avatar item-left>
               <img src="../../assets/icon/favicon.ico">
             </ion-avatar>
-           
+           <h3>({{ item.ScheduleDetails.Description }})</h3> 
           </ion-item>
             
            <ion-item-options side="right">
@@ -73,7 +65,7 @@
        
           </ion-item-options>
   
-          
+            
       </ion-item-sliding>
     </ion-list>
     

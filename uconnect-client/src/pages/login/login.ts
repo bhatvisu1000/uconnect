@@ -45,7 +45,11 @@ export class LoginPage {
           const responseReceived: ResponseReceived = response.json();
           console.log(responseReceived);
           this.authService.responseReceived=responseReceived;
+          
           this.storage.set('AuthResponse', responseReceived.MyResponse.Data[0]);
+          this.authService.auth.AuthKey= responseReceived.MyResponse.Data[0].AuthResponse.AuthKey;
+          this.authService.auth.EntityId= responseReceived.MyResponse.Data[0].AuthResponse.EntityId;
+          this.storage.set('Auth', this.authService.auth);
           this.navCtrl.push(MyTabsPage, {loginid: this.login.username});  
           console.log('navCtrl ');      
          },

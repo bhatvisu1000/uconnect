@@ -10,8 +10,6 @@ import {HttpService} from "../../services/HttpService"
 
 
 import {ResponseReceived} from "../../models/ResponseReceived"
-import {MyResponse} from "../../models/MyResponse"
-import {Data} from "../../models/response/Data"
 import {Header} from "../../models/Header"
 import {AuthResponse} from "../../models/response/AuthResponse"
 
@@ -20,7 +18,7 @@ import {Request} from "../../models/Request"
 import { AuthService } from "../../services/AuthService";
 import {SendRequest} from "../../models/SendRequest"
 import {LoginRequestData} from "../../models/login/LoginRequestData"
-
+import {Schedule} from "../../models/schedule/Schedule"
 import {Auth} from "../../models/connection/Auth"
 
 /*
@@ -34,7 +32,7 @@ import {Auth} from "../../models/connection/Auth"
   templateUrl: 'my-schedule.html'
 })
 export class MySchedulePage {
- listScheduleItems: Data= null;
+ public listScheduleItems: Schedule[]= null;
  public authResponseReceived: ResponseReceived;
  public scheduleResponseReceived: ResponseReceived;
  public authResponse: AuthResponse;
@@ -71,10 +69,7 @@ loadAllScheduleData(){
     this.storage.get('Auth').then((val) => {
       console.log('Your age is', val);
       this.auth = val;
-    });
-    
-    
-    this.loginRequestData = new LoginRequestData(this.auth);
+      this.loginRequestData = new LoginRequestData(this.auth);
     
     
     this.header= new Header("Schedule", "GetMyAllSchedules", "None");
@@ -92,13 +87,13 @@ loadAllScheduleData(){
       .subscribe(
         (response: Response) => {
           this.scheduleResponseReceived = response.json();
-          this.listScheduleItems = this.scheduleResponseReceived.MyResponse.Data;
-          console.log(this.scheduleResponseReceived);
+          this.listScheduleItems = this.scheduleResponseReceived.MyResponse.Data[0].Schedule;
+          console.log(this.listScheduleItems);
          },
         err => console.log('error ' + err.json().message),
         () => console.log('Schedule List Complete')
-      );
-
-
+      );  
+    });
+    
   }
 }

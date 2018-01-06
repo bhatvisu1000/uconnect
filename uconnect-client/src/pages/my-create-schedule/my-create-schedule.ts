@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 
 import {Invitee} from "../../models/schedule/Invitee"
 import {ScheduleDetails} from "../../models/schedule/ScheduleDetails"
-import {CreateScheduleData} from "../../models/schedule/CreateScheduleData"
+import {Schedule} from "../../models/schedule/Schedule"
 
 import {Auth} from "../../models/connection/Auth"
 
@@ -45,7 +45,7 @@ export class MyCreateSchedulePage {
  event: Event;
  auth: Auth;
  scheduleDetails: ScheduleDetails;
- createScheduleData: CreateScheduleData;
+ schedule: Schedule;
  private sendRequest: SendRequest = null;
  header: Header;
  request: Request;
@@ -87,12 +87,12 @@ export class MyCreateSchedulePage {
     
     this.scheduleDetails = new ScheduleDetails(this.event.title, 'Member', Number(this.auth.EntityId), this.event.location, '2017-12-29 12:12:12', '2017-12-29 01:12:12', 30);
 
-    this.createScheduleData = new CreateScheduleData(this.scheduleDetails, inviteeArray, null, null, null, null, this.auth);
+    this.schedule = new Schedule(this.scheduleDetails, inviteeArray, null, null, null, null, this.auth);
 
 	this.header= new Header("Schedule", "NewSchedule", "None");
 
     
-    this.request= new Request(this.header, this.createScheduleData);
+    this.request= new Request(this.header, this.schedule);
 
     this.sendRequest= new SendRequest(this.request);
     this.httpService.submitRequest(this.sendRequest)

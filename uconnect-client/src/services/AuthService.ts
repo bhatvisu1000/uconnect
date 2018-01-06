@@ -104,7 +104,7 @@ export class AuthService {
     
     this.loginRequestData = new LoginRequestData(this.auth);
     
-    this.storage.set('Auth', this.auth);
+    
     this.header= new Header("Login", "Authenticate", "None");
 
     
