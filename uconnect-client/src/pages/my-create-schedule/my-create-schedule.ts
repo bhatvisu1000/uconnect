@@ -20,7 +20,7 @@ import { Response } from "@angular/http";
 class Event {
   title: string;
   InviteeName: string;
-  startTime: string;
+  startTime: Date;
   endTime: string;
   location: string;
   allDay: boolean;
@@ -49,6 +49,11 @@ export class MyCreateSchedulePage {
  private sendRequest: SendRequest = null;
  header: Header;
  request: Request;
+ chromeReleased = '2008-09-02';
+ startTime;
+ endTime;
+ startDate;
+ endDate;
 
  constructor(public navCtrl: NavController, public navParams: NavParams,  public alertCtrl: AlertController, public httpService: HttpService) {}
 
@@ -72,10 +77,10 @@ export class MyCreateSchedulePage {
   	this.auth = this.navParams.get('auth');
 
   	this.event = new Event();
-  	this.event.startTime = '2017';
-  	this.event.endTime = '2017';
+  	this.startDate= '2018-01-14T12:30';
+  	this.endDate= '2018-01-14T';
   	this.event.InviteeName = this.targetFirstName + ' ' + this.targetLastName;
-  }
+  }	
 
 
 

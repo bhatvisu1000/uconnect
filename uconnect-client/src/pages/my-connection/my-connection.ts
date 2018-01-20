@@ -34,7 +34,7 @@ export class MyConnectionPage {
   public authResponseReceived: ResponseReceived;
   public connectionResponseReceived: ResponseReceived;
   public authResponse: AuthResponse;
-  private sendRequest: SendRequest = null;
+  private sendRequest: SendRequest = null;  
   private auth: Auth = null;
 
   segment: string ="All"

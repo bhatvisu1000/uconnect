@@ -19,23 +19,21 @@
     </ion-item>
 
     <ion-item>
-      <ion-label>Start</ion-label>
-      <ion-datetime displayFormat="MM/DD/YYYY" pickerFormat="YYYY/MM/DD HH:mm:ss" min="{{event.startTime}}" max="2099" [(ngModel)]="event.startTime"></ion-datetime>
+      
+            <ion-label>Start</ion-label>
+			<ion-datetime displayFormat="YYYY-MM-DDTHH:mm" min="2005" max="2099" [(ngModel)]="startDate"></ion-datetime><br>
+			
     </ion-item>
-
+	
     <ion-item>
         <ion-label>End</ion-label>	
-        <ion-datetime displayFormat="MM/DD/YYYY" pickerFormat="YYYY/MM/DD HH:mm" min="{{event.endTime}}" max="2099" [(ngModel)]="event.endTime"></ion-datetime>
+        <ion-datetime displayFormat="YYYY-MM-DDTHH:mm" min="2005" max="2099" [(ngModel)]="endDate"></ion-datetime><br>
+       
     </ion-item>
-
-      <ion-item>
-          <ion-label>All Day?</ion-label>
-          <ion-checkbox [(ngModel)]="event.allDay"></ion-checkbox>
-        </ion-item>
-
-        <ion-item>
-          <ion-input type="text" placeholder="Location" [(ngModel)]="event.location"></ion-input>
-        </ion-item>    
+		
+    <ion-item>
+      <ion-input type="text" placeholder="Location" [(ngModel)]="event.location"></ion-input>
+    </ion-item>    
 
   </ion-list>
   <button ion-button full icon-left (click)="submitCreateSchedule()">

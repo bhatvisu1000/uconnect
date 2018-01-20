@@ -43,7 +43,7 @@
         
     </ion-segment>  
  <div [ngSwitch]="segment">
-    <ion-list *ngSwitchCase="'UpcomingSchedule'">
+    <ion-list *ngSwitchCase="'All'">
         
       <ion-item-sliding *ngFor="let item of listScheduleItems; let i = index">
           
@@ -52,7 +52,9 @@
             <ion-avatar item-left>
               <img src="../../assets/icon/favicon.ico">
             </ion-avatar>
-           <h3>({{ item.ScheduleDetails.Description }})</h3> 
+           <h3>{{ item.ScheduleDetails.Description }}<br> 
+           StartTime: {{ item.ScheduleDetails.StartTime }}<br> 
+           EndTime : {{ item.ScheduleDetails.EndTime }}</h3>
           </ion-item>
             
            <ion-item-options side="right">

@@ -55,7 +55,7 @@ export class LoginPage {
          },
         err => console.log('error ' + err.json().message),
         () => console.log('Authentication Complete')
-      );
+      );  
       
     }
   }

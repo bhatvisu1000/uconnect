@@ -52,17 +52,54 @@
           
           <ion-item>
             
-            <ion-avatar item-left>
-              <img src="../../assets/icon/favicon.ico">
-            </ion-avatar>
-            <h3>({{ item.Main.FirstName }} {{ item.Main.LastName }})</h3> 
-            <h3>({{ item.Address.City }} {{ item.Address.State }})</h3>
-            <h3>({{ item.Contact.Mobile }})</h3>
-            <h3>({{ item.Status }})</h3>
-            <div *ngIf="item.Favorite == 1">
-              <ion-icon ios="ios-star" md="md-star"></ion-icon>
-            </div>
+          
+            <ion-grid>
+                  
 
+                  <ion-row>
+                      <ion-col col-15 justify-content-left>
+                        
+                        
+                          
+                                      <ion-avatar item-left>
+                                        <img src="../../assets/img/sanvi.png">
+                                      </ion-avatar>
+                        
+
+                        <div *ngIf="item.Favorite == 1">
+                            <ion-icon ios="ios-star" md="md-star"></ion-icon>
+                        </div>
+
+                      </ion-col>
+                      <ion-col col-70 justify-content-left>
+                          <h3>{{ item.Main.FirstName }} {{ item.Main.LastName }}  
+                            <br> {{ item.Address.City }} {{ item.Address.State }} 
+                            <br> {{ item.Contact.Mobile }}     </h3> 
+                      </ion-col>
+
+                      <ion-col col-15 justify-content-right>
+                        <div *ngIf="item.Status == 'Awaiting Response'">
+                            
+                          <button align-right ion-button clear (click)="createSchedule(item.Id, item.Main.FirstName, item.Main.LastName)">
+                            <ion-icon ios="ios-checkmark-circle" md="md-checkmark-circle"></ion-icon>
+                          </button>
+                          
+                        </div>
+
+                        <div *ngIf="item.Status == 'Accepted'">
+                            
+                          
+                          <button align-right ion-button clear (click)="createSchedule(item.Id, item.Main.FirstName, item.Main.LastName)">
+                            <ion-icon ios="ios-calendar" md="md-calendar"></ion-icon>
+                          </button>  
+                        </div>
+                      </ion-col>
+                  </ion-row>
+
+                 
+          </ion-grid>
+            
+            
           </ion-item>
             
             
