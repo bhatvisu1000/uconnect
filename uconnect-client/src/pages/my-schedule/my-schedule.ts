@@ -41,7 +41,9 @@ export class MySchedulePage {
  private auth: Auth = null;
  private loginRequestData: LoginRequestData = null;
  private request: Request = null;
-
+ segment: string ="All";
+ public queryText: string="";
+ 
   constructor(public navCtrl: NavController, public navParams: NavParams,  public alertCtrl: AlertController, public authService: AuthService, public storage: Storage, public httpService: HttpService ) {}
 
   ionViewDidLoad() {

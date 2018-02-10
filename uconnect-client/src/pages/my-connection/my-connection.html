@@ -17,7 +17,7 @@
     <ion-searchbar color="primary"
                    [(ngModel)]="queryText"
                    (ionInput)="searchConnection($event)"
-                   placeholder="Search" showCancelButton="True" debounce="3000">
+                   placeholder="Search" showCancelButton="True" debounce="2000">
     </ion-searchbar>
      <ion-buttons end>
       <button ion-button icon-only (click)="presentFilter()">
@@ -50,7 +50,7 @@
         
       <ion-item-sliding *ngFor="let item of listConnectionItems; let i = index">
           
-          <ion-item>
+          <ion-item detail-push>
             
           
             <ion-grid>
