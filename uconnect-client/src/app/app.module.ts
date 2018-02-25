@@ -25,6 +25,7 @@ import { RegistrationService } from "../services/RegistrationService";
 import { AuthService } from "../services/AuthService";
 import { HttpService } from "../services/HttpService";
 import { SQLStorageService } from "../services/SQLStorageService";
+import { Geolocation } from '@ionic-native/geolocation';
 
 
 
@@ -75,7 +76,8 @@ import { SQLStorageService } from "../services/SQLStorageService";
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
                 ConnectionService, RegistrationService, AuthService,
     InAppBrowser,
-    SplashScreen, HttpService, SQLStorageService
+    SplashScreen, HttpService, SQLStorageService,
+    Geolocation
   ]
 })
 export class AppModule {}

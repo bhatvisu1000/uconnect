@@ -2,6 +2,11 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import {AlertController } from 'ionic-angular';
 
+import {  ViewChild, ElementRef } from '@angular/core';
+import {  LoadingController, ToastController } from 'ionic-angular';
+import { Geolocation } from '@ionic-native/geolocation';
+
+
 import 'rxjs/add/operator/map';
 
 import {Invitee} from "../../models/schedule/Invitee"
@@ -16,6 +21,9 @@ import {Header} from "../../models/Header"
 import {Request} from "../../models/Request"
 
 import { Response } from "@angular/http";
+
+declare var google : any;
+
 
 class Event {
   title: string;
@@ -34,10 +42,13 @@ class Event {
   Ionic pages and navigation.
 */
 @Component({
-  selector: 'page-my--create-schedule',
+  selector: 'page-my-create-schedule',
   templateUrl: 'my-create-schedule.html'
 })
 export class MyCreateSchedulePage {
+
+@ViewChild('map') mapRef : ElementRef;
+
  targetMemberid: String;
  targetFirstName: String;
  targetLastName: String;
@@ -55,11 +66,68 @@ export class MyCreateSchedulePage {
  startDate;
  endDate;
 
- constructor(public navCtrl: NavController, public navParams: NavParams,  public alertCtrl: AlertController, public httpService: HttpService) {}
+ constructor(public navCtrl: NavController, public navParams: NavParams,  public alertCtrl: AlertController, public httpService: HttpService,
+ public geolocation: Geolocation,
+  public loadingCtrl: LoadingController, public toastCtrl: ToastController) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MySchedulePage');
+    this.showMap();
   }
+
+showMap()
+{
+  //const loader = this.loadingCtrl.create({content:'Getting Current Location'});
+  //loader.present();
+  this.geolocation.getCurrentPosition().then(position =>
+  {
+    //loader.dismiss();
+    const location = new google.maps.LatLng(position.coords.latitude, 
+      position.coords.longitude);
+      console.log( location);
+    
+      const options = {
+      center: location,
+      zoom: 10,
+      streetViewControl : true,
+      mapTypeId : 'roadmap'    
+    };
+    // const map = new google.maps.Map(this.mapRef.nativeElement, options);
+    const map = new google.maps.Map(document.getElementById('map'), options);
+    var marker = this.addMarker(location, map);
+
+    alert("Location: " + this.event.location);
+
+    // var searchBox = new google.maps.places.SearchBox(this.place);
+    var searchBox = new google.maps.places.SearchBox(document.getElementById('mapsearch'));
+    google.maps.event.addListener(searchBox, 'places_changed', function(){
+      var places = searchBox.getPlaces();
+      var bounds = new google.maps.LatLngBounds();
+      var i,place;
+      for(i=0;place = places[i];i++)
+      {
+        bounds.extend(place.geometry.location);
+        marker.setPosition(place.geometry.location);
+      }
+      map.fitBounds(bounds);
+      map.setZoom(15);
+    });
+  }).catch(error => {
+    console.log(error);
+   // loader.dismiss();
+    const toast = this.toastCtrl.create({message:'Unable to find the current location',
+  duration:2000}
+  );
+  toast.present();
+  });
+}
+
+addMarker(position, map)
+{
+  return new google.maps.Marker({
+    position, map
+  });
+}
 
   searchSchedule(event) {
       let alert = this.alertCtrl.create({

@@ -32,12 +32,17 @@
     </ion-item>
 		
     <ion-item>
-      <ion-input type="text" placeholder="Location" [(ngModel)]="event.location"></ion-input>
-    </ion-item>    
-
+    <input type="text" id="mapsearch">
+    <div id="map"></div>
+    </ion-item>
   </ion-list>
+
+  
+
   <button ion-button full icon-left (click)="submitCreateSchedule()">
     <ion-icon name="checkmark"></ion-icon> Add Event
   </button>
+
+
 
 </ion-content>
